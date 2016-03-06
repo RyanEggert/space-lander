@@ -133,7 +133,7 @@ void oc_pwm(_OC *self, _PIN *pin, _TIMER *timer, float freq, uint16_t duty) {
     }
     if (timer) {
         *(self->OCxCON1) = ((timer->octselnum)<<10)|0x0006;
-        *(self->OCxCON2) = 0x001F & 0x000F; //timer5
+        *(self->OCxCON2) = 0x001F;
         timer_setFreq(timer, freq);
         *(self->OCxRS) = *(timer->PRx);
         *(self->OCxTMR) = 0;

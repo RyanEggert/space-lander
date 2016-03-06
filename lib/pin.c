@@ -102,7 +102,7 @@ void init_pin(void) {
     //   set auto-sample time bits to 12*TAD (SAMC<4:0> = 12)
     //   set conversion clock select bits to 64*TCY (ADCS<7:0> = 64)
     //   set initial channel selection to AN0
-    AD1CON1 = 0x00E0; 
+    AD1CON1 = 0x02E0; 
     AD1CON2 = 0;
     AD1CON3 = 0x0C40;
     AD1CHS = 0;
