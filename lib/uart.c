@@ -47,17 +47,11 @@ void __putc_buffer(_UART *self, uint8_t ch) {
     while (self->TXbuffer.count==self->TXbuffer.length) {}  // Wait until TX 
                                                             // buffer is not 
                                                             // full
-<<<<<<< HEAD
-    self->TXbuffer.data[self->TXbuffer.tail] = ch;
-    self->TXbuffer.tail = (self->TXbuffer.tail+1)%(self->TXbuffer.length);
-    self->TXbuffer.count++;
-=======
     disable_interrupts();
     self->TXbuffer.data[self->TXbuffer.tail] = ch;
     self->TXbuffer.tail = (self->TXbuffer.tail+1)%(self->TXbuffer.length);
     self->TXbuffer.count++;
     enable_interrupts();
->>>>>>> 85f81a42f82d469ab424a5d889515fdec50ea53a
     if (self->TXbuffer.count>=self->TXthreshold)    // If TX buffer is full 
         bitset(self->UxSTA, 10);                    // enough, enable data
                                                     // transmission
@@ -70,17 +64,11 @@ void __serviceTxInterrupt(_UART *self) {
     if (self->TXbuffer.count==0)        // If nothing left in TX buffer, 
         bitclear(self->UxSTA, 10);      // disable data transmission
     while ((bitread(self->UxSTA, 9)==0) && (self->TXbuffer.count!=0)) {
-<<<<<<< HEAD
-        ch = self->TXbuffer.data[self->TXbuffer.head];
-        self->TXbuffer.head = (self->TXbuffer.head+1)%(self->TXbuffer.length);
-        self->TXbuffer.count--;
-=======
         disable_interrupts();
         ch = self->TXbuffer.data[self->TXbuffer.head];
         self->TXbuffer.head = (self->TXbuffer.head+1)%(self->TXbuffer.length);
         self->TXbuffer.count--;
         enable_interrupts();
->>>>>>> 85f81a42f82d469ab424a5d889515fdec50ea53a
         *(self->UxTXREG) = (uint16_t)ch;
     }
 }
@@ -89,17 +77,11 @@ uint8_t __getc_buffer(_UART *self) {
     uint8_t ch;
 
     while (self->RXbuffer.count==0) {}  // Wait until RX buffer is not empty
-<<<<<<< HEAD
-    ch = self->RXbuffer.data[self->RXbuffer.head];
-    self->RXbuffer.head = (self->RXbuffer.head+1)%(self->RXbuffer.length);
-    self->RXbuffer.count--;
-=======
     disable_interrupts();
     ch = self->RXbuffer.data[self->RXbuffer.head];
     self->RXbuffer.head = (self->RXbuffer.head+1)%(self->RXbuffer.length);
     self->RXbuffer.count--;
     enable_interrupts();
->>>>>>> 85f81a42f82d469ab424a5d889515fdec50ea53a
     return ch;
 }
 
@@ -107,17 +89,11 @@ void __serviceRxInterrupt(_UART *self) {
     bitclear(self->IFSy, self->UxRXIF); // Lower RX interrupt flag
     while ((bitread(self->UxSTA, 0)==1) && 
            (self->RXbuffer.count!=self->RXbuffer.length)) {
-<<<<<<< HEAD
-        self->RXbuffer.data[self->RXbuffer.tail] = (uint8_t)(*(self->UxRXREG));
-        self->RXbuffer.tail = (self->RXbuffer.tail+1)%(self->RXbuffer.length);
-        self->RXbuffer.count++;
-=======
         disable_interrupts();
         self->RXbuffer.data[self->RXbuffer.tail] = (uint8_t)(*(self->UxRXREG));
         self->RXbuffer.tail = (self->RXbuffer.tail+1)%(self->RXbuffer.length);
         self->RXbuffer.count++;
         enable_interrupts();
->>>>>>> 85f81a42f82d469ab424a5d889515fdec50ea53a
     }
 }
 
@@ -175,17 +151,10 @@ int16_t write(int16_t handle, void *buffer, uint16_t len) {
 void init_uart(void) {
     init_pin();
 
-<<<<<<< HEAD
-    pin_init(&AJTX, (uint16_t *)&PORTG, (uint16_t *)&TRISG, 
-             (uint16_t *)NULL, 6, -1, 8, 21, (uint16_t *)&RPOR10);
-    pin_init(&AJRX, (uint16_t *)&PORTG, (uint16_t *)&TRISG, 
-             (uint16_t *)NULL, 7, -1, 0, 26, (uint16_t *)&RPOR13);
-=======
     // pin_init(&AJTX, (uint16_t *)&PORTG, (uint16_t *)&TRISG, 
     //          (uint16_t *)NULL, 6, -1, 8, 21, (uint16_t *)&RPOR10);
     // pin_init(&AJRX, (uint16_t *)&PORTG, (uint16_t *)&TRISG, 
     //          (uint16_t *)NULL, 7, -1, 0, 26, (uint16_t *)&RPOR13);
->>>>>>> 85f81a42f82d469ab424a5d889515fdec50ea53a
 
     uart_init(&uart1, (uint16_t *)&U1MODE, (uint16_t *)&U1STA, 
               (uint16_t *)&U1TXREG, (uint16_t *)&U1RXREG, 
@@ -208,19 +177,12 @@ void init_uart(void) {
               (uint16_t *)&IEC5, 9, 8, (uint16_t *)&RPINR27, 
               (uint16_t *)&RPINR27, 0, 8, 30, 31);
 
-<<<<<<< HEAD
-    uart_open(&uart1, &AJTX, &AJRX, NULL, NULL, 19200., 'N', 1, 
-              0, NULL, 0, NULL, 0);
-
-    _stdout = &uart1;
-    _stderr = &uart1;
-=======
     // uart_open(&uart1, &AJTX, &AJRX, NULL, NULL, 19200., 'N', 1, 
     //           0, NULL, 0, NULL, 0);
 
     // _stdout = &uart1;
     // _stderr = &uart1;
->>>>>>> 85f81a42f82d469ab424a5d889515fdec50ea53a
+
 }
 
 void uart_init(_UART *self, uint16_t *UxMODE, uint16_t *UxSTA, 
@@ -478,10 +440,7 @@ void uart_gets(_UART *self, uint8_t *str, uint16_t len) {
     uart_flushTxBuffer(self);
     start = str;
     left = len;
-<<<<<<< HEAD
-=======
     // led_on(&led2);
->>>>>>> 85f81a42f82d469ab424a5d889515fdec50ea53a
     while (1) {
         *str = uart_getc(self);             // Get a character
         if (*str=='\r')                     // If character is return,
@@ -524,10 +483,7 @@ void uart_gets(_UART *self, uint8_t *str, uint16_t len) {
             left--;
         }
     }
-<<<<<<< HEAD
-=======
 
->>>>>>> 85f81a42f82d469ab424a5d889515fdec50ea53a
     *str = '\0';                            // Terminarte the string with null
     uart_putc(self, '\n');                  // Send newline and
     uart_putc(self, '\r');                  //   carriage return
