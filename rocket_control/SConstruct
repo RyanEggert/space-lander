@@ -19,7 +19,7 @@ env.Append(BUILDERS={'List': build_list})
 env.Program('rocket_main', ['main.c',
                             '../lib/pin.c',
                             '../lib/ui.c',
-                            '../lib/timer.c',
+                            'custom_lib/timer.c',
                             '../lib/uart.c'])
 env.Hex('rocket_main')
 env.List('rocket_main')

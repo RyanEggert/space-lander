@@ -102,3 +102,9 @@ target/
 
 # dotenv
 .env
+
+*.pyc
+*.lst
+*.hex
+*.elf
+*.sconsign*

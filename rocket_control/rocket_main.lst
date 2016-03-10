@@ -4930,6 +4930,7 @@ void init_uart(void) {
 
     // _stdout = &uart1;
     // _stderr = &uart1;
+
 }
     2b92:	00 80 fa    	ulnk      
     2b94:	00 00 06    	return    
@@ -9728,9 +9729,7 @@ int16_t main(void) {
             } else {
                 led_off(&led3);
             }
-
         }   
-
     }
     4192:	00 00 00    	nop       
 
