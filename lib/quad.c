@@ -5,6 +5,13 @@
 #include "timer.h"
 #include "quad.h"
 
+int8_t quad_lut [] = {0,-1,1,0,1,0,0,-1,-1,0,0,1,0,1,-1,0};
+// LUT index is  a'b`ab, where a and b are the current 1-bit binary reading of
+// the quadrature encoder's A and B pins, respectively, and a' and b' are the 
+// previous 1-bit binary readings of the quadrature encoder's A and B pins. 
+
+_QUAD quad1, quad2;
+
 void quad_read(_QUAD *self) {
     self -> a_curr = pin_read(self -> A);
     self -> b_curr = pin_read(self -> B);
@@ -102,5 +109,5 @@ void quad_reset_counter(_QUAD *self) {
     /*
     Resets the counter associated with the given quadrature encoder to zero.
     */
-    self -> counter = 0
+    self -> count = 0;
 }
