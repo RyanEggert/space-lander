@@ -19,6 +19,7 @@ typedef struct {
     uint8_t identifier;
     uint8_t encoder_read;
     uint32_t count;
+    int16_t overflow;
     QReader read;
     QTimerReader timer_read;
     _PIN* A;

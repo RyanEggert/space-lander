@@ -17,7 +17,18 @@ void quad_read(_QUAD *self) {
     self -> b_curr = pin_read(self -> B);
     unsigned char latest_read = (self -> a_curr << 1) + self -> b_curr;
     self -> encoder_read = ((self -> encoder_read << 2) + latest_read) & 0xF;
-    self -> count += quad_lut[self -> encoder_read];
+    int8_t delta = quad_lut[self -> encoder_read];
+    if (self -> count == 0) {
+        if (delta == -1) {
+            self -> overflow += -1;
+        }
+    }
+    self -> count += delta;
+    if (self -> count == 0) {
+        if (delta == 1) {
+            self -> overflow += 1;
+        }
+    }
     self -> a_prev = self -> a_curr;
     self -> b_prev = self -> b_curr;
 }
@@ -73,6 +84,7 @@ void quad_init(_QUAD *self, _PIN *in_A, _PIN *in_B) {
     self -> B = in_B;
     self -> a_prev = 0;
     self -> b_prev = 0;
+    self -> overflow = 0;
 
     pin_digitalIn(in_A);
     pin_digitalIn(in_B);

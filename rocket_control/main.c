@@ -161,7 +161,7 @@ int16_t main(void) {
 
             pin_write(&D[10], switch2);
             pin_write(&D[11], switch3);
-
+            
         }
     }
 }
