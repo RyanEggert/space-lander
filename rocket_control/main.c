@@ -11,6 +11,23 @@
 
 uint8_t MC_TXBUF[1024], MC_RXBUF[1024];
 
+
+void read_quad_enc(_TIMER *self) {
+
+    pin_set(&D[5]);
+    static uint8_t enc_val = 0;
+    // uint8_t enc_regs = PORTDbits & 0b11;
+    qenc.a_curr = pin_read(qenc.A);
+    qenc.b_curr = pin_read(qenc.B);
+    enc_val =  (qenc.a_prev << 3)+ (qenc.b_prev << 2) + (qenc.a_curr << 1) + qenc.b_curr;
+
+    qenc.count += quad_lut[enc_val & 0b1111];
+    qenc.a_prev = qenc.a_curr;
+    qenc.b_prev = qenc.b_curr;
+    pin_clear(&D[5]);
+
+}
+
 void print_buffer(uint8_t *buffer, uint16_t size) {
     int i;
     uint8_t* buf_str = (uint8_t*) malloc (2*size + 1);
@@ -87,14 +104,33 @@ void setup_uart() {
              (uint16_t *)NULL, 7, -1, 0, 26, (uint16_t *)&RPOR13);
     uart_open(&uart1, &AJTX, &AJRX, NULL, NULL, 19200., 'N', 1, 
               0, MC_TXBUF, 1024, MC_RXBUF, 1024);
+    _UART *_stdout, *_stderr;
+    _stdout = &uart1;
+    _stderr = &uart1;
 }
 
 void setup() {
     timer_setPeriod(&timer1, 1);  // Timer for LED operation/status blink
     timer_setPeriod(&timer2, 0.5); 
+    timer_setPeriod(&timer3, 0.01);
     timer_start(&timer1);
     timer_start(&timer2);
+    timer_start(&timer3);
+    pin_digitalOut(&D[5]);
+    pin_digitalOut(&D[11]);
+    pin_digitalOut(&D[10]);
+    pin_digitalOut(&D[2]);
 
+
+    // void timer_every(_TIMER *self, float interval, void (*callback)(_TIMER *self)) {
+    timer_every(&timer5, 0.0000875, read_quad_enc);
+    qenc.A = &D[12];
+    qenc.B = &D[13];
+    qenc.a_prev = 0;
+    qenc.b_prev = 0;
+
+    pin_digitalIn(qenc.A);
+    pin_digitalIn(qenc.B);
     setup_uart();
 
 }
@@ -118,14 +154,18 @@ int16_t main(void) {
         }
         if (timer_flag(&timer2)) {
             timer_lower(&timer2);
-            uart_gets(&uart1, rec_msg, 64);
-            msg = convert_msg(rec_msg);
-            is_recip = parse_addr(&msg);
-            if (is_recip == 1) {
-                led_on(&led3);
-            } else {
-                led_off(&led3);
-            }
-        }   
+            printf("%d\n\r", qenc.count);
+        }
+        if (timer_flag(&timer3)) {
+            timer_lower(&timer3);
+            uint16_t switch2 = !sw_read(&sw2);
+            uint16_t switch3 = !sw_read(&sw3);
+            led_write(&led1, switch2);
+            led_write(&led3, switch3);
+
+            pin_write(&D[10], switch2);
+            pin_write(&D[11], switch3);
+
+        }
     }
 }

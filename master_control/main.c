@@ -30,6 +30,7 @@ void setup_uart() {
              (uint16_t *)NULL, 7, -1, 0, 26, (uint16_t *)&RPOR13);
     uart_open(&uart1, &AJTX, &AJRX, NULL, NULL, 19200., 'N', 1, 
               0, NULL, 0, NULL, 0);
+
 }
 
 void setup() {
