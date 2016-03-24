@@ -135,19 +135,16 @@ int16_t main(void) {
     uint8_t rec_msg [64];
     uint64_t msg;
     char is_recip = 0;
-    uint32_t prev_count = quad1.count;
     while (1) {
         if (timer_flag(&timer1)) {
             // Blink green light to show normal operation.
             timer_lower(&timer1);
             led_toggle(&led2);
-            printf("%d\n\r", quad1.count);
         }
         if (timer_flag(&timer2)) {
             timer_lower(&timer2);
-            if (quad1.count != prev_count) {
+            if (quad1.count % 2 == 0) {
                 led_on(&led1);
-                prev_count = quad1.count;
             } else {
                 led_off(&led1);
             }
@@ -161,7 +158,7 @@ int16_t main(void) {
 
             pin_write(&D[10], switch2);
             pin_write(&D[11], switch3);
-            
+
         }
     }
 }
