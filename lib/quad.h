@@ -1,6 +1,6 @@
 // quad.h
-#ifndef ROCKET_CONTROL_CUSTOM_LIB_QUAD_H_
-#define ROCKET_CONTROL_CUSTOM_LIB_QUAD_H_
+#ifndef LIB_QUAD_H_
+#define LIB_QUAD_H_
 
 #include <stdint.h>
 #include "pin.h"
@@ -40,4 +40,4 @@ void quad_debug(_QUAD *self, _PIN *lut3, _PIN *lut2, _PIN *lut1, _PIN *lut0);
 
 void quad_reset_counter(_QUAD *self);
 
-#endif  // ROCKET_CONTROL_CUSTOM_LIB_QUAD_H_
+#endif  // LIB_QUAD_H_
