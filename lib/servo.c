@@ -1,3 +1,10 @@
+/*
+** I2C SERVO LIBRARY
+** Adapted from Adafruit Arduino servo driver library
+** (https://github.com/adafruit/Adafruit-PWM-Servo-Driver-Library)
+**
+*/
+
 #include <p24FJ128GB206.h>
 #include <libpic30.h>
 #include "common.h"
@@ -5,12 +12,38 @@
 #include "i2c.h"
 #include "servo.h"
 
-void init_servo_driver(_SERVODRIVER *self, _I2C *bus, uint8_t hardware_addr) {
 
+_SERVODRIVER sd1;
+_SERVO orientation_servo, speed_ind_servo, fuel_ind_servo;
+
+
+void init_servo_driver(_SERVODRIVER *self, _I2C *bus, uint8_t hardware_addr) {
+    /*
+    Initializes an I2C servo driver device given an initialized _I2C object
+    and its 6-bit slave hardware address, as configured on the device.
+    */
+    self -> bus = bus;
+    self -> hardware_addr = 0x3F & (hardware_addr);
+    self -> i2c_addr = 0x40 | self -> hardware_addr; // Add preceding 1 to addr
+    self -> mode1 = 0b00100001; // Suggested mode configuration
+    i2c_open(self -> bus); // Open I2C bus
 }
 
-void init_servo(_SERVODRIVER *sd, uint8_t number) {
+void close_servo_driver_i2c(_SERVODRIVER *self) {
+    /*
+    Closes I2C communication object for the specified servo driver
+    */
+    i2c_close(self -> bus);
+}
 
+void init_servo(_SERVO *self, _SERVODRIVER *sd, uint8_t number) {
+    /*
+    Initializes a servo object connected to an I2C servo driver. Requires an
+    object representing the controlling I2C servo driver and the servo's
+    numerical address (0-16, incl.) on its controlling I2C servo driver.
+    */
+    self -> driver = sd;
+    self -> num = number;
 }
 
 
@@ -47,9 +80,13 @@ void servo_driver_wake(_SERVODRIVER *self) {
 }
 
 void servo_driver_reset(_SERVODRIVER *self) {
-    servo_driver_begin_transmission(self, I2C_WRITE);
-    servo_driver_write_register(self, PCA9685_MODE1, 0x0);
-    servo_driver_end_transmission(self);
+    /*
+    Follows the software reset procedure outlined in the datasheet.
+    */
+    i2c_start(self -> bus);
+    i2c_putc(self -> bus, 0x00);
+    i2c_putc(self -> bus, 0x06);
+    i2c_close(self -> bus);
 }
 
 void servo_driver_set_pwm_freq(_SERVODRIVER *self, float new_freq) {
@@ -72,9 +109,14 @@ void servo_driver_set_pwm_freq(_SERVODRIVER *self, float new_freq) {
 }
 
 void servo_set_pwm(_SERVO *self, uint16_t on, uint16_t off) {
+    /*
+    Sets a PWM signal as specified by the datasheet by writing 16-bit on and
+    "off" values into a series of four registers. This requires that auto-
+    increment be enabled in the MODE1 register.
+    */
 
     servo_driver_begin_transmission(self -> driver -> i2c_addr, I2C_WRITE);
-    servo_driver_write_register(self -> driver -> bus, LED0_ON_L + 4 * num);
+    servo_driver_write_register(self -> driver -> bus, DEV0_ON_L + 4 * num);
     servo_driver_write_register(self -> driver -> bus, on);
     servo_driver_write_register(self -> driver -> bus, on >> 8);
     servo_driver_write_register(self -> driver -> bus, off);
@@ -119,7 +161,6 @@ void servo_set(_SERVO *self, uint16_t val, bool invert) {
             servo_set_pwm(self, 0, val);
         }
     }
-
 }
 
 
@@ -145,6 +186,6 @@ uint8_t servo_driver_read_register(_SERVODRIVER *dest, uint8_t reg) {
     return i2c_getc(dest -> bus);
 }
 
-void servo_driver_end_transmission (_SERVODRIVER *dest) {
+void servo_driver_end_transmission(_SERVODRIVER *dest) {
     i2c_stop(dest -> bus);
 }
