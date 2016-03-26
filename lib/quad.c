@@ -5,10 +5,10 @@
 #include "timer.h"
 #include "quad.h"
 
-int8_t quad_lut [] = {0,-1,1,0,1,0,0,-1,-1,0,0,1,0,1,-1,0};
+int8_t quad_lut [] = {0, -1, 1, 0, 1, 0, 0, -1, -1, 0, 0, 1, 0, 1, -1, 0};
 // LUT index is  a'b`ab, where a and b are the current 1-bit binary reading of
-// the quadrature encoder's A and B pins, respectively, and a' and b' are the 
-// previous 1-bit binary readings of the quadrature encoder's A and B pins. 
+// the quadrature encoder's A and B pins, respectively, and a' and b' are the
+// previous 1-bit binary readings of the quadrature encoder's A and B pins.
 
 _QUAD quad1, quad2;
 
@@ -78,7 +78,7 @@ void init_quad(void) {
 void quad_init(_QUAD *self, _PIN *in_A, _PIN *in_B) {
     /*
     Initializes a quadrature encoder object connected to two digital input pins,
-    in_A and in_B. 
+    in_A and in_B.
     */
     self -> A = in_A;
     self -> B = in_B;
@@ -101,16 +101,16 @@ void quad_every(_QUAD *self, _TIMER *timer, float interval) {
 
 void quad_debug(_QUAD *self, _PIN *lut3, _PIN *lut2, _PIN *lut1, _PIN *lut0 ) {
     /*
-    Given a quadrature encoder object and four configured digital output pins, 
+    Given a quadrature encoder object and four configured digital output pins,
     writes the value used to index the LUT across the four pins as follows--
-        LUT Index Bit   |  Source      
-        [LSB --> MSB]   |       
+        LUT Index Bit   |  Source
+        [LSB --> MSB]   |
         ****************************************
               0 (LSB)   | most recent value of B
               1         | most recent value of A
               2         | previously read value of B
               3 (MSB)   | previously read value of A
-    */                              
+    */
     pin_write(lut0, self -> b_curr); // b0
     pin_write(lut1, self -> a_curr); // b1
     pin_write(lut2, self -> b_prev); // b2
