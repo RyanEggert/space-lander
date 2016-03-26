@@ -6,7 +6,9 @@
 */
 
 #include <p24FJ128GB206.h>
-#include <libpic30.h>
+// #include <libpic30.h>
+#include <math.h>
+#include <stdbool.h>
 #include "common.h"
 #include "pin.h"
 #include "i2c.h"
@@ -17,7 +19,7 @@ _SERVODRIVER sd1;
 _SERVO orientation_servo, speed_ind_servo, fuel_ind_servo;
 
 
-void init_servo_driver(_SERVODRIVER *self, _I2C *bus, uint8_t hardware_addr) {
+void init_servo_driver(_SERVODRIVER *self, _I2C *bus, float i2c_freq, uint8_t hardware_addr) {
     /*
     Initializes an I2C servo driver device given an initialized _I2C object
     and its 6-bit slave hardware address, as configured on the device.
@@ -26,7 +28,8 @@ void init_servo_driver(_SERVODRIVER *self, _I2C *bus, uint8_t hardware_addr) {
     self -> hardware_addr = 0x3F & (hardware_addr);
     self -> i2c_addr = 0x40 | self -> hardware_addr; // Add preceding 1 to addr
     self -> mode1 = 0b00100001; // Suggested mode configuration
-    i2c_open(self -> bus); // Open I2C bus
+    self -> i2c_freq = i2c_freq;
+    i2c_open(self -> bus, i2c_freq); // Open I2C bus
 }
 
 void close_servo_driver_i2c(_SERVODRIVER *self) {
@@ -59,7 +62,7 @@ void servo_driver_sleep(_SERVODRIVER *self) {
     // Put servo driver to sleep
     servo_driver_begin_transmission(self, I2C_WRITE);
     servo_driver_write_register(self, PCA9685_MODE1, sleep_mode);
-    servo_driver_end_transmission(self)
+    servo_driver_end_transmission(self);
 }
 
 void servo_driver_wake(_SERVODRIVER *self) {
@@ -70,10 +73,10 @@ void servo_driver_wake(_SERVODRIVER *self) {
 
     servo_driver_begin_transmission(self, I2C_WRITE);
     servo_driver_write_register(self, PCA9685_MODE1, self -> mode1);
-    servo_driver_end_transmission(self)
-    __delay_us(500); // Oscillator takes max 500us to restart from sleep
+    servo_driver_end_transmission(self);
+    // __delay_us(500); // Oscillator takes max 500us to restart from sleep
     servo_driver_begin_transmission(self, I2C_WRITE);
-    servo_driver_write_register(PCA9685_MODE1, self -> mode1 | 0xa1);
+    servo_driver_write_register(self, PCA9685_MODE1, self -> mode1 | 0xa1);
     // 0xa1 ensures the raising of the restart bit, ALLCALL, and auto-increment
     servo_driver_end_transmission(self);
     // Servo driver is awake and functioning again!
@@ -89,7 +92,7 @@ void servo_driver_reset(_SERVODRIVER *self) {
     i2c_close(self -> bus);
 }
 
-void servo_driver_set_pwm_freq(_SERVODRIVER *self, float new_freq) {
+void servo_driver_set_pwm_freq(_SERVODRIVER *self, float freq) {
     /*
     Sets the PWM frequency (bounds 24Hz - 1526Hz). This involves sleeping and
     restarting the servo driver.
@@ -103,7 +106,7 @@ void servo_driver_set_pwm_freq(_SERVODRIVER *self, float new_freq) {
     // PWM frequency can only be updated when servo driver is asleep.
     servo_driver_sleep(self);
     servo_driver_begin_transmission(self, I2C_WRITE);
-    servo_driver_write_register(PCA9685_PRESCALE, prescale);
+    servo_driver_write_register(self, PCA9685_PRESCALE, prescale);
     servo_driver_end_transmission(self);
     servo_driver_wake(self);
 }
@@ -115,13 +118,13 @@ void servo_set_pwm(_SERVO *self, uint16_t on, uint16_t off) {
     increment be enabled in the MODE1 register.
     */
 
-    servo_driver_begin_transmission(self -> driver -> i2c_addr, I2C_WRITE);
-    servo_driver_write_register(self -> driver -> bus, DEV0_ON_L + 4 * num);
-    servo_driver_write_register(self -> driver -> bus, on);
-    servo_driver_write_register(self -> driver -> bus, on >> 8);
-    servo_driver_write_register(self -> driver -> bus, off);
-    servo_driver_write_register(self -> driver -> bus, off >> 8);
-    servo_driver_end_transmission(self -> driver -> bus);
+    servo_driver_begin_transmission(self -> driver, I2C_WRITE);
+    i2c_putc(self -> driver -> bus, DEV0_ON_L + 4 * self -> num);
+    i2c_putc(self -> driver -> bus, on);
+    i2c_putc(self -> driver -> bus, on >> 8);
+    i2c_putc(self -> driver -> bus, off);
+    i2c_putc(self -> driver -> bus, off >> 8);
+    servo_driver_end_transmission(self -> driver);
 }
 
 void servo_set(_SERVO *self, uint16_t val, bool invert) {

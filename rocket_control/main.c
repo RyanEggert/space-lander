@@ -6,6 +6,8 @@
 #include "timer.h"
 #include "uart.h"
 #include "quad.h"
+#include "i2c.h"
+#include "servo.h"
 #include "main.h"
 #include <stdio.h>
 #include <stdlib.h>

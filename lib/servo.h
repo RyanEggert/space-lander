@@ -8,6 +8,7 @@
 #ifndef LIB_SERVO_H_
 #define LIB_SERVO_H_
 
+#include <stdbool.h>
 #include "common.h"
 #include "i2c.h"
 
@@ -31,13 +32,10 @@
 #define ALLDEV_OFF_L 0xFC
 #define ALLDEV_OFF_H 0xFD
 
-extern _SERVODRIVER sd1;
-extern _SERVO orientation_servo, speed_ind_servo, fuel_ind_servo;
-
 // Servo Driver
 typedef struct {
-    _I2C bus;
-    uint8_t hardware_addr
+    _I2C *bus;
+    uint8_t hardware_addr;
     uint8_t i2c_addr;
     float i2c_freq;
     uint8_t mode1;  // Normal, awake mode of operation [MODE1 register]
@@ -45,12 +43,14 @@ typedef struct {
 
 // Servo Driver
 typedef struct {
-    _SERVODRIVER driver;
+    _SERVODRIVER *driver;
     uint8_t num;
 } _SERVO;
 
+extern _SERVODRIVER sd1;
+extern _SERVO orientation_servo, speed_ind_servo, fuel_ind_servo;
 
-void init_servo_driver(_SERVODRIVER *self, _I2C *bus, uint8_t hardware_addr);
+void init_servo_driver(_SERVODRIVER *self, _I2C *bus, float i2c_freq, uint8_t hardware_addr);
 
 void close_servo_driver_i2c(_SERVODRIVER *self);
 
