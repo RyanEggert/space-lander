@@ -1,3 +1,5 @@
+#include <p24FJ128GB206.h>
+#include <libpic30.h>
 #include "common.h"
 #include "pin.h"
 #include "i2c.h"
@@ -12,6 +14,37 @@ void init_servo(_SERVODRIVER *sd, uint8_t number) {
 }
 
 
+void servo_driver_sleep(_SERVODRIVER *self) {
+    /*
+    Puts servo driver into low-power sleep mode (to wake, use wake()) and
+    stores mode1 settings to self -> mode1 for later reinstatement on wake.
+    */
+    servo_driver_begin_transmission(self, I2C_READ);
+    self -> mode1 = servo_driver_read_register(self, PCA9685_MODE1);
+    uint8_t sleep_mode = (self -> mode1 & 0x7F) | 0x10;
+    servo_driver_end_transmission(self);
+    // Put servo driver to sleep
+    servo_driver_begin_transmission(self, I2C_WRITE);
+    servo_driver_write_register(self, PCA9685_MODE1, sleep_mode);
+    servo_driver_end_transmission(self)
+}
+
+void servo_driver_wake(_SERVODRIVER *self) {
+    /*
+    Wakes servo driver from sleep (to sleep, use servo_driver_sleep()) and
+    reinstates mode1 settings from pre-sleep period (uses self -> mode1).
+    */
+
+    servo_driver_begin_transmission(self, I2C_WRITE);
+    servo_driver_write_register(self, PCA9685_MODE1, self -> mode1);
+    servo_driver_end_transmission(self)
+    __delay_us(500); // Oscillator takes max 500us to restart from sleep
+    servo_driver_begin_transmission(self, I2C_WRITE);
+    servo_driver_write_register(PCA9685_MODE1, self -> mode1 | 0x81);
+    servo_driver_end_transmission(self);
+    // Servo driver is awake and functioning again!
+}
+
 void servo_driver_reset(_SERVODRIVER *self) {
     servo_driver_begin_transmission(self, I2C_WRITE);
     servo_driver_write_register(self, PCA9685_MODE1, 0x0);
@@ -24,23 +57,13 @@ void servo_driver_set_pwm_freq(_SERVODRIVER *self, float new_freq) {
     prescaleval /= 4096;
     prescaleval /= freq;
     prescaleval -= 1;
-    if (ENABLE_DEBUG_OUTPUT) {
-      //Serial.print("Estimated pre-scale: "); Serial.println(prescaleval);
-    }
     uint8_t prescale = floor(prescaleval + 0.5);
-    if (ENABLE_DEBUG_OUTPUT) {
-      //Serial.print("Final pre-scale: "); Serial.println(prescale);
-    }
-    
-    uint8_t oldmode = read8(PCA9685_MODE1);
-    uint8_t newmode = (oldmode&0x7F) | 0x10; // sleep
-    write8(PCA9685_MODE1, newmode); // go to sleep
-    write8(PCA9685_PRESCALE, prescale); // set the prescaler
-    write8(PCA9685_MODE1, oldmode);
-    delay(5);
-    write8(PCA9685_MODE1, oldmode | 0xa1);  //  This sets the MODE1 register to turn on auto increment.
-                                            // This is why the beginTransmission below was not working.
-    //  Serial.print("Mode now 0x"); Serial.println(read8(PCA9685_MODE1), HEX);
+    // PWM frequency can only be updated when servo driver is asleep.
+    servo_driver_sleep(self);
+    servo_driver_begin_transmission(self, I2C_WRITE);
+    servo_driver_write_register(PCA9685_PRESCALE, prescale);
+    servo_driver_end_transmission(self);
+    servo_driver_wake(self);
 }
 
 
@@ -59,6 +82,11 @@ void servo_driver_begin_transmission(_SERVODRIVER *dest, uint8_t rw) {
 void servo_driver_write_register(_SERVODRIVER *dest, uint8_t reg, uint8_t val) {
     i2c_putc(dest -> bus, reg);
     i2c_putc(dest -> bus, val);
+}
+
+uint8_t servo_driver_read_register(_SERVODRIVER *dest, uint8_t reg) {
+    i2c_putc(dest -> bus, reg);
+    return i2c_getc(dest -> bus);
 }
 
 void servo_driver_end_transmission (_SERVODRIVER *dest) {
