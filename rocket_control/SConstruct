@@ -21,6 +21,7 @@ env.Program('rocket_main', ['main.c',
                             '../lib/ui.c',
                             '../lib/timer.c',
                             '../lib/quad.c',
+                            '../lib/pid.c',
                             '../lib/uart.c'])
 env.Hex('rocket_main')
 env.List('rocket_main')
