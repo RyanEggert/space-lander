@@ -24,8 +24,8 @@ env.Program('stepper', ['stepper.c',
                       '../lib/common.c',
                       '../lib/usb.c',
                       '../lib/md.c',
+                      '../lib/stepper.c',
                       '../lib/descriptors.c'])
-
 
 env.Hex('stepper')
 env.List('stepper')

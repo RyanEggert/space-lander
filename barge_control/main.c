@@ -9,6 +9,6 @@ int16_t main(void) {
     init_uart();
 
    while (1) {
-    }
+   }
 }
 
