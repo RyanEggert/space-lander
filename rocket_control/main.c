@@ -1,16 +1,112 @@
 #include <p24FJ128GB206.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include "config.h"
 #include "common.h"
 #include "pin.h"
 #include "ui.h"
 #include "timer.h"
 #include "uart.h"
+#include "usb.h"
 #include "main.h"
-#include <stdio.h>
-#include <stdlib.h>
+
 
 uint8_t MC_TXBUF[1024], MC_RXBUF[1024];
 
+#define GET_ROCKET_VALS 0
+#define SET_ROCKET_STATE 1
+#define SEND_ROCKET_COMMANDS 2
+
+#define IDLE 0
+#define RESET 1
+#define FLYING 2
+
+#define SET_STATE    0   // Vendor request that receives 2 unsigned integer values
+#define GET_VALS    1   // Vendor request that returns 2 unsigned integer values 
+
+
+uint16_t rocket_state;
+uint16_t rocket_speed, rocket_tilt;
+uint8_t throttle, tilt; //commands
+uint8_t rocketstuff[64],rec_msg[64];
+uint8_t cmd, value;
+uint16_t val1, val2;
+
+void VendorRequests(void) {
+    WORD temp;
+    switch (USB_setup.bRequest) {
+        case SET_STATE:
+            // state = USB_setup.wValue.w;
+            BD[EP0IN].bytecount = 0;    // set EP0 IN byte count to 0 
+            BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
+            break;
+        case GET_VALS:
+            temp.w = uart1.TXbuffer.head;
+            BD[EP0IN].address[0] = temp.b[0];
+            BD[EP0IN].address[1] = temp.b[1];
+            temp.w = uart1.TXbuffer.tail;
+            BD[EP0IN].address[2] = temp.b[0];
+            BD[EP0IN].address[3] = temp.b[1];
+            temp.w = uart1.TXbuffer.count;
+            BD[EP0IN].address[4] = temp.b[0];
+            BD[EP0IN].address[5] = temp.b[1];
+
+            temp.w = uart1.RXbuffer.head;
+            BD[EP0IN].address[6] = temp.b[0];
+            BD[EP0IN].address[7] = temp.b[1];
+            temp.w = uart1.RXbuffer.tail;
+            BD[EP0IN].address[8] = temp.b[0];
+            BD[EP0IN].address[9] = temp.b[1];
+            temp.w = uart1.RXbuffer.count;
+            BD[EP0IN].address[10] = temp.b[0];
+            BD[EP0IN].address[11] = temp.b[1];
+            BD[EP0IN].bytecount = 12;    // set EP0 IN byte count to 4
+            BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
+            break;            
+        default:
+            USB_error_flags |= 0x01;    // set Request Error Flag
+    }
+}
+
+void VendorRequestsIn(void) {
+    switch (USB_request.setup.bRequest) {
+        default:
+            USB_error_flags |= 0x01;                    // set Request Error Flag
+    }
+}
+
+void VendorRequestsOut(void) {
+    switch (USB_request.setup.bRequest) {
+        default:
+            USB_error_flags |= 0x01;                    // set Request Error Flag
+    }
+}
+
+
+void UARTrequests(){
+    uart_gets(&uart1, rec_msg, 64);
+    uint32_t decoded_msg = (uint32_t)strtol(rec_msg, NULL, 16);
+    cmd = decoded_msg & 0x0f;
+    value = (decoded_msg & 0xf0) >> 4;
+    switch(cmd){
+        case GET_ROCKET_VALS:
+        //speed, orientation
+            led_toggle(&led1);
+            sprintf(rocketstuff, "%04x%04x%04x\r", rocket_speed, rocket_tilt, rocket_state);
+            uart_puts(&uart1, rocketstuff);
+            led_toggle(&led2);
+            break;
+        case SET_ROCKET_STATE:
+            rocket_state = value;
+            break;
+        case SEND_ROCKET_COMMANDS:
+            throttle = value & 0b01;
+            tilt = (value & 0b10) >> 1;
+            break;
+    }
+}
+
+//
 void print_buffer(uint8_t *buffer, uint16_t size) {
     int i;
     uint8_t* buf_str = (uint8_t*) malloc (2*size + 1);
@@ -96,6 +192,9 @@ void setup() {
     timer_start(&timer2);
 
     setup_uart();
+    throttle, tilt = 0;
+    val1,val2 = 8;
+    rocket_tilt = 15;
 
 }
 
@@ -107,25 +206,51 @@ int16_t main(void) {
     init_uart();
     setup();
     uint16_t counter = 0;
-    uint8_t rec_msg [64];
     uint64_t msg;
     char is_recip = 0;
+    led_off(&led2);
+    led_off(&led1);
+
+    InitUSB();
+    U1IE = 0xFF; //setting up ISR for USB requests
+    U1EIE = 0xFF;
+    IFS5bits.USB1IF = 0; //flag
+    IEC5bits.USB1IE = 1; //enable
+
     while (1) {
-        if (timer_flag(&timer1)) {
-            // Blink green light to show normal operation.
-            timer_lower(&timer1);
-            led_toggle(&led2);
-        }
+        // if (timer_flag(&timer1)) {
+        //     // Blink green light to show normal operation.
+        //     timer_lower(&timer1);
+        //     led_toggle(&led2);
+        // }
+
         if (timer_flag(&timer2)) {
             timer_lower(&timer2);
-            uart_gets(&uart1, rec_msg, 64);
-            msg = convert_msg(rec_msg);
-            is_recip = parse_addr(&msg);
-            if (is_recip == 1) {
-                led_on(&led3);
-            } else {
-                led_off(&led3);
-            }
+            // uart_gets(&uart1, rec_msg, 64);
+            // led_toggle(&led2);
+            UARTrequests();
+
+
+            // if (throttle == 1){
+            //     led_on(&led1);
+            // }
+
+            // else{
+            //     led_off(&led1);
+            // }
+
+        // if(rocket_state == FLYING){
+        //     led_on(&led1);
+        // }
+
+        // else{
+        //     led_off(&led1);
+        // }
+
+        val1 = uart1.TXbuffer.head;
+        val2 = uart1.TXbuffer.tail;
+
+            
         }   
     }
 }

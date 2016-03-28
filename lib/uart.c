@@ -422,7 +422,7 @@ void uart_puts(_UART *self, uint8_t *str) {
     uart_flushTxBuffer(self);
 }
 
-void uart_gets(_UART *self, uint8_t *str, uint16_t len) {
+void uart_gets_term(_UART *self, uint8_t *str, uint16_t len) {
     uint8_t *start;
     uint16_t left;
 
@@ -489,3 +489,32 @@ void uart_gets(_UART *self, uint8_t *str, uint16_t len) {
     uart_flushTxBuffer(self);
 }
 
+
+void uart_gets(_UART *self, uint8_t *str, uint16_t len) {
+    uint8_t *start;
+    uint16_t left;
+    uint8_t char_count = 0;
+
+    if (len==0)
+        return;
+
+    if (len==1) {
+        *str = '\0';
+        return;
+    }
+
+    // uart_flushTxBuffer(self);
+    start = str;
+    left = len;
+    // led_on(&led2);
+    while (1) {
+        *str = uart_getc(self);             // Get a character
+        char_count ++;
+        if (*str=='\r') {                     // If character is return,
+            break;
+        }
+        if (char_count >= UART_MSG_MAX_LEN) { // Terminate if max length reached.
+            break;
+        }  
+    }
+}         

@@ -17,9 +17,12 @@ build_list = Builder(action='xc16-objdump -S -D $SOURCE > $TARGET',
 env.Append(BUILDERS={'List': build_list})
 
 env.Program('rocket_main', ['main.c',
+                            '../lib/common.c',
                             '../lib/pin.c',
                             '../lib/ui.c',
                             '../lib/timer.c',
-                            '../lib/uart.c'])
+                            '../lib/uart.c',
+                            '../lib/usb.c',
+                            '../lib/descriptors.c'])
 env.Hex('rocket_main')
 env.List('rocket_main')
