@@ -18,7 +18,7 @@ typedef struct {
     unsigned char b_prev;
     uint8_t identifier;
     uint8_t encoder_read;
-    uint32_t count;
+    volatile uint32_t counter;
     int16_t overflow;
     QReader read;
     QTimerReader timer_read;

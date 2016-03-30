@@ -32,6 +32,7 @@
 _UART uart1, uart2, uart3, uart4;
 _UART *_stdout, *_stderr;
 _PIN AJTX, AJRX;
+_PIN 
 
 void __putc_nobuffer(_UART *self, uint8_t ch) {
     while (bitread(self->UxSTA, 9)==1) {}   // Wait until TX buffer is not full
@@ -151,10 +152,19 @@ int16_t write(int16_t handle, void *buffer, uint16_t len) {
 void init_uart(void) {
     init_pin();
 
-    // pin_init(&AJTX, (uint16_t *)&PORTG, (uint16_t *)&TRISG, 
-    //          (uint16_t *)NULL, 6, -1, 8, 21, (uint16_t *)&RPOR10);
-    // pin_init(&AJRX, (uint16_t *)&PORTG, (uint16_t *)&TRISG, 
-    //          (uint16_t *)NULL, 7, -1, 0, 26, (uint16_t *)&RPOR13);
+    pin_init(&AJTX, (uint16_t *)&PORTG, (uint16_t *)&TRISG, 
+             (uint16_t *)NULL, 6, -1, 8, 21, (uint16_t *)&RPOR10);
+    pin_init(&AJRX, (uint16_t *)&PORTG, (uint16_t *)&TRISG, 
+             (uint16_t *)NULL, 7, -1, 0, 26, (uint16_t *)&RPOR13);
+
+    pin_init(&TX2, (uint16_t *)&PORTB, (uint16_t *)&TRISB, 
+             (uint16_t *)&ANSB, 7, 7, 8, 7, (uint16_t *)&RPOR3);
+    pin_init(&RX2, (uint16_t *)&PORTB, (uint16_t *)&TRISB, 
+             (uint16_t *)&ANSB, 6, 6, 0, 6, (uint16_t *)&RPOR3);
+    pin_init(&RTS2, (uint16_t *)&PORTG, (uint16_t *)&TRISG, 
+             (uint16_t *)NULL, 9, -1, 8, 27, (uint16_t *)&RPOR13);
+    pin_init(&CTS2, (uint16_t *)&PORTG, (uint16_t *)&TRISG, 
+             (uint16_t *)NULL, 8, -1, 8, 19, (uint16_t *)&RPOR9);
 
     uart_init(&uart1, (uint16_t *)&U1MODE, (uint16_t *)&U1STA, 
               (uint16_t *)&U1TXREG, (uint16_t *)&U1RXREG, 
@@ -177,11 +187,11 @@ void init_uart(void) {
               (uint16_t *)&IEC5, 9, 8, (uint16_t *)&RPINR27, 
               (uint16_t *)&RPINR27, 0, 8, 30, 31);
 
-    // uart_open(&uart1, &AJTX, &AJRX, NULL, NULL, 19200., 'N', 1, 
-    //           0, NULL, 0, NULL, 0);
+    uart_open(&uart1, &AJTX, &AJRX, NULL, NULL, 19200., 'N', 1, 
+              0, NULL, 0, NULL, 0);
 
-    // _stdout = &uart1;
-    // _stderr = &uart1;
+    _stdout = &uart1;
+    _stderr = &uart1;
 
 }
 

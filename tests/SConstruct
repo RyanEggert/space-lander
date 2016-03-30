@@ -25,3 +25,12 @@ env.Program('servo_test', ['servo_test.c',
                             '../lib/uart.c'])
 env.Hex('servo_test')
 env.List('servo_test')
+
+env.Program('quad_test', ['quad_test.c',
+                            '../lib/pin.c',
+                            '../lib/ui.c',
+                            '../lib/timer.c',
+                            '../lib/uart.c',
+                            '../lib/quad.c',])
+env.Hex('quad_test')
+env.List('quad_test')

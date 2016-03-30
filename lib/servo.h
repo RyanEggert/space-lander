@@ -48,7 +48,7 @@ typedef struct {
 } _SERVO;
 
 extern _SERVODRIVER sd1;
-extern _SERVO orientation_servo, speed_ind_servo, fuel_ind_servo;
+extern _SERVO orientation_servo, speed_ind_servo, fuel_ind_servo, servo0, servo1, servo2, servo3, servo4;
 
 void init_servo_driver(_SERVODRIVER *self, _I2C *bus, float i2c_freq, uint8_t hardware_addr);
 
