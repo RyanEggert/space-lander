@@ -8,10 +8,10 @@
 #include "ui.h"
 #include "timer.h"
 #include "spi.h"
-#include "pin.h"
+// #include "pin.h"
 #include "oc.h"
 #include "usb.h"
-#include "md.h"
+// #include "md.h"
 #include "stepper.h"
 
 #define SET_VALS    0   // Vendor request that receives 2 unsigned integer values
@@ -161,13 +161,12 @@ int16_t main(void) {
     init_pin();
     init_uart();
     init_timer();
-    init_md();
+    // init_md();
     init_st();
 
     LEFT = &D[12];
     RIGHT = &D[13];
 
-    led_on(&led1);//LED to tell if it is in run mode
 
     timer_setPeriod(&timer2, .001);
     timer_start(&timer2);
