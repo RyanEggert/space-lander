@@ -12,14 +12,14 @@ typedef void (*QTimerReader)(_TIMER *timer);
 
 // Quadrature Encoder
 typedef struct {
-    unsigned char a_curr;
-    unsigned char a_prev;
-    unsigned char b_curr;
-    unsigned char b_prev;
+    volatile unsigned char a_curr;
+    volatile unsigned char a_prev;
+    volatile unsigned char b_curr;
+    volatile unsigned char b_prev;
     uint8_t identifier;
-    uint8_t encoder_read;
-    uint32_t count;
-    int16_t overflow;
+    volatile uint8_t encoder_read;
+    volatile uint32_t counter;
+    volatile int16_t overflow;
     QReader read;
     QTimerReader timer_read;
     _PIN* A;

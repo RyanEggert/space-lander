@@ -33,6 +33,8 @@ _UART uart1, uart2, uart3, uart4;
 _UART *_stdout, *_stderr;
 _PIN AJTX, AJRX;
 
+uint8_t HW_TXBUF[1024], HW_RXBUF[1024];
+
 void __putc_nobuffer(_UART *self, uint8_t ch) {
     while (bitread(self->UxSTA, 9)==1) {}   // Wait until TX buffer is not full
     *(self->UxTXREG) = (uint16_t)ch;
@@ -151,10 +153,10 @@ int16_t write(int16_t handle, void *buffer, uint16_t len) {
 void init_uart(void) {
     init_pin();
 
-    // pin_init(&AJTX, (uint16_t *)&PORTG, (uint16_t *)&TRISG, 
-    //          (uint16_t *)NULL, 6, -1, 8, 21, (uint16_t *)&RPOR10);
-    // pin_init(&AJRX, (uint16_t *)&PORTG, (uint16_t *)&TRISG, 
-    //          (uint16_t *)NULL, 7, -1, 0, 26, (uint16_t *)&RPOR13);
+    pin_init(&AJTX, (uint16_t *)&PORTG, (uint16_t *)&TRISG, 
+             (uint16_t *)NULL, 6, -1, 8, 21, (uint16_t *)&RPOR10);
+    pin_init(&AJRX, (uint16_t *)&PORTG, (uint16_t *)&TRISG, 
+             (uint16_t *)NULL, 7, -1, 0, 26, (uint16_t *)&RPOR13);
 
     uart_init(&uart1, (uint16_t *)&U1MODE, (uint16_t *)&U1STA, 
               (uint16_t *)&U1TXREG, (uint16_t *)&U1RXREG, 
@@ -177,11 +179,11 @@ void init_uart(void) {
               (uint16_t *)&IEC5, 9, 8, (uint16_t *)&RPINR27, 
               (uint16_t *)&RPINR27, 0, 8, 30, 31);
 
-    // uart_open(&uart1, &AJTX, &AJRX, NULL, NULL, 19200., 'N', 1, 
-    //           0, NULL, 0, NULL, 0);
+    uart_open(&uart1, &AJTX, &AJRX, NULL, NULL, 19200., 'N', 1, 
+              0, HW_TXBUF, 1024, HW_RXBUF, 1024);
 
-    // _stdout = &uart1;
-    // _stderr = &uart1;
+    _stdout = &uart1;
+    _stderr = &uart1;
 
 }
 

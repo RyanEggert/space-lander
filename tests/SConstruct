@@ -16,14 +16,21 @@ build_list = Builder(action='xc16-objdump -S -D $SOURCE > $TARGET',
                src_suffix='elf')
 env.Append(BUILDERS={'List': build_list})
 
-env.Program('rocket_main', ['main.c',
+env.Program('servo_test', ['servo_test.c',
                             '../lib/pin.c',
                             '../lib/ui.c',
                             '../lib/timer.c',
-                            '../lib/quad.c',
-			    '../lib/pid.c',
                             '../lib/i2c.c',
                             '../lib/servo.c',
                             '../lib/uart.c'])
-env.Hex('rocket_main')
-env.List('rocket_main')
+env.Hex('servo_test')
+env.List('servo_test')
+
+env.Program('quad_test', ['quad_test.c',
+                            '../lib/pin.c',
+                            '../lib/ui.c',
+                            '../lib/timer.c',
+                            '../lib/uart.c',
+                            '../lib/quad.c',])
+env.Hex('quad_test')
+env.List('quad_test')
