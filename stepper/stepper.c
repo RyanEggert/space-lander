@@ -170,6 +170,8 @@ int16_t main(void) {
 
     timer_setPeriod(&timer2, .001);
     timer_start(&timer2);
+    timer_setPeriod(&timer3, 1.0);
+    timer_start(&timer3);
 
     // // Comment these pins later
     // STEP = &D[0];
@@ -213,25 +215,57 @@ int16_t main(void) {
     last_state = (STATE_HANDLER_T)NULL;
 
     float freq = 100.0;
-    uint16_t accel = 10;
+    float freq_lim = 1000.0;
+    uint8_t dir = 0;
+    float accel = 10.0;
     st_state(&st_d, 1);
 
     while (1) {
         // state();
+        if (timer_flag(&timer3)) {
+            timer_lower(&timer3);
+            if (pin_read(LEFT) || pin_read(RIGHT)) {
+                if (freq < freq_lim) {
+                    freq += accel;
+                }
+            }
+            else {
+                if (freq != 100.0) {
+                    freq = 100.0;
+                }
+            }
+        }
         if (timer_flag(&timer2)) {
+            timer_lower(&timer2);
             if (pin_read(LEFT)) {
-                st_direction(&st_d, 0);
+                // if (freq < freq_lim) {
+                //     freq = freq+accel;
+                // }
+                if (dir == 1) {
+                    st_direction(&st_d, 0);
+                    dir = 0;
+                }
                 st_speed(&st_d, freq);
                 led_on(&led1);
                 led_off(&led3);
             }
             else if (pin_read(RIGHT)) {
-                st_direction(&st_d, 1);
+                // if (freq < freq_lim) {
+                //     freq = freq+accel;
+                // }
+                if (dir == 0) {
+                    st_direction(&st_d, 1);
+                    dir = 1;
+                }
+                // st_direction(&st_d, 1);
                 st_speed(&st_d, freq);
                 led_off(&led1);
                 led_on(&led3);
             }
             else {
+                // if (freq != 100.0) {
+                //     freq = 100.0;
+                // }
                 st_speed(&st_d, 0);
                 led_off(&led1);
                 led_off(&led3);
