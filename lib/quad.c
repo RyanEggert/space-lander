@@ -6,6 +6,7 @@
 #include "quad.h"
 #include "stdio.h"
 
+
 int8_t quad_lut [] = {0, -1, 1, 0, 1, 0, 0, -1, -1, 0, 0, 1, 0, 1, -1, 0};
 // LUT index is  a'b`ab, where a and b are the current 1-bit binary reading of
 // the quadrature encoder's A and B pins, respectively, and a' and b' are the
@@ -14,58 +15,46 @@ int8_t quad_lut [] = {0, -1, 1, 0, 1, 0, 0, -1, -1, 0, 0, 1, 0, 1, -1, 0};
 _QUAD quad1, quad2;
 
 void quad_read(_QUAD *self) {
+    disable_interrupts();
     self -> a_curr = pin_read(self -> A);
     self -> b_curr = pin_read(self -> B);
     unsigned char latest_read = (self -> a_curr << 1) + self -> b_curr;
     self -> encoder_read = ((self -> encoder_read << 2) + latest_read) & 0xF;
     int8_t delta = quad_lut[self -> encoder_read];
 
-    // if (self -> count == 0) {
-    //     if (delta == -1) {
-    //         self -> overflow += -1;
-    //     }
-    // }
-    uint32_t sc = self -> counter;
-    uint32_t nc = sc + delta;
-    // self -> counter = nc;
-
-    self -> counter = self -> counter + delta;
-
-    if ( delta != 0 ) {
-        // printf("%d\n\r", self -> counter);
-        // // self -> count = cnt;
-        printf("%d \n\r", delta);
-        // // printf("%d \n\r", self -> counter);
-        printf("%d %d \n\r", self -> counter, delta);
+    if (self -> counter == 0) {
+        if (delta == -1) {
+            self -> overflow += -1;
+        }
     }
-    // if (self -> count == 0) {
-    //     if (delta == 1) {
-    //         self -> overflow += 1;
-    //     }
-    // }
+
+    self -> counter += delta;
+
+    if (self -> counter == 0) {
+        if (delta == 1) {
+            self -> overflow += 1;
+        }
+    }
     
     self -> a_prev = self -> a_curr;
     self -> b_prev = self -> b_curr;
+    enable_interrupts();
 }
 
 void _timer_read_quad1(_TIMER *timer) {
     quad_read(&quad1);
-    // quad1.count += read;
 }
 
 void _timer_read_quad2(_TIMER *timer) {
     quad_read(&quad2);
-    // quad2.count += read;
 }
 
 void _read_quad1(void) {
     quad_read(&quad1);
-    // quad1.count += read;
 }
 
 void _read_quad2(void) {
     quad_read(&quad2);
-    // quad2.count += read;
 }
 
 void init_quad_fxns(void) {
@@ -104,7 +93,7 @@ void quad_init(_QUAD *self, _PIN *in_A, _PIN *in_B) {
     self -> a_prev = 0;
     self -> b_prev = 0;
     self -> overflow = 0;
-    self -> counter = 28;
+    self -> counter = 0;
 
     pin_digitalIn(in_A);
     pin_digitalIn(in_B);
