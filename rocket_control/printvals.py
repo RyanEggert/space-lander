@@ -2,5 +2,7 @@ import usb_vendor as h
 test = h.hellousb()
 
 while(1):
-	[TXhead, TXtail, TXcount, RXhead, RXtail, RXcount] = test.get_vals()
-	print "TX_head {} | TX_tail {} | TX_count {} || RX_head {} | RX_tail {} | RX_count {}".format(TXhead, TXtail, TXcount, RXhead, RXtail, RXcount)
+	# [TXhead, TXtail, TXcount, RXhead, RXtail, RXcount] = test.get_vals()
+	# print "TX_head {} | TX_tail {} | TX_count {} || RX_head {} | RX_tail {} | RX_count {}".format(TXhead, TXtail, TXcount, RXhead, RXtail, RXcount)
+    [r_tilt, r_speed, r_state] = test.get_rocket_info()
+    print "Rocket Tilt {} | Rocket Speed {} | Rocket State {}".format(r_tilt, r_speed, r_state)

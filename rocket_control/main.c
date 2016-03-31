@@ -23,12 +23,12 @@ uint8_t MC_TXBUF[1024], MC_RXBUF[1024];
 
 #define SET_STATE    0   // Vendor request that receives 2 unsigned integer values
 #define GET_VALS    1   // Vendor request that returns 2 unsigned integer values 
-
+#define GET_ROCKET_INFO 2
 
 uint16_t rocket_state;
 uint16_t rocket_speed, rocket_tilt;
 uint8_t throttle, tilt; //commands
-uint8_t rocketstuff[64],rec_msg[64];
+uint8_t rocketstuff[64], rec_msg[64];
 uint8_t cmd, value;
 uint16_t val1, val2;
 
@@ -62,7 +62,20 @@ void VendorRequests(void) {
             BD[EP0IN].address[11] = temp.b[1];
             BD[EP0IN].bytecount = 12;    // set EP0 IN byte count to 4
             BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
-            break;            
+            break;
+        case GET_ROCKET_INFO:
+            temp.w = rocket_tilt;
+            BD[EP0IN].address[0] = temp.b[0];
+            BD[EP0IN].address[1] = temp.b[1];
+            temp.w = rocket_speed;
+            BD[EP0IN].address[2] = temp.b[0];
+            BD[EP0IN].address[3] = temp.b[1];
+            temp.w = rocket_state;
+            BD[EP0IN].address[4] = temp.b[0];
+            BD[EP0IN].address[5] = temp.b[1];
+            BD[EP0IN].bytecount = 6;    // set EP0 IN byte count to 4
+            BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
+            break;     
         default:
             USB_error_flags |= 0x01;    // set Request Error Flag
     }
@@ -92,6 +105,9 @@ void UARTrequests(){
         case GET_ROCKET_VALS:
         //speed, orientation
             led_toggle(&led1);
+            // rocket_speed = 0xFFFF;
+            // rocket_tilt = 0xFFFF;
+            // rocket_state = 0xFFFF;
             sprintf(rocketstuff, "%04x%04x%04x\r", rocket_speed, rocket_tilt, rocket_state);
             uart_puts(&uart1, rocketstuff);
             led_toggle(&led2);
@@ -177,11 +193,13 @@ void setup_uart() {
     //           0, MC_TXBUF, 1024, MC_RXBUF, 1024);
     // uart_open(&uart3, &AJTX, &AJRX, NULL, NULL, 115200., 'N', 1, 
     //           0, TXBUF, 1024, RXBUF, 1024);
-    pin_init(&AJRX, (uint16_t *)&PORTG, (uint16_t *)&TRISG, 
-             (uint16_t *)NULL, 6, -1, 8, 21, (uint16_t *)&RPOR10);
-    pin_init(&AJTX, (uint16_t *)&PORTG, (uint16_t *)&TRISG, 
-             (uint16_t *)NULL, 7, -1, 0, 26, (uint16_t *)&RPOR13);
-    uart_open(&uart1, &AJTX, &AJRX, NULL, NULL, 19200., 'N', 1, 
+
+    // pin_init(&AJRX, (uint16_t *)&PORTG, (uint16_t *)&TRISG, 
+    //          (uint16_t *)NULL, 6, -1, 8, 21, (uint16_t *)&RPOR10);
+    // pin_init(&AJTX, (uint16_t *)&PORTG, (uint16_t *)&TRISG, 
+    //          (uint16_t *)NULL, 7, -1, 0, 26, (uint16_t *)&RPOR13);
+
+    uart_open(&uart1, &D[0], &D[1], NULL, NULL, 19200., 'N', 1, 
               0, MC_TXBUF, 1024, MC_RXBUF, 1024);
 }
 
