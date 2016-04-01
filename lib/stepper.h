@@ -45,7 +45,7 @@ typedef struct {
 
 extern _ST st_d;
 
-void st_init(_ST *self, _PIN *pin1, _PIN *pin2, _PIN *pin3, _PIN *pin4, _PIN *pin5, _PIN *pin6, _PIN *pin7, _PIN *pin8, uint16_t freq, _OC *oc, uint16_t duty_cyc);
+void st_init(_ST *self, _PIN *pin1, _PIN *pin2, _PIN *pin3, _PIN *pin4, _PIN *pin5, _PIN *pin6, _PIN *pin7, _PIN *pin8, _OC *oc, uint16_t duty_cyc);
 
 void st_speed(_ST *self, float speed);
 void st_state(_ST *self, uint8_t state);
