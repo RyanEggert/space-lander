@@ -1,0 +1,49 @@
+
+env = Environment(PIC='24FJ128GB206',
+                  CC='xc16-gcc',
+                  PROGSUFFIX='.elf',
+                  CFLAGS='-g -omf=elf -x c -mcpu=$PIC',
+                  LINKFLAGS='-omf=elf -mcpu=$PIC -Wl,--script="app_p24FJ128GB206.gld"',
+                  CPPPATH=['../lib'])
+env.PrependENVPath('PATH', '/opt/microchip/xc16/v1.25/bin')
+env.PrependENVPath('PATH', '/opt/microchip/xc16/v1.25/support/generic/h')
+
+
+
+bin2hex = Builder(action='xc16-bin2hex $SOURCE -omf=elf',
+                  suffix='hex',
+                  src_suffix='elf')
+env.Append(BUILDERS={'Hex': bin2hex})
+build_list = Builder(action='xc16-objdump -S -D $SOURCE > $TARGET',
+               suffix='lst',
+               src_suffix='elf')
+env.Append(BUILDERS={'List': build_list})
+
+env.Program('servo_test', ['servo_test.c',
+                            '../lib/pin.c',
+                            '../lib/ui.c',
+                            '../lib/timer.c',
+                            '../lib/i2c.c',
+                            '../lib/servo.c',
+                            '../lib/uart.c'])
+env.Hex('servo_test')
+env.List('servo_test')
+
+env.Program('quad_test', ['quad_test.c',
+                            '../lib/pin.c',
+                            '../lib/ui.c',
+                            '../lib/timer.c',
+                            '../lib/uart.c',
+                            '../lib/quad.c',])
+env.Hex('quad_test')
+env.List('quad_test')
+
+env.Program('dcmotor_test', ['dcmotor_test.c',
+                            '../lib/pin.c',
+                            '../lib/ui.c',
+                            '../lib/timer.c',
+                            '../lib/uart.c',
+                            '../lib/md.c',
+                            '../lib/oc.c'])
+env.Hex('dcmotor_test')
+env.List('dcmotor_test')
