@@ -45,6 +45,7 @@
 #define bitclear(addr, bit)     *(addr) &= ~(1<<bit)
 #define bitflip(addr, bit)      *(addr) ^= 1<<bit
 
+
 #define disable_interrupts()    __asm__ volatile("disi #0x3FFF")
 #define enable_interrupts()     DISICNT = 0
 

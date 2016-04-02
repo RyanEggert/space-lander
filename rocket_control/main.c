@@ -7,10 +7,14 @@
 #include "ui.h"
 #include "timer.h"
 #include "uart.h"
+#include "quad.h"
+#include "i2c.h"
+#include "servo.h"
+#include "main.h"
 #include "usb.h"
 #include "msgs.h"
 
-uint8_t MC_TXBUF[1024], MC_RXBUF[1024];
+uint8_t RC_TXBUF[1024], RC_RXBUF[1024];
 
 #define SET_STATE    0   // Vendor request that receives 2 unsigned integer values
 #define GET_VALS    1   // Vendor request that returns 2 unsigned integer values 
@@ -116,14 +120,22 @@ void setup_uart() {
     Automatically uses uart2 for stdout, stderr to PC via audio jack.
     */
     uart_open(&uart1, &D[0], &D[1], NULL, NULL, 19200., 'N', 1,
-              0, MC_TXBUF, 1024, MC_RXBUF, 1024);
+              0, RC_TXBUF, 1024, RC_RXBUF, 1024);
 }
 
 void setup() {
     timer_setPeriod(&timer1, 1);  // Timer for LED operation/status blink
     timer_setPeriod(&timer2, 0.5);  // Timer for UART servicing
+    timer_setPeriod(&timer3, 0.01);
     timer_start(&timer1);
     timer_start(&timer2);
+    timer_start(&timer3);
+
+    quad_init(&quad1, &D[12], &D[13]); // quad1 uses pins D12 & D13
+    quad_every(&quad1, &timer5, 0.0000875); // quad1 will use timer5 interrupts
+
+    // General use debugging output pin
+    pin_digitalOut(&D[2]);
 
     setup_uart();
     throttle, tilt = 0;
@@ -138,6 +150,7 @@ int16_t main(void) {
     init_ui();
     init_timer();
     init_uart();
+    init_quad();
     setup();
     uint16_t counter = 0;
     uint64_t msg;
