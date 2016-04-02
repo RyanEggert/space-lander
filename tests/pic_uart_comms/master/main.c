@@ -96,7 +96,7 @@ void UART_ctl(uint8_t cmd, uint8_t value) {
         uint32_t decoded_msg = (uint32_t)strtol(rec_msg, NULL, 16);
         rocket_speed = (uint16_t)((decoded_msg & 0xFF0000) >> 16);
         rocket_tilt = (uint16_t)((decoded_msg & 0xFF00) >> 8);
-        rocket_state = decoded_msg;
+        rocket_state = decoded_msg & 0xFF;
     }
 }
 
