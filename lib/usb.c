@@ -511,3 +511,9 @@ void SendDataPacket(void) {
     BD[EP0IN].bytecount = packet_length;
     BD[EP0IN].status = ((BD[EP0IN].status^0x40)&0x40)|0x88; // toggle the DATA01 bit, clear the PIDs bits, and set the UOWN and DTS bits
 }
+
+//Making Service USB interrupt driven
+void __attribute__((interrupt, auto_psv)) _USB1Interrupt(void) {
+    IFS5bits.USB1IF = 0; //flag
+    ServiceUSB();
+}

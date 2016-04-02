@@ -13,7 +13,7 @@ uint8_t __attribute__ ((space(auto_psv))) Device[] = {
     MAX_PACKET_SIZE,    // bMaxPacketSize
     0x66,       // idVendor (low byte)
     0x66,       // idVendor (high byte)
-    0x03,       // idProduct (low byte)
+    0x04,       // idProduct (low byte)
     0x00,       // idProduct (high byte)
     0x00,       // bcdDevice (low byte)
     0x00,       // bcdDevice (high byte)

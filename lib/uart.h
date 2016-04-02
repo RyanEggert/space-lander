@@ -29,6 +29,8 @@
 #include <stdint.h>
 #include "pin.h"
 
+#define UART_MSG_MAX_LEN 128
+
 void init_uart(void);
 
 typedef struct _RINGBUFFER {
@@ -86,6 +88,7 @@ void uart_putc(_UART *self, uint8_t ch);
 uint8_t uart_getc(_UART *self);
 void uart_flushTxBuffer(_UART *self);
 void uart_puts(_UART *self, uint8_t *str);
+void uart_gets_term(_UART *self, uint8_t *str, uint16_t len);
 void uart_gets(_UART *self, uint8_t *str, uint16_t len);
 
 #endif
