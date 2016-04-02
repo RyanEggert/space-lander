@@ -108,12 +108,3 @@ target/
 *.hex
 *.elf
 *.sconsign*
-
-*.swp
-*.hex
-*.lst
-*.cof
-*.elf
-.*
-*.pyc
-*.o
