@@ -4,7 +4,7 @@ env = Environment(PIC='24FJ128GB206',
                   PROGSUFFIX='.elf',
                   CFLAGS='-g -omf=elf -x c -mcpu=$PIC',
                   LINKFLAGS='-omf=elf -mcpu=$PIC -Wl,--script="app_p24FJ128GB206.gld"',
-                  CPPPATH='../lib')
+                  CPPPATH=['../lib'])
 env.PrependENVPath('PATH', '/opt/microchip/xc16/v1.25/bin')
 env.PrependENVPath('PATH', '/opt/microchip/xc16/v1.25/bin')
 bin2hex = Builder(action='xc16-bin2hex $SOURCE -omf=elf',
@@ -20,8 +20,10 @@ env.Program('rocket_main', ['main.c',
                             '../lib/pin.c',
                             '../lib/ui.c',
                             '../lib/timer.c',
-                            '../lib/uart.c',
-                            '../lib/md.c',
-                            '../lib/oc.c'])
+                            '../lib/quad.c',
+			    '../lib/pid.c',
+                            '../lib/i2c.c',
+                            '../lib/servo.c',
+                            '../lib/uart.c'])
 env.Hex('rocket_main')
 env.List('rocket_main')
