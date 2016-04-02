@@ -21,7 +21,7 @@ env.Program('master_main', ['main.c',
                             '../lib/ui.c',
                             '../lib/timer.c',
                             '../lib/usb.c',
-                            '../lib/descriptors.c',
+                            'descriptors.c',
                             '../lib/uart.c'])
 env.Hex('master_main')
 env.List('master_main')

@@ -1,18 +1,24 @@
 import usb.core
 
 class PIC_USB(object):
-
-    def __init__(self):
+    def __init__(self, product_id):
         super(PIC_USB, self).__init__()
         self.SET_STATE = 0
         self.GET_VALS = 1
         self.GET_ROCKET_INFO = 2
         self.DEBUG_UART_BUFFERS = 3
-
-        self.dev = usb.core.find(idVendor = 0x6666, idProduct = 0x0003)
+        self.vendor_id = 0x6666
+        self.product_id = product_id
+        self.dev = usb.core.find(idVendor=self.vendor_id, idProduct=self.product_id)
         if self.dev is None:
-            raise ValueError('no USB device found matching idVendor = 0x6666 and idProduct = 0x0003')
-        self.dev.set_configuration()
+            raise ValueError('No USB device found with idVendor=0x{0:04x} and idProduct=0x{1:04x}.'.format(self.vendor_id, self.product_id))
+        try:
+            self.dev.set_configuration()
+        except usb.core.USBError, e:
+            print("ERR:\nError connecting to found device.\n" 
+                "If permissions issue, try adding this device to /etc/udev/rules.d/usb_prototype_devices.rules. Do so by adding the following line--\n"
+                "SUBSYSTEM==\"usb\", ATTRS{{idVendor}}==\"{:04x}\", ATTRS{{idProduct}}==\"{:04x}\", MODE==\"0666\"\n\n".format(self.vendor_id, self.product_id))
+            raise(e)
 
     def close(self):
         self.dev = None

@@ -1,6 +1,7 @@
 import time
 from usb_vendor import PIC_USB
-comms = PIC_USB()
+# Product IDs: Master PIC is 0x0004, Rocket PIC is 0x0005, Barge PIC is 0x0006
+comms = PIC_USB(0x0005)  
 
 def main():
     print("START")
