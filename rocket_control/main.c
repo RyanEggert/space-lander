@@ -12,6 +12,8 @@
 #include "servo.h"
 #include "main.h"
 #include "usb.h"
+#include "oc.h"
+#include "dcm.h"
 #include "msgs.h"
 
 uint8_t RC_TXBUF[1024], RC_RXBUF[1024];
