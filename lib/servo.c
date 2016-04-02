@@ -4,12 +4,13 @@
 ** (https://github.com/adafruit/Adafruit-PWM-Servo-Driver-Library)
 **
 */
+// #define FCY 800000
 
 #include <p24FJ128GB206.h>
-// #include <libpic30.h>
+#include "common.h"
+#include <libpic30.h>
 #include <math.h>
 #include <stdbool.h>
-#include "common.h"
 #include "pin.h"
 #include "i2c.h"
 #include "servo.h"
@@ -73,7 +74,7 @@ void servo_driver_wake(_SERVODRIVER *self) {
     servo_driver_begin_transmission(self, I2C_WRITE);
     servo_driver_write_register(self, PCA9685_MODE1, self -> mode1);
     servo_driver_end_transmission(self);
-    // __delay_us(500); // Oscillator takes max 500us to restart from sleep
+    __delay_us(500); // Oscillator takes max 500us to restart from sleep
     servo_driver_begin_transmission(self, I2C_WRITE);
     servo_driver_write_register(self, PCA9685_MODE1, self -> mode1 | 0xa1);
     // 0xa1 ensures the raising of the restart bit, ALLCALL, and auto-increment
