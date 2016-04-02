@@ -96,7 +96,7 @@ void UARTrequests() {
     switch (cmd) {
     case GET_ROCKET_VALS:
         //speed, orientation
-        sprintf(rocketstuff, "%04x%04x%04x\r", rocket_speed, rocket_tilt, rocket_state);
+        sprintf(rocketstuff, "%02x%02x%02x\r", rocket_speed, rocket_tilt, rocket_state);
         uart_puts(&uart1, rocketstuff);
         break;
     case SET_ROCKET_STATE:
@@ -121,7 +121,7 @@ void setup_uart() {
 
 void setup() {
     timer_setPeriod(&timer1, 1);  // Timer for LED operation/status blink
-    timer_setPeriod(&timer2, 0.5);
+    timer_setPeriod(&timer2, 0.5);  // Timer for UART servicing
     timer_start(&timer1);
     timer_start(&timer2);
 
