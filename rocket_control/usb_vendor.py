@@ -7,6 +7,8 @@ class PIC_USB(object):
         self.GET_VALS = 1
         self.GET_ROCKET_INFO = 2
         self.DEBUG_UART_BUFFERS = 3
+        self.GET_QUAD_INFO = 4
+
         self.vendor_id = 0x6666
         self.product_id = product_id
         self.dev = usb.core.find(idVendor=self.vendor_id, idProduct=self.product_id)
@@ -22,9 +24,14 @@ class PIC_USB(object):
 
     def close(self):
         self.dev = None
+
     @staticmethod
     def parse16(ret, start_index):
         return int(ret[start_index])+int(ret[start_index + 1])*256
+
+    @staticmethod
+    def parse32(ret, start_index):
+        return int(ret[start_index]) + int(ret[start_index + 1]) * 2**8 + int(ret[start_index + 2]) * 2**16 + int(ret[start_index + 3]) * 2**24
 
     # Handlers
     def set_state(self, state):
@@ -83,4 +90,20 @@ class PIC_USB(object):
             out["tilt"] = self.parse16(ret, 0)
             out["speed"] = self.parse16(ret, 2)
             out["state"] = self.parse16(ret, 4)
+            return out
+
+    def get_quad_info(self):
+        """
+        Reads the latest data from the DC motor's quadrature encoder. Returned
+        is the counter (4 bytes) and an overflow/underflow counter.
+        """
+        try:
+            ret = self.dev.ctrl_transfer(0xC0, self.GET_QUAD_INFO, 0, 0, 6)
+        except usb.core.USBError:
+            print "Could not send GET_QUAD_INFO vendor request."
+        else:
+            print ret
+            out = {}
+            out["counter"] = self.parse32(ret, 0)
+            out["overflow"] = self.parse16(ret, 4)
             return out

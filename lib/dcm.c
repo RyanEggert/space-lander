@@ -36,14 +36,17 @@ void dcm_init(_DCM *self, _PIN *pin_PWM, _PIN *pin_DIR, uint16_t freq, uint8_t m
         pin_set(self->pin_PWM);
     } else {
         // Sign-magnitude PWM control mode
-        oc_pwm(self->oc, self->pin_PWM, NULL, freq, 0);
+        oc_pwm(self->oc, self->pin_PWM, NULL, freq, self->speed);
         pin_digitalOut(self->pin_DIR);
         pin_clear(self->pin_DIR);
     }
 }
 
 void init_dcm(void) {
-    dcm_init(&dcm1, &D[8], &D[7], 1e3, 0, &oc7);
+    /*
+    Initialized DC Motor libary. Nothing to do here for the time being. Included
+    to prevent calls (force of habit) from breaking.
+    */
 }
 
 void dcm_run(_DCM *self) {

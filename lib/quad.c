@@ -16,12 +16,13 @@ _QUAD quad1, quad2;
 
 void quad_read(_QUAD *self) {
     disable_interrupts();
+    pin_set(&D[2]);
     self -> a_curr = pin_read(self -> A);
     self -> b_curr = pin_read(self -> B);
     unsigned char latest_read = (self -> a_curr << 1) + self -> b_curr;
     self -> encoder_read = ((self -> encoder_read << 2) + latest_read) & 0xF;
     int8_t delta = quad_lut[self -> encoder_read];
-
+    self -> delta = delta;
     if (self -> counter == 0) {
         if (delta == -1) {
             self -> overflow += -1;
@@ -38,6 +39,7 @@ void quad_read(_QUAD *self) {
     
     self -> a_prev = self -> a_curr;
     self -> b_prev = self -> b_curr;
+    pin_clear(&D[2]);
     enable_interrupts();
 }
 

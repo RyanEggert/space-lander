@@ -5,10 +5,10 @@ comms = PIC_USB(0x0005)
 
 def main():
     print("START")
-    loop_time = .25  # How often to run the main loop, in seconds
+    loop_time = .05  # How often to run the main loop, in seconds
     while True:
         start_time = time.clock()
-        rocket_info()
+        quad_info()
 
         while (time.clock() - start_time) < loop_time:
             pass
@@ -33,6 +33,13 @@ def debug_uart_buffers():
         rx["head"],
         rx["tail"],
         rx["count"],
+    )
+
+def quad_info():
+    info = comms.get_quad_info()
+    print "Quad Counter {} | Overflow {}".format(
+        info["counter"],
+        info["overflow"],
     )
 
 

@@ -20,6 +20,7 @@ typedef struct {
     volatile uint8_t encoder_read;
     volatile uint32_t counter;
     volatile int16_t overflow;
+    volatile int8_t delta;
     QReader read;
     QTimerReader timer_read;
     _PIN* A;
