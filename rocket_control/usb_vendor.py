@@ -33,6 +33,14 @@ class PIC_USB(object):
     def parse32(ret, start_index):
         return int(ret[start_index]) + int(ret[start_index + 1]) * 2**8 + int(ret[start_index + 2]) * 2**16 + int(ret[start_index + 3]) * 2**24
 
+    @staticmethod
+    def parse_gen(ret, start_index, end_index):
+        running_sum = 0 
+        selection = ret[start_index:end_index + 1]
+        for i, val in enumerate(selection):
+            running_sum += int(val) * (2 ** (8* i))
+        return running_sum
+
     # Handlers
     def set_state(self, state):
         try:
