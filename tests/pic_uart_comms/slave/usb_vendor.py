@@ -1,45 +1,24 @@
 import usb.core
 
 class PIC_USB(object):
-    def __init__(self, product_id):
+
+    def __init__(self):
         super(PIC_USB, self).__init__()
         self.SET_STATE = 0
         self.GET_VALS = 1
         self.GET_ROCKET_INFO = 2
         self.DEBUG_UART_BUFFERS = 3
-        self.GET_QUAD_INFO = 4
 
-        self.vendor_id = 0x6666
-        self.product_id = product_id
-        self.dev = usb.core.find(idVendor=self.vendor_id, idProduct=self.product_id)
+        self.dev = usb.core.find(idVendor = 0x6666, idProduct = 0x0003)
         if self.dev is None:
-            raise ValueError('No USB device found with idVendor=0x{0:04x} and idProduct=0x{1:04x}.'.format(self.vendor_id, self.product_id))
-        try:
-            self.dev.set_configuration()
-        except usb.core.USBError, e:
-            print("ERR:\nError connecting to found device.\n" 
-                "If permissions issue, try adding this device to /etc/udev/rules.d/usb_prototype_devices.rules. Do so by adding the following line--\n"
-                "SUBSYSTEM==\"usb\", ATTRS{{idVendor}}==\"{:04x}\", ATTRS{{idProduct}}==\"{:04x}\", MODE==\"0666\"\n\n".format(self.vendor_id, self.product_id))
-            raise(e)
+            raise ValueError('no USB device found matching idVendor = 0x6666 and idProduct = 0x0003')
+        self.dev.set_configuration()
 
     def close(self):
         self.dev = None
-
     @staticmethod
     def parse16(ret, start_index):
         return int(ret[start_index])+int(ret[start_index + 1])*256
-
-    @staticmethod
-    def parse32(ret, start_index):
-        return int(ret[start_index]) + int(ret[start_index + 1]) * 2**8 + int(ret[start_index + 2]) * 2**16 + int(ret[start_index + 3]) * 2**24
-
-    @staticmethod
-    def parse_gen(ret, start_index, end_index):
-        running_sum = 0 
-        selection = ret[start_index:end_index + 1]
-        for i, val in enumerate(selection):
-            running_sum += int(val) * (2 ** (8* i))
-        return running_sum
 
     # Handlers
     def set_state(self, state):
@@ -98,20 +77,4 @@ class PIC_USB(object):
             out["tilt"] = self.parse16(ret, 0)
             out["speed"] = self.parse16(ret, 2)
             out["state"] = self.parse16(ret, 4)
-            return out
-
-    def get_quad_info(self):
-        """
-        Reads the latest data from the DC motor's quadrature encoder. Returned
-        is the counter (4 bytes) and an overflow/underflow counter.
-        """
-        try:
-            ret = self.dev.ctrl_transfer(0xC0, self.GET_QUAD_INFO, 0, 0, 6)
-        except usb.core.USBError:
-            print "Could not send GET_QUAD_INFO vendor request."
-        else:
-            print ret
-            out = {}
-            out["counter"] = self.parse32(ret, 0)
-            out["overflow"] = self.parse16(ret, 4)
             return out

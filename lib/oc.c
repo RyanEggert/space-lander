@@ -182,4 +182,3 @@ void oc_servo(_OC *self, _PIN *pin, _TIMER *timer, float interval,
         self->pin->read = __servoRead;
     }
 }
-
