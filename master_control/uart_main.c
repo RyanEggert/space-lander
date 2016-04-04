@@ -15,14 +15,9 @@ uint8_t RC_TXBUF[1024], RC_RXBUF[1024];
 #define SET_ROCKET_STATE 1
 #define SEND_ROCKET_COMMANDS 2
 
-#define IDLE 0 //game states
+#define IDLE 0
 #define RESET 1
 #define FLYING 2
-
-#define LANDED 0
-#define CRASHED 1
-//flying is already defined as 2
-#define READY 3 //rocket has been zeroed
 
 #define TILT_LEFT 1
 #define TILT_RIGHT 2
@@ -31,21 +26,10 @@ uint8_t RC_TXBUF[1024], RC_RXBUF[1024];
 #define SET_STATE    0   // Vendor request that receives 2 unsigned integer values
 #define GET_VALS    1   // Vendor request that returns 2 unsigned integer values 
 
-typedef void (*STATE_HANDLER_T)(void);
-
-void idle(void);
-void reset(void);
-void flying(void);
-void win(void);
-void lose(void);
-
-STATE_HANDLER_T state, last_state;
-
 
 //Throttle and Orientation will be encoded in Value.
 
-uint8_t coin, trials;
-uint16_t rocket_state, counter;
+uint16_t rocket_state;
 uint16_t rocket_speed, rocket_tilt;
 uint8_t rec_msg[64], tx_msg[64];
 
@@ -135,115 +119,6 @@ void setup_uart() {
               0, RC_TXBUF, 1024, RC_RXBUF, 1024);
 }
 
-void idle(void) {
-    if (state != last_state) {  // if we are entering the state, do initialization stuff
-        last_state = state;
-        trials = 0;
-    }
-
-    // Perform state tasks
-
-    // Check for state transitions
-    if (coin == 1) {
-        state = reset;
-    }
-
-    if (state != last_state) {  // if we are leaving the state, do clean up stuff
-    }
-}
-
-void reset(void) {
-    if (state != last_state) {  // if we are entering the state, do initialization stuff
-        last_state = state;
-    }
-
-    // Perform state tasks
-
-    // Check for state transitions
-
-    if (trials == 3){
-        state = idle;
-    }
-
-    if (rocket_state == READY) {
-        state = flying;
-    }
-
-    if (state != last_state) {  // if we are leaving the state, do clean up stuff
-    }
-}
-
-void flying(void) {
-    if (state != last_state) {  // if we are entering the state, do initialization stuff
-        last_state = state;
-    }
-
-    // Perform state tasks
-
-    // Check for state transitions
-    if (rocket_state == CRASHED) {
-        state = lose;
-    }
-
-    if (rocket_state == LANDED){
-        state = win;
-    }
-
-    if (state != last_state) {  // if we are leaving the state, do clean up stuff
-    }
-}
-
-void lose(void) {
-    if (state != last_state) {  // if we are entering the state, do initialization stuff
-        last_state = state;
-        timer_start(&timer1);
-        counter = 0;
-    }
-
-    if (timer_flag(&timer1)) {
-        timer_lower(&timer1);
-        counter++;
-    }
-
-    // Check for state transitions
-    if (counter == 10) {
-        state = reset;
-    }
-
-    if (state != last_state) {
-        timer_stop(&timer1);
-        trials++;  // if we are leaving the state, do clean up stuff
-    }
-}
-
-void win(void) {
-    if (state != last_state) {  // if we are entering the state, do initialization stuff
-        last_state = state;
-        timer_start(&timer1);
-        counter = 0;
-    }
-
-    if (timer_flag(&timer1)) {
-        timer_lower(&timer1);
-        counter++;
-    }
-
-    // Check for state transitions
-    if (counter == 10) {
-        state = reset;
-    }
-
-    if (state != last_state) {
-        timer_stop(&timer1);
-        trials++;  // if we are leaving the state, do clean up stuff
-    }
-}
-
-
-
-
-
-
 void setup() {
     timer_setPeriod(&timer1, 1);  // Timer for LED operation/status blink
     timer_setPeriod(&timer2, 0.5); 
@@ -274,12 +149,48 @@ int16_t main(void) {
 
     while (1) {
         if (timer_flag(&timer1)) {
+            // Blink green light to show normal operation.
             timer_lower(&timer1);
             led_toggle(&led1);
         }
+        if (timer_flag(&timer2)) {
+            // Transmit UART data
+            timer_lower(&timer2);
+            counter ++;
+            // sprintf(status_msg, "This is message #%d.\r", counter);
+            // uint8_t addr = counter % 4;
+            // uint8_t cmd = 28;
+            // sprintf(status_msg, "%02x%02x\r", cmd, addr);
+            // uart_puts(&uart1, status_msg);
+            // UART_ctl(SEND_ROCKET_COMMANDS, 0b11);
+            // UART_ctl(SET_ROCKET_STATE, IDLE);
+            UART_ctl(GET_ROCKET_VALS,0b0);
+            
+            // if (rocket_state == 15) {
+            //     led_on(&led1);
+            // }
 
-        state = idle;
-        last_state = (STATE_HANDLER_T)NULL;
+            // else{
+            //     led_off(&led1);
+            // }
+
+            // if(rocket_speed ==15){
+            //     led_on(&led2);
+            // }
+
+            // else{
+            //     led_off(&led2);
+            // }
+
+             if(rocket_tilt==15){
+                led_on(&led2);
+            }
+
+            else{
+                led_off(&led2);
+            }
+       
        
         }   
+    }
 }
