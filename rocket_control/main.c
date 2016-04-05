@@ -1,4 +1,8 @@
 #include <p24FJ128GB206.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
 #include "config.h"
 #include "common.h"
 #include "pin.h"
@@ -8,13 +12,15 @@
 #include "quad.h"
 #include "i2c.h"
 #include "servo.h"
+#include "oc.h"
+#include "md.h"
 #include "main.h"
-#include <stdio.h>
-#include <stdlib.h>
+
+_PIN *MOTOR_DIR;
+_PIN *FWD, *REV;
 
 uint8_t MC_TXBUF[1024], MC_RXBUF[1024];
 uint8_t TX_BUF[1024], RX_BUF[1024];
-
 
 void print_buffer(uint8_t *buffer, uint16_t size) {
     int i;
@@ -101,65 +107,135 @@ void setup() {
     printf("START\n\r");
     timer_setPeriod(&timer1, 1);  // Timer for LED operation/status blink
     timer_setPeriod(&timer2, 0.5);
+    // ** period was 0.1 for rocket-motor-control branch; if shit goes wrong, this could be a culprit
     timer_setPeriod(&timer3, 0.01);
     timer_start(&timer1);
     timer_start(&timer2);
     timer_start(&timer3);
 
-    quad_init(&quad1, &D[12], &D[13]); // quad1 uses pins D12 & D13
-    quad_every(&quad1, &timer5, 0.0000875); // quad1 will use timer5 interrupts
+    // quad_init(&quad1, &D[12], &D[13]); // quad1 uses pins D12 & D13
+    // quad_every(&quad1, &timer5, 0.0000875); // quad1 will use timer5 interrupts
 
-    // Optional Quad Encoder Debug Pins
-    pin_digitalOut(&D[6]); // b0
-    pin_digitalOut(&D[7]); // b1
-    pin_digitalOut(&D[8]); // b2
-    pin_digitalOut(&D[9]); // b3
+    // // Optional Quad Encoder Debug Pins
+    // pin_digitalOut(&D[6]); // b0
+    // pin_digitalOut(&D[7]); // b1
+    // pin_digitalOut(&D[8]); // b2
+    // pin_digitalOut(&D[9]); // b3
 
-    // Debug button output pins
-    pin_digitalOut(&D[11]);
-    pin_digitalOut(&D[10]);
+    // // Debug button output pins
+    // pin_digitalOut(&D[11]);
+    // pin_digitalOut(&D[10]);
 
-    // General use debugging output pin
-    pin_digitalOut(&D[2]);
+    // // General use debugging output pin
+    // pin_digitalOut(&D[2]);
+
+    // Motor pins
+    MOTOR_DIR = &D[0];
+    FWD = &D[2];
+    REV = &D[13];
 
     setup_uart();
+
 }
 
 int16_t main(void) {
-    // printf("Starting Rocket Controller...\r\n");
+        // printf("Starting Rocket Controller...\r\n");
     init_clock();
     init_ui();
     init_timer();
     init_uart();
     init_quad();
+    init_pin();
+    init_oc();
+    // ***init_md:  may need to change md.c so it utilizes less DIO pins    
+    init_md();
     setup();
+
     uint16_t counter = 0;
     uint8_t rec_msg [64];
     uint64_t msg;
     char is_recip = 0;
+
+    // Initialize motor vars/pins
+    uint16_t MOTOR_SPEED = 0xC000;
+    uint16_t MOTOR_DIR_TRACK = 0;   // tracks vert dir of rocket
+    pin_digitalOut(MOTOR_DIR);
+
+    uint8_t direction = 1;
+
+    const uint16_t MOTOR_SPEED_LIMIT = 0xFFF0;
+    const uint16_t GRAV_VAL = 0x00F0;
+    const uint16_t THRUST_VAL = GRAV_VAL*2;
+    uint16_t mot_speed = 0;
+    int mot_dir = 0;
+    pin_clear(MOTOR_DIR);
     while (1) {
-        if (timer_flag(&timer1)) {
-            // Blink green light to show normal operation.
-            timer_lower(&timer1);
-            led_toggle(&led2);
-        }
-        if (timer_flag(&timer2)) {
-            timer_lower(&timer2);
-            if (quad1.count % 2 == 0) {
-                led_on(&led1);
-            } else {
-                led_off(&led1);
-            }
-        }
+
+        // if (timer_flag(&timer2)) {
+        //     timer_lower(&timer2);
+        //     if (quad1.count % 2 == 0) {
+        //         led_on(&led1);
+        //     } else {
+        //         led_off(&led1);
+        //     }
+        // }
         if (timer_flag(&timer3)) {
             timer_lower(&timer3);
-            uint16_t switch2 = !sw_read(&sw2);
-            uint16_t switch3 = !sw_read(&sw3);
-            // led_write(&led1, switch2);
-            led_write(&led3, switch3);
+            // uint16_t switch2 = !sw_read(&sw2);
+            // uint16_t switch3 = !sw_read(&sw3);
+            // // led_write(&led1, switch2);
+            // led_write(&led3, switch3);
 
-            pin_write(&D[10], switch2);
-            pin_write(&D[11], switch3);
+            // pin_write(&D[10], switch2);
+            // pin_write(&D[11], switch3);
+
+            // Handle rocket thrust
+            if (pin_read(FWD)) { // Thrust on
+                if (MOTOR_DIR_TRACK == 0) {  // rocket falling
+                    if (MOTOR_SPEED > THRUST_VAL) {  // nonzero velocity
+                        MOTOR_SPEED = MOTOR_SPEED - THRUST_VAL;
+                    }
+                    else {  // zero velocity
+                        MOTOR_DIR_TRACK = 1;
+                        MOTOR_SPEED = 0;
+                    }
+                }
+                else { // rocket rising
+                    if (MOTOR_SPEED < MOTOR_SPEED_LIMIT) {
+                        MOTOR_SPEED = MOTOR_SPEED + THRUST_VAL;
+                    }
+                }
+                // pin_set(MOTOR_DIR);
+                // if (MOTOR_SPEED < MOTOR_SPEED_LIMIT) {
+                //     MOTOR_SPEED = MOTOR_SPEED + THRUST_VAL;
+                // }
+                // md_speed(&mdp, MOTOR_SPEED);
+                led_on(&led2);
+            }
+            else { // no thrust
+                if (MOTOR_DIR_TRACK == 0) { // rocket falling
+                    if (MOTOR_SPEED < MOTOR_SPEED_LIMIT) {
+                        MOTOR_SPEED = MOTOR_SPEED + GRAV_VAL;
+                    }
+                }
+                else {  // rocket rising
+                    if (MOTOR_SPEED > THRUST_VAL) {
+                        MOTOR_SPEED = MOTOR_SPEED - GRAV_VAL;
+                    }
+                    else {
+                        MOTOR_DIR_TRACK = 0;
+                        MOTOR_SPEED = GRAV_VAL;
+                    }
+                }
+                led_off(&led2);
+            }
+            if (MOTOR_DIR_TRACK) {
+                pin_set(MOTOR_DIR);
+            }
+            else {
+                pin_clear(MOTOR_DIR);
+            }
+            md_speed(&mdp, MOTOR_SPEED);
 
         }
     }

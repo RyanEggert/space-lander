@@ -8,6 +8,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+_PIN *LEFT, *RIGHT;
+
 uint8_t RC_TXBUF[1024], RC_RXBUF[1024];
 
 void setup_uart() {
@@ -40,7 +42,9 @@ void setup() {
     timer_start(&timer2);
 
     setup_uart();
-
+    // declare digital I/O
+    LEFT = &D[12];
+    RIGHT = &D[13];
 }
 
 int16_t main(void) {
