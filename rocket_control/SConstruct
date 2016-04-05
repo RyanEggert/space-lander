@@ -5,7 +5,7 @@ env = Environment(PIC='24FJ128GB206',
                   PROGSUFFIX='.elf',
                   CFLAGS='-g -omf=elf -x c -mcpu=$PIC',
                   LINKFLAGS='-omf=elf -mcpu=$PIC -Wl,--script="app_p24FJ128GB206.gld"',
-                  CPPPATH=['../lib'])
+                  CPPPATH=['../lib', '../include'])
 env.PrependENVPath('PATH', '/opt/microchip/xc16/v1.25/bin')
 env.PrependENVPath('PATH', '/opt/microchip/xc16/v1.25/bin')
 bin2hex = Builder(action='xc16-bin2hex $SOURCE -omf=elf',
@@ -18,6 +18,7 @@ build_list = Builder(action='xc16-objdump -S -D $SOURCE > $TARGET',
 env.Append(BUILDERS={'List': build_list})
 
 env.Program('rocket_main', ['main.c',
+                            '../lib/common.c',
                             '../lib/pin.c',
                             '../lib/ui.c',
                             '../lib/timer.c',
@@ -27,7 +28,10 @@ env.Program('rocket_main', ['main.c',
                             '../lib/servo.c',
                             '../lib/uart.c',
                             '../lib/md.c',
-                            '../lib/oc.c'])
+                            '../lib/oc.c',
+                            '../lib/usb.c',
+                            '../lib/dcm.c',
+                            'descriptors.c'])
 
 print('Creating builder to load hex file via bootloader...')
 def load_function(target, source, env):
@@ -46,4 +50,5 @@ env.Append(BUILDERS = {'Load' : load})
 
 env.Hex('rocket_main')
 env.List('rocket_main')
+
 env.Load('rocket_main')

@@ -30,7 +30,7 @@ int16_t main(void) {
     init_timer();
     init_uart();
     init_quad();
-    quad_init(&quad1, &D[9], &D[10]);
+    quad_init(&quad1, &D[8], &D[9]);
     quad_every(&quad1, &timer5, 0.0000875);
     // quad_every(&quad1, &timer5, 1.00);
     setup();
@@ -44,7 +44,7 @@ int16_t main(void) {
         }
         if (timer_flag(&timer2)) {
             timer_lower(&timer2);
-            // printf("ENC: "PRIu32"\n\r", quad1.counter);
+            // printf("12 13: %d %d\n\r", pin_read(&D[8]), pin_read(&D[9]));
             if (quad1.counter > 50) {
                 led_on(&led1);
             } else {

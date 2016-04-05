@@ -30,7 +30,7 @@
 _MD md1, md2, mdp;
 
 void init_md(void) {
-    md_init(&md1, &D[6], &D[7], 1e3, &oc7);
+    md_init(&md1, &D[8], &D[7], 1e3, &oc7);
 }
 
 void md_init(_MD *self, _PIN *pin1, _PIN *pin2, uint16_t freq, _OC *oc) {

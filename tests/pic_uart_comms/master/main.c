@@ -14,8 +14,6 @@
 #define GET_VALS    1   // Vendor request that returns 2 unsigned integer values 
 #define GET_ROCKET_INFO 2  // Vendor request that returns rocket state, speed, and tilt
 
-_PIN *LEFT, *RIGHT;
-
 uint8_t RC_TXBUF[1024], RC_RXBUF[1024];
 
 
@@ -94,6 +92,7 @@ void UART_ctl(uint8_t cmd, uint8_t value) {
     uart_puts(&uart1, tx_msg);
     if (cmd == GET_ROCKET_VALS) {
         uart_gets(&uart1, rec_msg, 64);
+        led_toggle(&led3);
         uint32_t decoded_msg = (uint32_t)strtol(rec_msg, NULL, 16);
         rocket_speed = (uint16_t)((decoded_msg & 0xFF0000) >> 16);
         rocket_tilt = (uint16_t)((decoded_msg & 0xFF00) >> 8);
@@ -118,7 +117,6 @@ void setup() {
     timer_start(&timer2);
 
     setup_uart();
-    
     rocket_tilt, rocket_speed = 0;
 }
 
@@ -142,11 +140,11 @@ int16_t main(void) {
         if (timer_flag(&timer1)) {
             // Blink green light to show normal operation.
             timer_lower(&timer1);
-            led_toggle(&led2);
+            led_toggle(&led1);
         }
         if (timer_flag(&timer2)) {
             // Transmit UART data
-            timer_lower(&timer2);
+
             // UART_ctl(SEND_ROCKET_COMMANDS, 0b11);
             // UART_ctl(SET_ROCKET_STATE, IDLE);
             UART_ctl(GET_ROCKET_VALS, 0b0);

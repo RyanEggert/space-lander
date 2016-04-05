@@ -141,9 +141,9 @@ void oc_pwm(_OC *self, _PIN *pin, _TIMER *timer, float freq, uint16_t duty) {
     } else {
         *(self->OCxCON1) = 0x1C06;
         *(self->OCxCON2) = 0x001F;
-        // if (freq<(FCY/65536.))
-        //     *(self->OCxRS) = 0xFFFF;
-        // else
+        if (freq<(FCY/65536.))
+            *(self->OCxRS) = 0xFFFF;
+        else
             *(self->OCxRS) = (uint16_t)(FCY/freq-1.);
     }
     temp.ul = (uint32_t)duty*(uint32_t)(*(self->OCxRS));
@@ -182,4 +182,3 @@ void oc_servo(_OC *self, _PIN *pin, _TIMER *timer, float interval,
         self->pin->read = __servoRead;
     }
 }
-
