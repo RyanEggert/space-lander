@@ -21,6 +21,9 @@ typedef struct {
     volatile uint32_t counter;
     volatile int16_t overflow;
     volatile int8_t delta;
+
+    // Measurements
+    uint16_t meas_speed;
     QReader read;
     QTimerReader timer_read;
     _PIN* A;
@@ -40,5 +43,9 @@ void quad_every(_QUAD *self, _TIMER *timer, float interval);
 void quad_debug(_QUAD *self, _PIN *lut3, _PIN *lut2, _PIN *lut1, _PIN *lut0);
 
 void quad_reset_counter(_QUAD *self);
+
+float quad_meas_speed(_QUAD *self, float interval);
+
+
 
 #endif  // LIB_QUAD_H_

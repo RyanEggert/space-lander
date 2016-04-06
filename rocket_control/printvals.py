@@ -1,7 +1,7 @@
 import time
 from usb_vendor import PIC_USB
 # Product IDs: Master PIC is 0x0004, Rocket PIC is 0x0005, Barge PIC is 0x0006
-comms = PIC_USB(0x0005)  
+comms = PIC_USB(0x0005)
 
 def main():
     print("START")
@@ -9,7 +9,6 @@ def main():
     while True:
         start_time = time.clock()
         quad_info()
-
         while (time.clock() - start_time) < loop_time:
             pass
 
@@ -37,9 +36,11 @@ def debug_uart_buffers():
 
 def quad_info():
     info = comms.get_quad_info()
-    print "Quad Counter {} | Overflow {}".format(
+    print "Quad Counter {} | Overflow {} | Diff {} | PySpeed {}".format(
         info["counter"],
         info["overflow"],
+        info["diff"],
+        info["diff"]/.01
     )
 
 

@@ -14,6 +14,7 @@
 #include "usb.h"
 #include "oc.h"
 #include "dcm.h"
+#include "pid.h"
 #include "msgs.h"
 
 uint8_t RC_TXBUF[1024], RC_RXBUF[1024];
@@ -23,6 +24,7 @@ uint8_t RC_TXBUF[1024], RC_RXBUF[1024];
 #define GET_ROCKET_INFO 2
 #define DEBUG_UART_BUFFERS 3
 #define GET_QUAD_INFO 4
+#define COMMAND_DCMOTOR 5
 
 uint16_t rocket_state;
 uint16_t rocket_speed, rocket_tilt;
@@ -86,7 +88,15 @@ void VendorRequests(void) {
         temp.w = quad1.overflow;
         BD[EP0IN].address[4] = temp.b[0];
         BD[EP0IN].address[5] = temp.b[1];
-        BD[EP0IN].bytecount = 6;    // set EP0 IN byte count to 4
+        temp.w = quad1.meas_speed;
+        BD[EP0IN].address[6] = temp.b[0];
+        BD[EP0IN].address[7] = temp.b[1];
+        BD[EP0IN].bytecount = 8;    // set EP0 IN byte count to 4
+        BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
+        break;
+    case COMMAND_DCMOTOR:
+        dcm_velocity(&dcm1, USB_setup.wValue.w, USB_setup.wIndex.w);
+        BD[EP0IN].bytecount = 0;    // set EP0 IN byte count to 0
         BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
         break;
     default:
@@ -143,7 +153,7 @@ void setup_uart() {
 
 void setup() {
     timer_setPeriod(&timer1, 1);  // Timer for LED operation/status blink
-    timer_setPeriod(&timer2, 0.5);  // Timer for UART servicing
+    timer_setPeriod(&timer2, 0.01);  // Timer for UART servicing
     timer_setPeriod(&timer3, 0.01);
     timer_start(&timer1);
     timer_start(&timer2);
@@ -179,15 +189,24 @@ int16_t main(void) {
     uint16_t counter = 0;
     uint64_t msg;
     char is_recip = 0;
-
+    uint32_t prev_count = quad1.counter;
+    int32_t diff_count;
+    uint32_t curr_count;
+    float dcm1_speed;
     InitUSB();
     U1IE = 0xFF; //setting up ISR for USB requests
     U1EIE = 0xFF;
     IFS5bits.USB1IF = 0; //flag
     IEC5bits.USB1IE = 1; //enable
-
-    dcm_velocity(&dcm1, 64000, 1);
+    // uint32_t pid_command;
+    dcm_velocity(&dcm1, 1000, 1);
     while (1) {
+        // pid_command = PID_U32_control();
+
+        // if (quad1.counter > 5000) {
+        //     dcm_speed(&dcm1, 0);
+        // }
+
         if (timer_flag(&timer1)) {
             // Blink green light to show normal operation.
             timer_lower(&timer1);
@@ -196,13 +215,13 @@ int16_t main(void) {
 
         if (timer_flag(&timer2)) {
             timer_lower(&timer2);
-            // UARTrequests();
-            if (quad1.counter > 5000)
-            {
-                led_on(&led1);
-            } else {
-                led_off(&led1);
-            }
+            led_toggle(&led1);
+            curr_count = quad1.counter;
+            diff_count = curr_count - prev_count;
+            prev_count = curr_count;
+            // dcm1_speed = quad_meas_speed(&quad1, 0.5);
+            quad1.meas_speed = abs(diff_count);
+            // printf("Diff: %d\n\r", diff_count);
         }
     }
 }

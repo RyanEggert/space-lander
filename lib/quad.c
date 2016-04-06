@@ -95,7 +95,7 @@ void quad_init(_QUAD *self, _PIN *in_A, _PIN *in_B) {
     self -> a_prev = 0;
     self -> b_prev = 0;
     self -> overflow = 0;
-    self -> counter = 0;
+    self -> counter = 4000;
 
     pin_digitalIn(in_A);
     pin_digitalIn(in_B);
@@ -133,4 +133,12 @@ void quad_reset_counter(_QUAD *self) {
     Resets the counter associated with the given quadrature encoder to zero.
     */
     self -> counter = 0;
+}
+
+float quad_meas_speed(_QUAD *self, float interval) {
+    static uint32_t prev_ticks = 0;
+    uint32_t current_ticks = self->counter;
+    float speed = (current_ticks - prev_ticks)/interval; // Ticks per second
+    prev_ticks = current_ticks;
+    return speed;
 }
