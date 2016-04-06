@@ -2,9 +2,12 @@
 import time
 from csv import DictWriter
 from usb_vendor import PIC_USB
-from os import getcwd
+
 
 def main(start_vel, end_vel):
+    """
+    Performs a step response test and saves the data to a csv.
+    """
     test_len = 10  # Length of test in seconds.
     read_frq = 100  # Frequency of reads
     step_time = 1  # Time (in sec) at which to perform step.
@@ -59,6 +62,7 @@ def main(start_vel, end_vel):
 
 
 if __name__ == '__main__':
-    start_vel = (0, 1)
-    end_vel = (65535, 1)
-    main(start_vel, end_vel)
+    # Vels are defined as (speed [0-65535], dir [0-1])
+    start_velocity = (0, 1)
+    end_velocity = (65535, 1)
+    main(start_velocity, end_velocity)
