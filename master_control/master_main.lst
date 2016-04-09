@@ -21,7 +21,7 @@ Disassembly of section .text:
 
 00001122 <CORCON_RESET>:
     1122:	0c 00 07    	rcall     0x113c <__psv_init>
-    1124:	00 80 24    	mov.w     #0x4800, w0
+    1124:	c0 87 24    	mov.w     #0x487c, w0
     1126:	01 00 20    	mov.w     #0x0, w1
     1128:	0f 00 07    	rcall     0x1148 <__data_init>
     112a:	00 00 20    	mov.w     #0x0, w0
@@ -31,7 +31,7 @@ Disassembly of section .text:
     1132:	00 00 00 
 
 00001134 <L11>:
-    1134:	c2 45 02    	call      0x45c2 <_main>
+    1134:	28 46 02    	call      0x4628 <_main>
     1136:	00 00 00 
     1138:	00 40 da    	.pword 0xda4000
     113a:	00 00 fe    	reset     
@@ -156,9 +156,9 @@ Disassembly of section .text:
     11e8:	00 00 00 
     11ea:	ee 44 04    	goto      0x44ee <_flying>
     11ec:	00 00 00 
-    11ee:	14 45 04    	goto      0x4514 <_lose>
+    11ee:	66 45 04    	goto      0x4566 <_lose>
     11f0:	00 00 00 
-    11f2:	5a 45 04    	goto      0x455a <_win>
+    11f2:	ac 45 04    	goto      0x45ac <_win>
     11f4:	00 00 00 
     11f6:	2a 3e 04    	goto      0x3e2a <___digitalRead>
     11f8:	00 00 00 
@@ -822,7 +822,7 @@ Disassembly of section .text:
 
 000015a8 <.L8>:
     15a8:	20 02 20    	mov.w     #0x22, w0
-    15aa:	90 ec 88    	mov.w     w0, 0x1d92
+    15aa:	e0 ec 88    	mov.w     w0, 0x1d9c
     15ac:	f0 ff 2f    	mov.w     #0xffff, w0
     15ae:	f1 ff 27    	mov.w     #0x7fff, w1
     15b0:	d2 c2 b3    	mov.b     #0x2d, w2
@@ -947,7 +947,7 @@ Disassembly of section .text:
     1666:	0d 00 37    	bra       0x1682 <.L13>
 
 00001668 <.L14>:
-    1668:	c1 cf 21    	mov.w     #0x1cfc, w1
+    1668:	61 d0 21    	mov.w     #0x1d06, w1
     166a:	81 40 50    	sub.b     w0, w1, w1
     166c:	c1 ef 9f    	mov.b     w1, [w15-20]
     166e:	61 59 b9    	mul.su    w11, #0x1, w2
@@ -968,7 +968,7 @@ Disassembly of section .text:
     1688:	43 00 07    	rcall     0x1710 <_tolower>
     168a:	0b 01 78    	mov.w     w11, w2
     168c:	80 00 78    	mov.w     w0, w1
-    168e:	c0 cf 21    	mov.w     #0x1cfc, w0
+    168e:	60 d0 21    	mov.w     #0x1d06, w0
     1690:	1c 02 07    	rcall     0x1aca <_memchr>
     1692:	8f ba 97    	mov.w     [w15-16], w5
     1694:	00 00 e0    	cp0.w     w0
@@ -984,7 +984,7 @@ Disassembly of section .text:
 
 000016a8 <.L15>:
     16a8:	04 82 52    	sub.w     w5, w4, w4
-    16aa:	10 d2 21    	mov.w     #0x1d21, w0
+    16aa:	b0 d2 21    	mov.w     #0x1d2b, w0
     16ac:	60 c0 7d    	mov.b     [w0+w11], w0
     16ae:	00 00 fb    	se        w0, w0
     16b0:	00 02 52    	sub.w     w4, w0, w4
@@ -1010,7 +1010,7 @@ Disassembly of section .text:
 
 000016d8 <.L17>:
     16d8:	20 02 20    	mov.w     #0x22, w0
-    16da:	90 ec 88    	mov.w     w0, 0x1d92
+    16da:	e0 ec 88    	mov.w     w0, 0x1d9c
     16dc:	00 84 eb    	setm.w    w8
     16de:	80 84 eb    	setm.w    w9
     16e0:	05 00 37    	bra       0x16ec <.L18>
@@ -1066,13 +1066,13 @@ Disassembly of section .text:
     171c:	00 00 06    	return    
 
 0000171e <__Geterrno>:
-    171e:	a0 ec 80    	mov.w     0x1d94, w0
+    171e:	f0 ec 80    	mov.w     0x1d9e, w0
     1720:	00 00 e0    	cp0.w     w0
     1722:	01 00 32    	bra       Z, 0x1726 <.L2>
     1724:	00 00 01    	call      w0
 
 00001726 <.L2>:
-    1726:	20 d9 21    	mov.w     #0x1d92, w0
+    1726:	c0 d9 21    	mov.w     #0x1d9c, w0
     1728:	00 00 06    	return    
 
 0000172a <_prout>:
@@ -1162,10 +1162,10 @@ Disassembly of section .text:
     17b8:	07 00 37    	bra       0x17c8 <.L34>
 
 000017ba <.L8>:
-    17ba:	c1 d7 21    	mov.w     #0x1d7c, w1
+    17ba:	61 d8 21    	mov.w     #0x1d86, w1
     17bc:	01 00 50    	sub.w     w0, w1, w0
     17be:	00 00 40    	add.w     w0, w0, w0
-    17c0:	01 d7 21    	mov.w     #0x1d70, w1
+    17c0:	a1 d7 21    	mov.w     #0x1d7a, w1
     17c2:	61 00 78    	mov.w     [w1+w0], w0
     17c4:	df 98 97    	mov.w     [w15-70], w1
     17c6:	01 00 70    	ior.w     w0, w1, w0
@@ -1176,7 +1176,7 @@ Disassembly of section .text:
     17cc:	09 04 78    	mov.w     w9, w8
     17ce:	38 45 78    	mov.b     [w8++], w10
     17d0:	8a 00 fb    	se        w10, w1
-    17d2:	c0 d7 21    	mov.w     #0x1d7c, w0
+    17d2:	60 d8 21    	mov.w     #0x1d86, w0
     17d4:	8b 01 07    	rcall     0x1aec <_strchr>
     17d6:	00 00 e0    	cp0.w     w0
     17d8:	f0 ff 3a    	bra       NZ, 0x17ba <.L8>
@@ -1267,7 +1267,7 @@ Disassembly of section .text:
 00001858 <.L16>:
     1858:	98 44 78    	mov.b     [w8], w9
     185a:	89 00 fb    	se        w9, w1
-    185c:	80 d6 21    	mov.w     #0x1d68, w0
+    185c:	20 d7 21    	mov.w     #0x1d72, w0
     185e:	46 01 07    	rcall     0x1aec <_strchr>
     1860:	00 00 e0    	cp0.w     w0
     1862:	02 00 32    	bra       Z, 0x1868 <.L25>
@@ -1750,24 +1750,24 @@ Disassembly of section .text:
     1b1c:	69 40 40    	add.b     w0, #0x9, w0
     1b1e:	80 cf 50    	sub.b     w1, w0, [w15]
     1b20:	0b 00 32    	bra       Z, 0x1b38 <.L37>
-    1b22:	70 d5 21    	mov.w     #0x1d57, w0
+    1b22:	10 d6 21    	mov.w     #0x1d61, w0
     1b24:	80 bf 9f    	mov.w     w0, [w15-16]
     1b26:	ae 00 20    	mov.w     #0xa, w14
     1b28:	0a 00 37    	bra       0x1b3e <.L2>
 
 00001b2a <.L35>:
-    1b2a:	62 d4 21    	mov.w     #0x1d46, w2
+    1b2a:	02 d5 21    	mov.w     #0x1d50, w2
     1b2c:	82 bf 9f    	mov.w     w2, [w15-16]
     1b2e:	06 00 37    	bra       0x1b3c <.L46>
 
 00001b30 <.L36>:
-    1b30:	73 d5 21    	mov.w     #0x1d57, w3
+    1b30:	13 d6 21    	mov.w     #0x1d61, w3
     1b32:	83 bf 9f    	mov.w     w3, [w15-16]
     1b34:	8e 00 20    	mov.w     #0x8, w14
     1b36:	03 00 37    	bra       0x1b3e <.L2>
 
 00001b38 <.L37>:
-    1b38:	74 d5 21    	mov.w     #0x1d57, w4
+    1b38:	14 d6 21    	mov.w     #0x1d61, w4
     1b3a:	84 bf 9f    	mov.w     w4, [w15-16]
 
 00001b3c <.L46>:
@@ -2743,141 +2743,141 @@ Disassembly of section .application_ivt:
 00001000 <__DEFAULT_VECTOR-0x10c>:
     1000:	10 11 04    	goto      0x1110 <__resetPRI>
     1002:	00 00 00 
-    1004:	c4 48 04    	goto      0x48c4 <__DefaultInterrupt>
+    1004:	48 49 04    	goto      0x4948 <__DefaultInterrupt>
     1006:	00 00 00 
-    1008:	c4 48 04    	goto      0x48c4 <__DefaultInterrupt>
+    1008:	48 49 04    	goto      0x4948 <__DefaultInterrupt>
     100a:	00 00 00 
-    100c:	c4 48 04    	goto      0x48c4 <__DefaultInterrupt>
+    100c:	48 49 04    	goto      0x4948 <__DefaultInterrupt>
     100e:	00 00 00 
-    1010:	c4 48 04    	goto      0x48c4 <__DefaultInterrupt>
+    1010:	48 49 04    	goto      0x4948 <__DefaultInterrupt>
     1012:	00 00 00 
-    1014:	c4 48 04    	goto      0x48c4 <__DefaultInterrupt>
+    1014:	48 49 04    	goto      0x4948 <__DefaultInterrupt>
     1016:	00 00 00 
-    1018:	c4 48 04    	goto      0x48c4 <__DefaultInterrupt>
+    1018:	48 49 04    	goto      0x4948 <__DefaultInterrupt>
     101a:	00 00 00 
-    101c:	c4 48 04    	goto      0x48c4 <__DefaultInterrupt>
+    101c:	48 49 04    	goto      0x4948 <__DefaultInterrupt>
     101e:	00 00 00 
-    1020:	c4 48 04    	goto      0x48c4 <__DefaultInterrupt>
+    1020:	48 49 04    	goto      0x4948 <__DefaultInterrupt>
     1022:	00 00 00 
     1024:	2c 39 04    	goto      0x392c <__T1Interrupt>
     1026:	00 00 00 
-    1028:	c4 48 04    	goto      0x48c4 <__DefaultInterrupt>
+    1028:	48 49 04    	goto      0x4948 <__DefaultInterrupt>
     102a:	00 00 00 
-    102c:	c4 48 04    	goto      0x48c4 <__DefaultInterrupt>
+    102c:	48 49 04    	goto      0x4948 <__DefaultInterrupt>
     102e:	00 00 00 
     1030:	5a 39 04    	goto      0x395a <__T2Interrupt>
     1032:	00 00 00 
     1034:	88 39 04    	goto      0x3988 <__T3Interrupt>
     1036:	00 00 00 
-    1038:	c4 48 04    	goto      0x48c4 <__DefaultInterrupt>
+    1038:	48 49 04    	goto      0x4948 <__DefaultInterrupt>
     103a:	00 00 00 
-    103c:	c4 48 04    	goto      0x48c4 <__DefaultInterrupt>
+    103c:	48 49 04    	goto      0x4948 <__DefaultInterrupt>
     103e:	00 00 00 
     1040:	c4 23 04    	goto      0x23c4 <__U1RXInterrupt>
     1042:	00 00 00 
     1044:	96 23 04    	goto      0x2396 <__U1TXInterrupt>
     1046:	00 00 00 
-    1048:	c4 48 04    	goto      0x48c4 <__DefaultInterrupt>
+    1048:	48 49 04    	goto      0x4948 <__DefaultInterrupt>
     104a:	00 00 00 
-    104c:	c4 48 04    	goto      0x48c4 <__DefaultInterrupt>
+    104c:	48 49 04    	goto      0x4948 <__DefaultInterrupt>
     104e:	00 00 00 
-    1050:	c4 48 04    	goto      0x48c4 <__DefaultInterrupt>
+    1050:	48 49 04    	goto      0x4948 <__DefaultInterrupt>
     1052:	00 00 00 
-    1054:	c4 48 04    	goto      0x48c4 <__DefaultInterrupt>
+    1054:	48 49 04    	goto      0x4948 <__DefaultInterrupt>
     1056:	00 00 00 
-    1058:	c4 48 04    	goto      0x48c4 <__DefaultInterrupt>
+    1058:	48 49 04    	goto      0x4948 <__DefaultInterrupt>
     105a:	00 00 00 
-    105c:	c4 48 04    	goto      0x48c4 <__DefaultInterrupt>
+    105c:	48 49 04    	goto      0x4948 <__DefaultInterrupt>
     105e:	00 00 00 
-    1060:	c4 48 04    	goto      0x48c4 <__DefaultInterrupt>
+    1060:	48 49 04    	goto      0x4948 <__DefaultInterrupt>
     1062:	00 00 00 
-    1064:	c4 48 04    	goto      0x48c4 <__DefaultInterrupt>
+    1064:	48 49 04    	goto      0x4948 <__DefaultInterrupt>
     1066:	00 00 00 
-    1068:	c4 48 04    	goto      0x48c4 <__DefaultInterrupt>
+    1068:	48 49 04    	goto      0x4948 <__DefaultInterrupt>
     106a:	00 00 00 
-    106c:	c4 48 04    	goto      0x48c4 <__DefaultInterrupt>
+    106c:	48 49 04    	goto      0x4948 <__DefaultInterrupt>
     106e:	00 00 00 
     1070:	b6 39 04    	goto      0x39b6 <__T4Interrupt>
     1072:	00 00 00 
     1074:	e4 39 04    	goto      0x39e4 <__T5Interrupt>
     1076:	00 00 00 
-    1078:	c4 48 04    	goto      0x48c4 <__DefaultInterrupt>
+    1078:	48 49 04    	goto      0x4948 <__DefaultInterrupt>
     107a:	00 00 00 
     107c:	20 24 04    	goto      0x2420 <__U2RXInterrupt>
     107e:	00 00 00 
     1080:	f2 23 04    	goto      0x23f2 <__U2TXInterrupt>
     1082:	00 00 00 
-    1084:	c4 48 04    	goto      0x48c4 <__DefaultInterrupt>
+    1084:	48 49 04    	goto      0x4948 <__DefaultInterrupt>
     1086:	00 00 00 
-    1088:	c4 48 04    	goto      0x48c4 <__DefaultInterrupt>
+    1088:	48 49 04    	goto      0x4948 <__DefaultInterrupt>
     108a:	00 00 00 
-    108c:	c4 48 04    	goto      0x48c4 <__DefaultInterrupt>
+    108c:	48 49 04    	goto      0x4948 <__DefaultInterrupt>
     108e:	00 00 00 
-    1090:	c4 48 04    	goto      0x48c4 <__DefaultInterrupt>
+    1090:	48 49 04    	goto      0x4948 <__DefaultInterrupt>
     1092:	00 00 00 
-    1094:	c4 48 04    	goto      0x48c4 <__DefaultInterrupt>
+    1094:	48 49 04    	goto      0x4948 <__DefaultInterrupt>
     1096:	00 00 00 
-    1098:	c4 48 04    	goto      0x48c4 <__DefaultInterrupt>
+    1098:	48 49 04    	goto      0x4948 <__DefaultInterrupt>
     109a:	00 00 00 
-    109c:	c4 48 04    	goto      0x48c4 <__DefaultInterrupt>
+    109c:	48 49 04    	goto      0x4948 <__DefaultInterrupt>
     109e:	00 00 00 
-    10a0:	c4 48 04    	goto      0x48c4 <__DefaultInterrupt>
+    10a0:	48 49 04    	goto      0x4948 <__DefaultInterrupt>
     10a2:	00 00 00 
-    10a4:	c4 48 04    	goto      0x48c4 <__DefaultInterrupt>
+    10a4:	48 49 04    	goto      0x4948 <__DefaultInterrupt>
     10a6:	00 00 00 
-    10a8:	c4 48 04    	goto      0x48c4 <__DefaultInterrupt>
+    10a8:	48 49 04    	goto      0x4948 <__DefaultInterrupt>
     10aa:	00 00 00 
-    10ac:	c4 48 04    	goto      0x48c4 <__DefaultInterrupt>
+    10ac:	48 49 04    	goto      0x4948 <__DefaultInterrupt>
     10ae:	00 00 00 
-    10b0:	c4 48 04    	goto      0x48c4 <__DefaultInterrupt>
+    10b0:	48 49 04    	goto      0x4948 <__DefaultInterrupt>
     10b2:	00 00 00 
-    10b4:	c4 48 04    	goto      0x48c4 <__DefaultInterrupt>
+    10b4:	48 49 04    	goto      0x4948 <__DefaultInterrupt>
     10b6:	00 00 00 
-    10b8:	c4 48 04    	goto      0x48c4 <__DefaultInterrupt>
+    10b8:	48 49 04    	goto      0x4948 <__DefaultInterrupt>
     10ba:	00 00 00 
-    10bc:	c4 48 04    	goto      0x48c4 <__DefaultInterrupt>
+    10bc:	48 49 04    	goto      0x4948 <__DefaultInterrupt>
     10be:	00 00 00 
-    10c0:	c4 48 04    	goto      0x48c4 <__DefaultInterrupt>
+    10c0:	48 49 04    	goto      0x4948 <__DefaultInterrupt>
     10c2:	00 00 00 
-    10c4:	c4 48 04    	goto      0x48c4 <__DefaultInterrupt>
+    10c4:	48 49 04    	goto      0x4948 <__DefaultInterrupt>
     10c6:	00 00 00 
-    10c8:	c4 48 04    	goto      0x48c4 <__DefaultInterrupt>
+    10c8:	48 49 04    	goto      0x4948 <__DefaultInterrupt>
     10ca:	00 00 00 
-    10cc:	c4 48 04    	goto      0x48c4 <__DefaultInterrupt>
+    10cc:	48 49 04    	goto      0x4948 <__DefaultInterrupt>
     10ce:	00 00 00 
-    10d0:	c4 48 04    	goto      0x48c4 <__DefaultInterrupt>
+    10d0:	48 49 04    	goto      0x4948 <__DefaultInterrupt>
     10d2:	00 00 00 
-    10d4:	c4 48 04    	goto      0x48c4 <__DefaultInterrupt>
+    10d4:	48 49 04    	goto      0x4948 <__DefaultInterrupt>
     10d6:	00 00 00 
-    10d8:	c4 48 04    	goto      0x48c4 <__DefaultInterrupt>
+    10d8:	48 49 04    	goto      0x4948 <__DefaultInterrupt>
     10da:	00 00 00 
     10dc:	7c 24 04    	goto      0x247c <__U3RXInterrupt>
     10de:	00 00 00 
     10e0:	4e 24 04    	goto      0x244e <__U3TXInterrupt>
     10e2:	00 00 00 
-    10e4:	c4 48 04    	goto      0x48c4 <__DefaultInterrupt>
+    10e4:	48 49 04    	goto      0x4948 <__DefaultInterrupt>
     10e6:	00 00 00 
-    10e8:	c4 48 04    	goto      0x48c4 <__DefaultInterrupt>
+    10e8:	48 49 04    	goto      0x4948 <__DefaultInterrupt>
     10ea:	00 00 00 
     10ec:	ac 38 04    	goto      0x38ac <__USB1Interrupt>
     10ee:	00 00 00 
-    10f0:	c4 48 04    	goto      0x48c4 <__DefaultInterrupt>
+    10f0:	48 49 04    	goto      0x4948 <__DefaultInterrupt>
     10f2:	00 00 00 
     10f4:	d8 24 04    	goto      0x24d8 <__U4RXInterrupt>
     10f6:	00 00 00 
     10f8:	aa 24 04    	goto      0x24aa <__U4TXInterrupt>
     10fa:	00 00 00 
-    10fc:	c4 48 04    	goto      0x48c4 <__DefaultInterrupt>
+    10fc:	48 49 04    	goto      0x4948 <__DefaultInterrupt>
     10fe:	00 00 00 
-    1100:	c4 48 04    	goto      0x48c4 <__DefaultInterrupt>
+    1100:	48 49 04    	goto      0x4948 <__DefaultInterrupt>
     1102:	00 00 00 
-    1104:	c4 48 04    	goto      0x48c4 <__DefaultInterrupt>
+    1104:	48 49 04    	goto      0x4948 <__DefaultInterrupt>
     1106:	00 00 00 
-    1108:	c4 48 04    	goto      0x48c4 <__DefaultInterrupt>
+    1108:	48 49 04    	goto      0x4948 <__DefaultInterrupt>
     110a:	00 00 00 
 
 0000110c <__DEFAULT_VECTOR>:
-    110c:	c4 48 04    	goto      0x48c4 <__DefaultInterrupt>
+    110c:	48 49 04    	goto      0x4948 <__DefaultInterrupt>
     110e:	00 00 00 
 Disassembly of section .ivt:
 
@@ -3520,7 +3520,7 @@ void __attribute__((interrupt, auto_psv)) _U1TXInterrupt(void) {
 
 000023ae <.LSM53>:
     __serviceTxInterrupt(&uart1);
-    23ae:	60 85 20    	mov.w     #0x856, w0
+    23ae:	00 86 20    	mov.w     #0x860, w0
     23b0:	4b ff 07    	rcall     0x2248 <___serviceTxInterrupt>
 
 000023b2 <.LSM54>:
@@ -3553,7 +3553,7 @@ void __attribute__((interrupt, auto_psv)) _U1RXInterrupt(void) {
 
 000023dc <.LSM56>:
     __serviceRxInterrupt(&uart1);
-    23dc:	60 85 20    	mov.w     #0x856, w0
+    23dc:	00 86 20    	mov.w     #0x860, w0
     23de:	9f ff 07    	rcall     0x231e <___serviceRxInterrupt>
 
 000023e0 <.LSM57>:
@@ -3586,7 +3586,7 @@ void __attribute__((interrupt, auto_psv)) _U2TXInterrupt(void) {
 
 0000240a <.LSM59>:
     __serviceTxInterrupt(&uart2);
-    240a:	20 89 20    	mov.w     #0x892, w0
+    240a:	c0 89 20    	mov.w     #0x89c, w0
     240c:	1d ff 07    	rcall     0x2248 <___serviceTxInterrupt>
 
 0000240e <.LSM60>:
@@ -3619,7 +3619,7 @@ void __attribute__((interrupt, auto_psv)) _U2RXInterrupt(void) {
 
 00002438 <.LSM62>:
     __serviceRxInterrupt(&uart2);
-    2438:	20 89 20    	mov.w     #0x892, w0
+    2438:	c0 89 20    	mov.w     #0x89c, w0
     243a:	71 ff 07    	rcall     0x231e <___serviceRxInterrupt>
 
 0000243c <.LSM63>:
@@ -3652,7 +3652,7 @@ void __attribute__((interrupt, auto_psv)) _U3TXInterrupt(void) {
 
 00002466 <.LSM65>:
     __serviceTxInterrupt(&uart3);
-    2466:	e0 8c 20    	mov.w     #0x8ce, w0
+    2466:	80 8d 20    	mov.w     #0x8d8, w0
     2468:	ef fe 07    	rcall     0x2248 <___serviceTxInterrupt>
 
 0000246a <.LSM66>:
@@ -3685,7 +3685,7 @@ void __attribute__((interrupt, auto_psv)) _U3RXInterrupt(void) {
 
 00002494 <.LSM68>:
     __serviceRxInterrupt(&uart3);
-    2494:	e0 8c 20    	mov.w     #0x8ce, w0
+    2494:	80 8d 20    	mov.w     #0x8d8, w0
     2496:	43 ff 07    	rcall     0x231e <___serviceRxInterrupt>
 
 00002498 <.LSM69>:
@@ -3718,7 +3718,7 @@ void __attribute__((interrupt, auto_psv)) _U4TXInterrupt(void) {
 
 000024c2 <.LSM71>:
     __serviceTxInterrupt(&uart4);
-    24c2:	a0 90 20    	mov.w     #0x90a, w0
+    24c2:	40 91 20    	mov.w     #0x914, w0
     24c4:	c1 fe 07    	rcall     0x2248 <___serviceTxInterrupt>
 
 000024c6 <.LSM72>:
@@ -3751,7 +3751,7 @@ void __attribute__((interrupt, auto_psv)) _U4RXInterrupt(void) {
 
 000024f0 <.LSM74>:
     __serviceRxInterrupt(&uart4);
-    24f0:	a0 90 20    	mov.w     #0x90a, w0
+    24f0:	40 91 20    	mov.w     #0x914, w0
     24f2:	15 ff 07    	rcall     0x231e <___serviceRxInterrupt>
 
 000024f4 <.LSM75>:
@@ -3811,7 +3811,7 @@ int16_t write(int16_t handle, void *buffer, uint16_t len) {
     2528:	2e 00 90    	mov.w     [w14+4], w0
     252a:	00 00 e8    	inc.w     w0, w0
     252c:	20 07 98    	mov.w     w0, [w14+4]
-    252e:	90 42 80    	mov.w     0x852, w0
+    252e:	d0 42 80    	mov.w     0x85a, w0
     2530:	7b 04 07    	rcall     0x2e28 <_uart_putc>
 
 00002532 <.LSM81>:
@@ -3837,7 +3837,7 @@ int16_t write(int16_t handle, void *buffer, uint16_t len) {
     2548:	2e 00 90    	mov.w     [w14+4], w0
     254a:	00 00 e8    	inc.w     w0, w0
     254c:	20 07 98    	mov.w     w0, [w14+4]
-    254e:	a0 42 80    	mov.w     0x854, w0
+    254e:	e0 42 80    	mov.w     0x85c, w0
     2550:	6b 04 07    	rcall     0x2e28 <_uart_putc>
 
 00002552 <.LSM85>:
@@ -3886,7 +3886,7 @@ void init_uart(void) {
     2576:	80 01 eb    	clr.w     w3
     2578:	02 2f 20    	mov.w     #0x2f0, w2
     257a:	21 2f 20    	mov.w     #0x2f2, w1
-    257c:	60 94 20    	mov.w     #0x946, w0
+    257c:	00 95 20    	mov.w     #0x950, w0
     257e:	88 0d 07    	rcall     0x4090 <_pin_init>
     2580:	8f 87 e9    	dec2.w    w15, w15
 
@@ -3902,7 +3902,7 @@ void init_uart(void) {
     258e:	80 01 eb    	clr.w     w3
     2590:	02 2f 20    	mov.w     #0x2f0, w2
     2592:	21 2f 20    	mov.w     #0x2f2, w1
-    2594:	c0 95 20    	mov.w     #0x95c, w0
+    2594:	60 96 20    	mov.w     #0x966, w0
     2596:	7c 0d 07    	rcall     0x4090 <_pin_init>
     2598:	8f 87 e9    	dec2.w    w15, w15
 
@@ -3919,7 +3919,7 @@ void init_uart(void) {
     25a6:	23 4e 20    	mov.w     #0x4e2, w3
     25a8:	82 2c 20    	mov.w     #0x2c8, w2
     25aa:	a1 2c 20    	mov.w     #0x2ca, w1
-    25ac:	20 97 20    	mov.w     #0x972, w0
+    25ac:	c0 97 20    	mov.w     #0x97c, w0
     25ae:	70 0d 07    	rcall     0x4090 <_pin_init>
     25b0:	8f 87 e9    	dec2.w    w15, w15
 
@@ -3935,7 +3935,7 @@ void init_uart(void) {
     25be:	23 4e 20    	mov.w     #0x4e2, w3
     25c0:	82 2c 20    	mov.w     #0x2c8, w2
     25c2:	a1 2c 20    	mov.w     #0x2ca, w1
-    25c4:	80 98 20    	mov.w     #0x988, w0
+    25c4:	20 99 20    	mov.w     #0x992, w0
     25c6:	64 0d 07    	rcall     0x4090 <_pin_init>
     25c8:	8f 87 e9    	dec2.w    w15, w15
 
@@ -3951,7 +3951,7 @@ void init_uart(void) {
     25d6:	80 01 eb    	clr.w     w3
     25d8:	02 2f 20    	mov.w     #0x2f0, w2
     25da:	21 2f 20    	mov.w     #0x2f2, w1
-    25dc:	e0 99 20    	mov.w     #0x99e, w0
+    25dc:	80 9a 20    	mov.w     #0x9a8, w0
     25de:	58 0d 07    	rcall     0x4090 <_pin_init>
     25e0:	8f 87 e9    	dec2.w    w15, w15
 
@@ -3967,7 +3967,7 @@ void init_uart(void) {
     25ee:	80 01 eb    	clr.w     w3
     25f0:	02 2f 20    	mov.w     #0x2f0, w2
     25f2:	21 2f 20    	mov.w     #0x2f2, w1
-    25f4:	40 9b 20    	mov.w     #0x9b4, w0
+    25f4:	e0 9b 20    	mov.w     #0x9be, w0
     25f6:	4c 0d 07    	rcall     0x4090 <_pin_init>
     25f8:	8f 87 e9    	dec2.w    w15, w15
 
@@ -3998,7 +3998,7 @@ void init_uart(void) {
     2622:	43 22 20    	mov.w     #0x224, w3
     2624:	22 22 20    	mov.w     #0x222, w2
     2626:	01 22 20    	mov.w     #0x220, w1
-    2628:	60 85 20    	mov.w     #0x856, w0
+    2628:	00 86 20    	mov.w     #0x860, w0
     262a:	6b 00 07    	rcall     0x2702 <_uart_init>
     262c:	f0 87 57    	sub.w     w15, #0x10, w15
 
@@ -4031,7 +4031,7 @@ void init_uart(void) {
     2656:	43 23 20    	mov.w     #0x234, w3
     2658:	22 23 20    	mov.w     #0x232, w2
     265a:	01 23 20    	mov.w     #0x230, w1
-    265c:	20 89 20    	mov.w     #0x892, w0
+    265c:	c0 89 20    	mov.w     #0x89c, w0
     265e:	51 00 07    	rcall     0x2702 <_uart_init>
     2660:	f0 87 57    	sub.w     w15, #0x10, w15
 
@@ -4064,7 +4064,7 @@ void init_uart(void) {
     268a:	43 25 20    	mov.w     #0x254, w3
     268c:	22 25 20    	mov.w     #0x252, w2
     268e:	01 25 20    	mov.w     #0x250, w1
-    2690:	e0 8c 20    	mov.w     #0x8ce, w0
+    2690:	80 8d 20    	mov.w     #0x8d8, w0
     2692:	37 00 07    	rcall     0x2702 <_uart_init>
     2694:	f0 87 57    	sub.w     w15, #0x10, w15
 
@@ -4097,7 +4097,7 @@ void init_uart(void) {
     26be:	43 2b 20    	mov.w     #0x2b4, w3
     26c0:	22 2b 20    	mov.w     #0x2b2, w2
     26c2:	01 2b 20    	mov.w     #0x2b0, w1
-    26c4:	a0 90 20    	mov.w     #0x90a, w0
+    26c4:	40 91 20    	mov.w     #0x914, w0
     26c6:	1d 00 07    	rcall     0x2702 <_uart_init>
     26c8:	f0 87 57    	sub.w     w15, #0x10, w15
 
@@ -4110,11 +4110,11 @@ void init_uart(void) {
     uart_open(&uart2, &AJTX, &AJRX, NULL, NULL, 19200., 'N', 1, 
     26ca:	00 40 20    	mov.w     #0x400, w0
     26cc:	80 1f 78    	mov.w     w0, [w15++]
-    26ce:	a0 dc 20    	mov.w     #0xdca, w0
+    26ce:	40 dd 20    	mov.w     #0xdd4, w0
     26d0:	80 1f 78    	mov.w     w0, [w15++]
     26d2:	00 40 20    	mov.w     #0x400, w0
     26d4:	80 1f 78    	mov.w     w0, [w15++]
-    26d6:	a0 9c 20    	mov.w     #0x9ca, w0
+    26d6:	40 9d 20    	mov.w     #0x9d4, w0
     26d8:	80 1f 78    	mov.w     w0, [w15++]
     26da:	00 00 eb    	clr.w     w0
     26dc:	80 1f 78    	mov.w     w0, [w15++]
@@ -4125,9 +4125,9 @@ void init_uart(void) {
     26e6:	67 69 24    	mov.w     #0x4696, w7
     26e8:	00 02 eb    	clr.w     w4
     26ea:	80 01 eb    	clr.w     w3
-    26ec:	c2 95 20    	mov.w     #0x95c, w2
-    26ee:	61 94 20    	mov.w     #0x946, w1
-    26f0:	20 89 20    	mov.w     #0x892, w0
+    26ec:	62 96 20    	mov.w     #0x966, w2
+    26ee:	01 95 20    	mov.w     #0x950, w1
+    26f0:	c0 89 20    	mov.w     #0x89c, w0
     26f2:	72 00 07    	rcall     0x27d8 <_uart_open>
     26f4:	ec 87 57    	sub.w     w15, #0xc, w15
 
@@ -4135,13 +4135,13 @@ void init_uart(void) {
               0, HWTXBUF, 1024, HWRXBUF, 1024);
 
     _stdout = &uart2;
-    26f6:	20 89 20    	mov.w     #0x892, w0
-    26f8:	90 42 88    	mov.w     w0, 0x852
+    26f6:	c0 89 20    	mov.w     #0x89c, w0
+    26f8:	d0 42 88    	mov.w     w0, 0x85a
 
 000026fa <.LSM104>:
     _stderr = &uart2;
-    26fa:	20 89 20    	mov.w     #0x892, w0
-    26fc:	a0 42 88    	mov.w     w0, 0x854
+    26fa:	c0 89 20    	mov.w     #0x89c, w0
+    26fc:	e0 42 88    	mov.w     w0, 0x85c
 
 000026fe <.LSM105>:
 }
@@ -6279,7 +6279,7 @@ void InitUSB(void) {
 
 0000307a <.LSM11>:
     BD[EP0OUT].address = EP0_OUT_buffer;    // EP0 OUT gets a buffer
-    307a:	20 c0 21    	mov.w     #0x1c02, w0
+    307a:	c0 c0 21    	mov.w     #0x1c0c, w0
     307c:	10 f0 88    	mov.w     w0, 0x1e02
 
 0000307e <.LSM12>:
@@ -6290,7 +6290,7 @@ void InitUSB(void) {
 
 00003084 <.LSM13>:
     BD[EP0IN].address = EP0_IN_buffer;      // EP0 IN gets a buffer
-    3084:	20 c4 21    	mov.w     #0x1c42, w0
+    3084:	c0 c4 21    	mov.w     #0x1c4c, w0
     3086:	30 f0 88    	mov.w     w0, 0x1e06
 
 00003088 <.LSM14>:
@@ -6331,26 +6331,26 @@ void InitUSB(void) {
 
 000030a0 <.LSM22>:
     USB_curr_config = 0x00;
-    30a0:	3d 68 ef    	clr.b     0x83d
+    30a0:	55 68 ef    	clr.b     0x855
 
 000030a2 <.LSM23>:
     USB_USWSTAT = 0x00;         // default to powered state
-    30a2:	40 68 ef    	clr.b     0x840
+    30a2:	58 68 ef    	clr.b     0x858
 
 000030a4 <.LSM24>:
     USB_device_status = 0x01;
     30a4:	10 c0 b3    	mov.b     #0x1, w0
-    30a6:	3e e8 b7    	mov.b     WREG, 0x83e
+    30a6:	56 e8 b7    	mov.b     WREG, 0x856
 
 000030a8 <.LSM25>:
     USB_request.setup.bmRequestType = NO_REQUEST;    // No device requests in process
-    30a8:	20 c8 21    	mov.w     #0x1c82, w0
+    30a8:	c0 c8 21    	mov.w     #0x1c8c, w0
     30aa:	80 c0 eb    	setm.b    w1
     30ac:	01 48 78    	mov.b     w1, [w0]
 
 000030ae <.LSM26>:
     USB_request.setup.bRequest = NO_REQUEST;
-    30ae:	30 c8 21    	mov.w     #0x1c83, w0
+    30ae:	d0 c8 21    	mov.w     #0x1c8d, w0
     30b0:	80 c0 eb    	setm.b    w1
     30b2:	01 48 78    	mov.b     w1, [w0]
 
@@ -6474,7 +6474,7 @@ void ServiceUSB(void) {
 
 0000311c <.LSM42>:
         USB_curr_config = 0x00;
-    311c:	3d 68 ef    	clr.b     0x83d
+    311c:	55 68 ef    	clr.b     0x855
 
 0000311e <.LSM43>:
         while (U1IRbits.TRNIF) {
@@ -6552,7 +6552,7 @@ void ServiceUSB(void) {
 
 0000315c <.LSM57>:
         BD[EP0OUT].address = EP0_OUT_buffer;    // EP0 OUT gets a buffer
-    315c:	20 c0 21    	mov.w     #0x1c02, w0
+    315c:	c0 c0 21    	mov.w     #0x1c0c, w0
     315e:	10 f0 88    	mov.w     w0, 0x1e02
 
 00003160 <.LSM58>:
@@ -6563,7 +6563,7 @@ void ServiceUSB(void) {
 
 00003166 <.LSM59>:
         BD[EP0IN].address = EP0_IN_buffer;      // EP0 IN gets a buffer
-    3166:	20 c4 21    	mov.w     #0x1c42, w0
+    3166:	c0 c4 21    	mov.w     #0x1c4c, w0
     3168:	30 f0 88    	mov.w     w0, 0x1e06
 
 0000316a <.LSM60>:
@@ -6590,12 +6590,12 @@ void ServiceUSB(void) {
 //      U1EIE = 0x00FF;                 // enable all USB error interrupts
         USB_USWSTAT = DEFAULT_STATE;
     317a:	10 c0 b3    	mov.b     #0x1, w0
-    317c:	40 e8 b7    	mov.b     WREG, 0x840
+    317c:	58 e8 b7    	mov.b     WREG, 0x858
 
 0000317e <.LSM65>:
         USB_device_status = 0x01;       // self powered, remote wakeup disabled
     317e:	10 c0 b3    	mov.b     #0x1, w0
-    3180:	3e e8 b7    	mov.b     WREG, 0x83e
+    3180:	56 e8 b7    	mov.b     WREG, 0x856
     3182:	3a 00 37    	bra       0x31f8 <.L5>
 
 00003184 <.L12>:
@@ -6622,25 +6622,25 @@ void ServiceUSB(void) {
         USB_buffer_desc.status = buf_desc_ptr->status;
     3198:	2e 00 90    	mov.w     [w14+4], w0
     319a:	10 40 90    	mov.b     [w0+1], w0
-    319c:	31 e8 b7    	mov.b     WREG, 0x831
+    319c:	49 e8 b7    	mov.b     WREG, 0x849
 
 0000319e <.LSM69>:
         USB_buffer_desc.bytecount = buf_desc_ptr->bytecount;
     319e:	2e 00 90    	mov.w     [w14+4], w0
     31a0:	10 40 78    	mov.b     [w0], w0
-    31a2:	30 e8 b7    	mov.b     WREG, 0x830
+    31a2:	48 e8 b7    	mov.b     WREG, 0x848
 
 000031a4 <.LSM70>:
         USB_buffer_desc.address = buf_desc_ptr->address;
     31a4:	2e 00 90    	mov.w     [w14+4], w0
     31a6:	10 00 90    	mov.w     [w0+2], w0
-    31a8:	90 41 88    	mov.w     w0, 0x832
+    31a8:	50 42 88    	mov.w     w0, 0x84a
 
 000031aa <.LSM71>:
         USB_USTAT = U1STAT;             // save the USB status register
     31aa:	90 24 80    	mov.w     0x492, w0
     31ac:	00 40 78    	mov.b     w0, w0
-    31ae:	3f e8 b7    	mov.b     WREG, 0x83f
+    31ae:	57 e8 b7    	mov.b     WREG, 0x857
 
 000031b0 <.LSM72>:
         U1IR = U1IR_TRNIF;              // clear TRNIF
@@ -6654,11 +6654,11 @@ void ServiceUSB(void) {
         }
 #endif
         USB_error_flags = 0x00;         // clear USB error flags
-    31b4:	3c 68 ef    	clr.b     0x83c
+    31b4:	54 68 ef    	clr.b     0x854
 
 000031b6 <.LSM74>:
         switch (USB_buffer_desc.status&0x3C) {    // extract PID bits
-    31b6:	31 c8 bf    	mov.b     0x831, WREG
+    31b6:	49 c8 bf    	mov.b     0x849, WREG
     31b8:	80 80 fb    	ze        w0, w1
     31ba:	c0 03 20    	mov.w     #0x3c, w0
     31bc:	00 80 60    	and.w     w1, w0, w0
@@ -6698,7 +6698,7 @@ void ServiceUSB(void) {
 000031da <.L17>:
         }
         if (USB_error_flags&0x01) {             // if there was a Request Error...
-    31da:	3c c8 bf    	mov.b     0x83c, WREG
+    31da:	54 c8 bf    	mov.b     0x854, WREG
     31dc:	00 80 fb    	ze        w0, w0
     31de:	61 00 60    	and.w     w0, #0x1, w0
     31e0:	00 40 78    	mov.b     w0, w0
@@ -6739,14 +6739,14 @@ void ProcessSetupToken(void) {
     BYTE *buf_ptr;
 
     buf_ptr = USB_buffer_desc.address;
-    31fe:	91 41 80    	mov.w     0x832, w1
+    31fe:	51 42 80    	mov.w     0x84a, w1
     3200:	01 0f 78    	mov.w     w1, [w14]
 
 00003202 <.LSM87>:
     USB_setup.bmRequestType = *buf_ptr++;   // copy the setup packet received from the host
     3202:	1e 00 78    	mov.w     [w14], w0
     3204:	90 40 78    	mov.b     [w0], w1
-    3206:	40 83 20    	mov.w     #0x834, w0
+    3206:	c0 84 20    	mov.w     #0x84c, w0
     3208:	01 48 78    	mov.b     w1, [w0]
     320a:	1e 0f e8    	inc.w     [w14], [w14]
 
@@ -6754,7 +6754,7 @@ void ProcessSetupToken(void) {
     USB_setup.bRequest = *buf_ptr++;
     320c:	1e 00 78    	mov.w     [w14], w0
     320e:	90 40 78    	mov.b     [w0], w1
-    3210:	40 83 20    	mov.w     #0x834, w0
+    3210:	c0 84 20    	mov.w     #0x84c, w0
     3212:	11 40 98    	mov.b     w1, [w0+1]
     3214:	1e 0f e8    	inc.w     [w14], [w14]
 
@@ -6762,7 +6762,7 @@ void ProcessSetupToken(void) {
     USB_setup.wValue.b[0] = *buf_ptr++;
     3216:	1e 00 78    	mov.w     [w14], w0
     3218:	90 40 78    	mov.b     [w0], w1
-    321a:	40 83 20    	mov.w     #0x834, w0
+    321a:	c0 84 20    	mov.w     #0x84c, w0
     321c:	21 40 98    	mov.b     w1, [w0+2]
     321e:	1e 0f e8    	inc.w     [w14], [w14]
 
@@ -6770,7 +6770,7 @@ void ProcessSetupToken(void) {
     USB_setup.wValue.b[1] = *buf_ptr++;
     3220:	1e 00 78    	mov.w     [w14], w0
     3222:	90 40 78    	mov.b     [w0], w1
-    3224:	40 83 20    	mov.w     #0x834, w0
+    3224:	c0 84 20    	mov.w     #0x84c, w0
     3226:	31 40 98    	mov.b     w1, [w0+3]
     3228:	1e 0f e8    	inc.w     [w14], [w14]
 
@@ -6778,7 +6778,7 @@ void ProcessSetupToken(void) {
     USB_setup.wIndex.b[0] = *buf_ptr++;
     322a:	1e 00 78    	mov.w     [w14], w0
     322c:	90 40 78    	mov.b     [w0], w1
-    322e:	40 83 20    	mov.w     #0x834, w0
+    322e:	c0 84 20    	mov.w     #0x84c, w0
     3230:	41 40 98    	mov.b     w1, [w0+4]
     3232:	1e 0f e8    	inc.w     [w14], [w14]
 
@@ -6786,7 +6786,7 @@ void ProcessSetupToken(void) {
     USB_setup.wIndex.b[1] = *buf_ptr++;
     3234:	1e 00 78    	mov.w     [w14], w0
     3236:	90 40 78    	mov.b     [w0], w1
-    3238:	40 83 20    	mov.w     #0x834, w0
+    3238:	c0 84 20    	mov.w     #0x84c, w0
     323a:	51 40 98    	mov.b     w1, [w0+5]
     323c:	1e 0f e8    	inc.w     [w14], [w14]
 
@@ -6794,7 +6794,7 @@ void ProcessSetupToken(void) {
     USB_setup.wLength.b[0] = *buf_ptr++;
     323e:	1e 00 78    	mov.w     [w14], w0
     3240:	90 40 78    	mov.b     [w0], w1
-    3242:	40 83 20    	mov.w     #0x834, w0
+    3242:	c0 84 20    	mov.w     #0x84c, w0
     3244:	61 40 98    	mov.b     w1, [w0+6]
     3246:	1e 0f e8    	inc.w     [w14], [w14]
 
@@ -6802,7 +6802,7 @@ void ProcessSetupToken(void) {
     USB_setup.wLength.b[1] = *buf_ptr++;
     3248:	1e 00 78    	mov.w     [w14], w0
     324a:	90 40 78    	mov.b     [w0], w1
-    324c:	40 83 20    	mov.w     #0x834, w0
+    324c:	c0 84 20    	mov.w     #0x84c, w0
     324e:	71 40 98    	mov.b     w1, [w0+7]
     3250:	1e 0f e8    	inc.w     [w14], [w14]
 
@@ -6820,11 +6820,11 @@ void ProcessSetupToken(void) {
 
 0000325e <.LSM97>:
     BD[EP0OUT].status = (!(USB_setup.bmRequestType&0x80) && (USB_setup.wLength.w)) ? 0xC8:0x88;    // set EP0 OUT UOWN back to USB and DATA0/DATA1 packet according to the request type
-    325e:	40 83 20    	mov.w     #0x834, w0
+    325e:	c0 84 20    	mov.w     #0x84c, w0
     3260:	10 40 78    	mov.b     [w0], w0
     3262:	00 04 e0    	cp0.b     w0
     3264:	06 00 35    	bra       LT, 0x3272 <.L22>
-    3266:	40 83 20    	mov.w     #0x834, w0
+    3266:	c0 84 20    	mov.w     #0x84c, w0
     3268:	30 00 90    	mov.w     [w0+6], w0
     326a:	00 00 e0    	cp0.w     w0
     326c:	02 00 32    	bra       Z, 0x3272 <.L22>
@@ -6844,19 +6844,19 @@ void ProcessSetupToken(void) {
 
 0000327a <.LSM99>:
     USB_request.setup.bmRequestType = NO_REQUEST;   // clear the device request in process
-    327a:	20 c8 21    	mov.w     #0x1c82, w0
+    327a:	c0 c8 21    	mov.w     #0x1c8c, w0
     327c:	80 c0 eb    	setm.b    w1
     327e:	01 48 78    	mov.b     w1, [w0]
 
 00003280 <.LSM100>:
     USB_request.setup.bRequest = NO_REQUEST;
-    3280:	30 c8 21    	mov.w     #0x1c83, w0
+    3280:	d0 c8 21    	mov.w     #0x1c8d, w0
     3282:	80 c0 eb    	setm.b    w1
     3284:	01 48 78    	mov.b     w1, [w0]
 
 00003286 <.LSM101>:
     switch (USB_setup.bmRequestType&0x60) {    // extract request type bits
-    3286:	40 83 20    	mov.w     #0x834, w0
+    3286:	c0 84 20    	mov.w     #0x84c, w0
     3288:	10 40 78    	mov.b     [w0], w0
     328a:	80 80 fb    	ze        w0, w1
     328c:	00 06 20    	mov.w     #0x60, w0
@@ -6892,9 +6892,9 @@ void ProcessSetupToken(void) {
 //            break;
         default:
             USB_error_flags |= 0x01;    // set Request Error Flag
-    32a4:	3c c8 bf    	mov.b     0x83c, WREG
+    32a4:	54 c8 bf    	mov.b     0x854, WREG
     32a6:	00 04 a0    	bset.b    w0, #0x0
-    32a8:	3c e8 b7    	mov.b     WREG, 0x83c
+    32a8:	54 e8 b7    	mov.b     WREG, 0x854
 
 000032aa <.L21>:
     }
@@ -6913,7 +6913,7 @@ void StandardRequests(void) {
     BYTE n;
 
     switch (USB_setup.bRequest) {
-    32b0:	40 83 20    	mov.w     #0x834, w0
+    32b0:	c0 84 20    	mov.w     #0x84c, w0
     32b2:	10 40 90    	mov.b     [w0+1], w0
     32b4:	00 80 fb    	ze        w0, w0
     32b6:	e6 0f 50    	sub.w     w0, #0x6, [w15]
@@ -6954,7 +6954,7 @@ void StandardRequests(void) {
 000032ee <.L31>:
         case GET_STATUS:
             switch (USB_setup.bmRequestType&0x1F) { // extract request recipient bits
-    32ee:	40 83 20    	mov.w     #0x834, w0
+    32ee:	c0 84 20    	mov.w     #0x84c, w0
     32f0:	10 40 78    	mov.b     [w0], w0
     32f2:	00 80 fb    	ze        w0, w0
     32f4:	7f 00 60    	and.w     w0, #0x1f, w0
@@ -6969,7 +6969,7 @@ void StandardRequests(void) {
                 case RECIPIENT_DEVICE:
                     BD[EP0IN].address[0] = USB_device_status;
     3302:	30 f0 80    	mov.w     0x1e06, w0
-    3304:	e1 83 20    	mov.w     #0x83e, w1
+    3304:	61 85 20    	mov.w     #0x856, w1
     3306:	91 40 78    	mov.b     [w1], w1
     3308:	01 48 78    	mov.b     w1, [w0]
 
@@ -6999,7 +6999,7 @@ void StandardRequests(void) {
 00003320 <.L44>:
                 case RECIPIENT_INTERFACE:
                     switch (USB_USWSTAT) {
-    3320:	40 c8 bf    	mov.b     0x840, WREG
+    3320:	58 c8 bf    	mov.b     0x858, WREG
     3322:	00 80 fb    	ze        w0, w0
     3324:	e2 0f 50    	sub.w     w0, #0x2, [w15]
     3326:	03 00 32    	bra       Z, 0x332e <.L48>
@@ -7010,9 +7010,9 @@ void StandardRequests(void) {
 0000332e <.L48>:
                         case ADDRESS_STATE:
                             USB_error_flags |= 0x01;        // set Request Error Flag
-    332e:	3c c8 bf    	mov.b     0x83c, WREG
+    332e:	54 c8 bf    	mov.b     0x854, WREG
     3330:	00 04 a0    	bset.b    w0, #0x0
-    3332:	3c e8 b7    	mov.b     WREG, 0x83c
+    3332:	54 e8 b7    	mov.b     WREG, 0x854
 
 00003334 <.LSM118>:
                             break;
@@ -7021,7 +7021,7 @@ void StandardRequests(void) {
 00003336 <.L49>:
                         case CONFIG_STATE:
                             if (USB_setup.wIndex.b[0]<NUM_INTERFACES) {
-    3336:	40 83 20    	mov.w     #0x834, w0
+    3336:	c0 84 20    	mov.w     #0x84c, w0
     3338:	40 40 90    	mov.b     [w0+4], w0
     333a:	00 04 e0    	cp0.b     w0
     333c:	0e 00 3a    	bra       NZ, 0x335a <.L50>
@@ -7055,9 +7055,9 @@ void StandardRequests(void) {
 0000335a <.L50>:
                             } else {
                                 USB_error_flags |= 0x01;    // set Request Error Flag
-    335a:	3c c8 bf    	mov.b     0x83c, WREG
+    335a:	54 c8 bf    	mov.b     0x854, WREG
     335c:	00 04 a0    	bset.b    w0, #0x0
-    335e:	3c e8 b7    	mov.b     WREG, 0x83c
+    335e:	54 e8 b7    	mov.b     WREG, 0x854
 
 00003360 <.L47>:
                             }
@@ -7068,7 +7068,7 @@ void StandardRequests(void) {
 00003362 <.L45>:
                 case RECIPIENT_ENDPOINT:
                     switch (USB_USWSTAT) {
-    3362:	40 c8 bf    	mov.b     0x840, WREG
+    3362:	58 c8 bf    	mov.b     0x858, WREG
     3364:	00 80 fb    	ze        w0, w0
     3366:	e2 0f 50    	sub.w     w0, #0x2, [w15]
     3368:	03 00 32    	bra       Z, 0x3370 <.L52>
@@ -7079,7 +7079,7 @@ void StandardRequests(void) {
 00003370 <.L52>:
                         case ADDRESS_STATE:
                             if (!(USB_setup.wIndex.b[0]&0x0F)) {    // get EP, strip off direction bit and see if it is EP0
-    3370:	40 83 20    	mov.w     #0x834, w0
+    3370:	c0 84 20    	mov.w     #0x84c, w0
     3372:	40 40 90    	mov.b     [w0+4], w0
     3374:	00 80 fb    	ze        w0, w0
     3376:	6f 00 60    	and.w     w0, #0xf, w0
@@ -7089,7 +7089,7 @@ void StandardRequests(void) {
 0000337c <.LSM128>:
                                 BD[EP0IN].address[0] = (((USB_setup.wIndex.b[0]&0x80) ? BD[EP0IN].status:BD[EP0OUT].status)&0x04)>>2;    // return the BSTALL bit of EP0 IN or OUT, whichever was requested
     337c:	31 f0 80    	mov.w     0x1e06, w1
-    337e:	40 83 20    	mov.w     #0x834, w0
+    337e:	c0 84 20    	mov.w     #0x84c, w0
     3380:	40 40 90    	mov.b     [w0+4], w0
     3382:	00 04 e0    	cp0.b     w0
     3384:	07 00 3d    	bra       GE, 0x3394 <.L55>
@@ -7135,9 +7135,9 @@ void StandardRequests(void) {
 000033b8 <.L54>:
                             } else {
                                 USB_error_flags |= 0x01;    // set Request Error Flag
-    33b8:	3c c8 bf    	mov.b     0x83c, WREG
+    33b8:	54 c8 bf    	mov.b     0x854, WREG
     33ba:	00 04 a0    	bset.b    w0, #0x0
-    33bc:	3c e8 b7    	mov.b     WREG, 0x83c
+    33bc:	54 e8 b7    	mov.b     WREG, 0x854
 
 000033be <.L57>:
                             }
@@ -7152,7 +7152,7 @@ void StandardRequests(void) {
 
 000033c4 <.LSM135>:
                             n = USB_setup.wIndex.b[0]&0x0F;    // get EP and strip off direction bit for offset from U1EP0
-    33c4:	40 83 20    	mov.w     #0x834, w0
+    33c4:	c0 84 20    	mov.w     #0x84c, w0
     33c6:	40 40 90    	mov.b     [w0+4], w0
     33c8:	6f 4f 60    	and.b     w0, #0xf, [w14]
 
@@ -7161,7 +7161,7 @@ void StandardRequests(void) {
     33ca:	1e 80 fb    	ze        [w14], w0
     33cc:	00 00 40    	add.w     w0, w0, w0
     33ce:	80 00 78    	mov.w     w0, w1
-    33d0:	40 83 20    	mov.w     #0x834, w0
+    33d0:	c0 84 20    	mov.w     #0x84c, w0
     33d2:	40 40 90    	mov.b     [w0+4], w0
     33d4:	00 00 fb    	se        w0, w0
     33d6:	4f 00 de    	lsr.w     w0, #0xf, w0
@@ -7178,7 +7178,7 @@ void StandardRequests(void) {
     33e6:	9e 00 90    	mov.w     [w14+2], w1
     33e8:	00 80 40    	add.w     w1, w0, w0
     33ea:	90 00 78    	mov.w     [w0], w1
-    33ec:	40 83 20    	mov.w     #0x834, w0
+    33ec:	c0 84 20    	mov.w     #0x84c, w0
     33ee:	40 40 90    	mov.b     [w0+4], w0
     33f0:	00 04 e0    	cp0.b     w0
     33f2:	02 00 3d    	bra       GE, 0x33f8 <.L59>
@@ -7227,9 +7227,9 @@ void StandardRequests(void) {
 00003426 <.L61>:
                             } else {
                                 USB_error_flags |= 0x01;    // set Request Error Flag
-    3426:	3c c8 bf    	mov.b     0x83c, WREG
+    3426:	54 c8 bf    	mov.b     0x854, WREG
     3428:	00 04 a0    	bset.b    w0, #0x0
-    342a:	3c e8 b7    	mov.b     WREG, 0x83c
+    342a:	54 e8 b7    	mov.b     WREG, 0x854
 
 0000342c <.L62>:
                             }
@@ -7239,9 +7239,9 @@ void StandardRequests(void) {
 0000342e <.L129>:
                         default:
                             USB_error_flags |= 0x01;        // set Request Error Flag
-    342e:	3c c8 bf    	mov.b     0x83c, WREG
+    342e:	54 c8 bf    	mov.b     0x854, WREG
     3430:	00 04 a0    	bset.b    w0, #0x0
-    3432:	3c e8 b7    	mov.b     WREG, 0x83c
+    3432:	54 e8 b7    	mov.b     WREG, 0x854
 
 00003434 <.L58>:
                     }
@@ -7251,9 +7251,9 @@ void StandardRequests(void) {
 00003436 <.L128>:
                 default:
                     USB_error_flags |= 0x01;                // set Request Error Flag
-    3436:	3c c8 bf    	mov.b     0x83c, WREG
+    3436:	54 c8 bf    	mov.b     0x854, WREG
     3438:	00 04 a0    	bset.b    w0, #0x0
-    343a:	3c e8 b7    	mov.b     WREG, 0x83c
+    343a:	54 e8 b7    	mov.b     WREG, 0x854
 
 0000343c <.LSM147>:
             }
@@ -7267,7 +7267,7 @@ void StandardRequests(void) {
         case CLEAR_FEATURE:
         case SET_FEATURE:
             switch (USB_setup.bmRequestType&0x1F) {         // extract request recipient bits
-    3440:	40 83 20    	mov.w     #0x834, w0
+    3440:	c0 84 20    	mov.w     #0x84c, w0
     3442:	10 40 78    	mov.b     [w0], w0
     3444:	00 80 fb    	ze        w0, w0
     3446:	7f 00 60    	and.w     w0, #0x1f, w0
@@ -7280,7 +7280,7 @@ void StandardRequests(void) {
 00003452 <.L65>:
                 case RECIPIENT_DEVICE:
                     switch (USB_setup.wValue.b[0]) {
-    3452:	40 83 20    	mov.w     #0x834, w0
+    3452:	c0 84 20    	mov.w     #0x84c, w0
     3454:	20 40 90    	mov.b     [w0+2], w0
     3456:	00 80 fb    	ze        w0, w0
     3458:	e1 0f 50    	sub.w     w0, #0x1, [w15]
@@ -7289,26 +7289,26 @@ void StandardRequests(void) {
 0000345c <.LSM150>:
                         case DEVICE_REMOTE_WAKEUP:
                             if (USB_setup.bRequest==CLEAR_FEATURE)
-    345c:	40 83 20    	mov.w     #0x834, w0
+    345c:	c0 84 20    	mov.w     #0x84c, w0
     345e:	10 40 90    	mov.b     [w0+1], w0
     3460:	e1 4f 50    	sub.b     w0, #0x1, [w15]
     3462:	06 00 3a    	bra       NZ, 0x3470 <.L69>
 
 00003464 <.LSM151>:
                                 USB_device_status &= 0xFE;
-    3464:	e1 83 20    	mov.w     #0x83e, w1
+    3464:	61 85 20    	mov.w     #0x856, w1
     3466:	91 40 78    	mov.b     [w1], w1
     3468:	e0 cf b3    	mov.b     #0xfe, w0
     346a:	00 c0 60    	and.b     w1, w0, w0
-    346c:	3e e8 b7    	mov.b     WREG, 0x83e
+    346c:	56 e8 b7    	mov.b     WREG, 0x856
     346e:	03 00 37    	bra       0x3476 <.L70>
 
 00003470 <.L69>:
                             else
                                 USB_device_status |= 0x01;
-    3470:	3e c8 bf    	mov.b     0x83e, WREG
+    3470:	56 c8 bf    	mov.b     0x856, WREG
     3472:	00 04 a0    	bset.b    w0, #0x0
-    3474:	3e e8 b7    	mov.b     WREG, 0x83e
+    3474:	56 e8 b7    	mov.b     WREG, 0x856
 
 00003476 <.L70>:
                             BD[EP0IN].bytecount = 0x00;          // set EP0 IN byte count to 0
@@ -7329,9 +7329,9 @@ void StandardRequests(void) {
 00003484 <.L131>:
                         default:
                             USB_error_flags |= 0x01;        // set Request Error Flag
-    3484:	3c c8 bf    	mov.b     0x83c, WREG
+    3484:	54 c8 bf    	mov.b     0x854, WREG
     3486:	00 04 a0    	bset.b    w0, #0x0
-    3488:	3c e8 b7    	mov.b     WREG, 0x83c
+    3488:	54 e8 b7    	mov.b     WREG, 0x854
 
 0000348a <.L71>:
                     }
@@ -7341,7 +7341,7 @@ void StandardRequests(void) {
 0000348c <.L66>:
                 case RECIPIENT_ENDPOINT:
                     switch (USB_USWSTAT) {
-    348c:	40 c8 bf    	mov.b     0x840, WREG
+    348c:	58 c8 bf    	mov.b     0x858, WREG
     348e:	00 80 fb    	ze        w0, w0
     3490:	e2 0f 50    	sub.w     w0, #0x2, [w15]
     3492:	03 00 32    	bra       Z, 0x349a <.L74>
@@ -7352,7 +7352,7 @@ void StandardRequests(void) {
 0000349a <.L74>:
                         case ADDRESS_STATE:
                             if (!(USB_setup.wIndex.b[0]&0x0F)) {    // get EP, strip off direction bit, and see if its EP0
-    349a:	40 83 20    	mov.w     #0x834, w0
+    349a:	c0 84 20    	mov.w     #0x84c, w0
     349c:	40 40 90    	mov.b     [w0+4], w0
     349e:	00 80 fb    	ze        w0, w0
     34a0:	6f 00 60    	and.w     w0, #0xf, w0
@@ -7375,9 +7375,9 @@ void StandardRequests(void) {
 000034b4 <.L76>:
                             } else {
                                 USB_error_flags |= 0x01;    // set Request Error Flag
-    34b4:	3c c8 bf    	mov.b     0x83c, WREG
+    34b4:	54 c8 bf    	mov.b     0x854, WREG
     34b6:	00 04 a0    	bset.b    w0, #0x0
-    34b8:	3c e8 b7    	mov.b     WREG, 0x83c
+    34b8:	54 e8 b7    	mov.b     WREG, 0x854
 
 000034ba <.L77>:
                             }
@@ -7392,7 +7392,7 @@ void StandardRequests(void) {
 
 000034c0 <.LSM165>:
                             if (n = USB_setup.wIndex.b[0]&0x0F) {    // get EP and strip off direction bit for offset from U1EP0, if not EP0...
-    34c0:	40 83 20    	mov.w     #0x834, w0
+    34c0:	c0 84 20    	mov.w     #0x84c, w0
     34c2:	40 40 90    	mov.b     [w0+4], w0
     34c4:	6f 4f 60    	and.b     w0, #0xf, [w14]
     34c6:	1e 40 78    	mov.b     [w14], w0
@@ -7404,7 +7404,7 @@ void StandardRequests(void) {
     34cc:	1e 80 fb    	ze        [w14], w0
     34ce:	00 00 40    	add.w     w0, w0, w0
     34d0:	80 00 78    	mov.w     w0, w1
-    34d2:	40 83 20    	mov.w     #0x834, w0
+    34d2:	c0 84 20    	mov.w     #0x84c, w0
     34d4:	40 40 90    	mov.b     [w0+4], w0
     34d6:	00 00 fb    	se        w0, w0
     34d8:	4f 00 de    	lsr.w     w0, #0xf, w0
@@ -7416,7 +7416,7 @@ void StandardRequests(void) {
 
 000034e4 <.LSM167>:
                                 if (USB_setup.wIndex.b[0]&0x80) {    // if the specified EP direction is IN...
-    34e4:	40 83 20    	mov.w     #0x834, w0
+    34e4:	c0 84 20    	mov.w     #0x84c, w0
     34e6:	40 40 90    	mov.b     [w0+4], w0
     34e8:	00 04 e0    	cp0.b     w0
     34ea:	16 00 3d    	bra       GE, 0x3518 <.L80>
@@ -7434,7 +7434,7 @@ void StandardRequests(void) {
 
 000034fc <.LSM169>:
                                         buf_desc_ptr->status = (USB_setup.bRequest==CLEAR_FEATURE) ? 0x00:0x84;
-    34fc:	40 83 20    	mov.w     #0x834, w0
+    34fc:	c0 84 20    	mov.w     #0x84c, w0
     34fe:	10 40 90    	mov.b     [w0+1], w0
     3500:	e1 4f 50    	sub.b     w0, #0x1, [w15]
     3502:	02 00 3a    	bra       NZ, 0x3508 <.L82>
@@ -7452,9 +7452,9 @@ void StandardRequests(void) {
 00003510 <.L81>:
                                     } else {
                                         USB_error_flags |= 0x01;    // set Request Error Flag
-    3510:	3c c8 bf    	mov.b     0x83c, WREG
+    3510:	54 c8 bf    	mov.b     0x854, WREG
     3512:	00 04 a0    	bset.b    w0, #0x0
-    3514:	3c e8 b7    	mov.b     WREG, 0x83c
+    3514:	54 e8 b7    	mov.b     WREG, 0x854
     3516:	15 00 37    	bra       0x3542 <.L79>
 
 00003518 <.L80>:
@@ -7472,7 +7472,7 @@ void StandardRequests(void) {
 
 00003528 <.LSM172>:
                                         buf_desc_ptr->status = (USB_setup.bRequest==CLEAR_FEATURE) ? 0x88:0x84;
-    3528:	40 83 20    	mov.w     #0x834, w0
+    3528:	c0 84 20    	mov.w     #0x84c, w0
     352a:	10 40 90    	mov.b     [w0+1], w0
     352c:	e1 4f 50    	sub.b     w0, #0x1, [w15]
     352e:	02 00 3a    	bra       NZ, 0x3534 <.L85>
@@ -7490,16 +7490,16 @@ void StandardRequests(void) {
 0000353c <.L84>:
                                     } else {
                                         USB_error_flags |= 0x01;    // set Request Error Flag
-    353c:	3c c8 bf    	mov.b     0x83c, WREG
+    353c:	54 c8 bf    	mov.b     0x854, WREG
     353e:	00 04 a0    	bset.b    w0, #0x0
-    3540:	3c e8 b7    	mov.b     WREG, 0x83c
+    3540:	54 e8 b7    	mov.b     WREG, 0x854
 
 00003542 <.L79>:
                                     }
                                 }
                             }
                             if (!(USB_error_flags&0x01)) {  // if there was no Request Error...
-    3542:	3c c8 bf    	mov.b     0x83c, WREG
+    3542:	54 c8 bf    	mov.b     0x854, WREG
     3544:	00 80 fb    	ze        w0, w0
     3546:	61 00 60    	and.w     w0, #0x1, w0
     3548:	00 00 e0    	cp0.w     w0
@@ -7525,9 +7525,9 @@ void StandardRequests(void) {
 0000355a <.L132>:
                         default:
                             USB_error_flags |= 0x01;        // set Request Error Flag
-    355a:	3c c8 bf    	mov.b     0x83c, WREG
+    355a:	54 c8 bf    	mov.b     0x854, WREG
     355c:	00 04 a0    	bset.b    w0, #0x0
-    355e:	3c e8 b7    	mov.b     WREG, 0x83c
+    355e:	54 e8 b7    	mov.b     WREG, 0x854
 
 00003560 <.L78>:
                     }
@@ -7537,9 +7537,9 @@ void StandardRequests(void) {
 00003562 <.L130>:
                 default:
                     USB_error_flags |= 0x01;                // set Request Error Flag
-    3562:	3c c8 bf    	mov.b     0x83c, WREG
+    3562:	54 c8 bf    	mov.b     0x854, WREG
     3564:	00 04 a0    	bset.b    w0, #0x0
-    3566:	3c e8 b7    	mov.b     WREG, 0x83c
+    3566:	54 e8 b7    	mov.b     WREG, 0x854
 
 00003568 <.LSM181>:
             }
@@ -7552,16 +7552,16 @@ void StandardRequests(void) {
 0000356c <.L33>:
         case SET_ADDRESS:
             if (USB_setup.wValue.b[0]>0x7F) {       // if new device address is illegal, send Request Error
-    356c:	40 83 20    	mov.w     #0x834, w0
+    356c:	c0 84 20    	mov.w     #0x84c, w0
     356e:	20 40 90    	mov.b     [w0+2], w0
     3570:	00 04 e0    	cp0.b     w0
     3572:	04 00 3d    	bra       GE, 0x357c <.L88>
 
 00003574 <.LSM183>:
                 USB_error_flags |= 0x01;            // set Request Error Flag
-    3574:	3c c8 bf    	mov.b     0x83c, WREG
+    3574:	54 c8 bf    	mov.b     0x854, WREG
     3576:	00 04 a0    	bset.b    w0, #0x0
-    3578:	3c e8 b7    	mov.b     WREG, 0x83c
+    3578:	54 e8 b7    	mov.b     WREG, 0x854
 
 0000357a <.LSM184>:
             } else {
@@ -7577,31 +7577,31 @@ void StandardRequests(void) {
     357a:	07 01 37    	bra       0x378a <.L29>
 
 0000357c <.L88>:
-    357c:	40 83 20    	mov.w     #0x834, w0
+    357c:	c0 84 20    	mov.w     #0x84c, w0
     357e:	90 40 78    	mov.b     [w0], w1
-    3580:	20 c8 21    	mov.w     #0x1c82, w0
+    3580:	c0 c8 21    	mov.w     #0x1c8c, w0
     3582:	01 48 78    	mov.b     w1, [w0]
 
 00003584 <.LSM186>:
-    3584:	40 83 20    	mov.w     #0x834, w0
+    3584:	c0 84 20    	mov.w     #0x84c, w0
     3586:	90 40 90    	mov.b     [w0+1], w1
-    3588:	30 c8 21    	mov.w     #0x1c83, w0
+    3588:	d0 c8 21    	mov.w     #0x1c8d, w0
     358a:	01 48 78    	mov.b     w1, [w0]
 
 0000358c <.LSM187>:
-    358c:	40 83 20    	mov.w     #0x834, w0
+    358c:	c0 84 20    	mov.w     #0x84c, w0
     358e:	10 00 90    	mov.w     [w0+2], w0
-    3590:	20 e4 88    	mov.w     w0, 0x1c84
+    3590:	70 e4 88    	mov.w     w0, 0x1c8e
 
 00003592 <.LSM188>:
-    3592:	40 83 20    	mov.w     #0x834, w0
+    3592:	c0 84 20    	mov.w     #0x84c, w0
     3594:	20 00 90    	mov.w     [w0+4], w0
-    3596:	30 e4 88    	mov.w     w0, 0x1c86
+    3596:	80 e4 88    	mov.w     w0, 0x1c90
 
 00003598 <.LSM189>:
-    3598:	40 83 20    	mov.w     #0x834, w0
+    3598:	c0 84 20    	mov.w     #0x84c, w0
     359a:	30 00 90    	mov.w     [w0+6], w0
-    359c:	40 e4 88    	mov.w     w0, 0x1c88
+    359c:	90 e4 88    	mov.w     w0, 0x1c92
 
 0000359e <.LSM190>:
     359e:	40 e0 21    	mov.w     #0x1e04, w0
@@ -7619,39 +7619,39 @@ void StandardRequests(void) {
 000035ac <.L34>:
         case GET_DESCRIPTOR:
             USB_request.setup.bmRequestType = USB_setup.bmRequestType;  // processing a GET_DESCRIPTOR request
-    35ac:	40 83 20    	mov.w     #0x834, w0
+    35ac:	c0 84 20    	mov.w     #0x84c, w0
     35ae:	90 40 78    	mov.b     [w0], w1
-    35b0:	20 c8 21    	mov.w     #0x1c82, w0
+    35b0:	c0 c8 21    	mov.w     #0x1c8c, w0
     35b2:	01 48 78    	mov.b     w1, [w0]
 
 000035b4 <.LSM194>:
             USB_request.setup.bRequest = USB_setup.bRequest;
-    35b4:	40 83 20    	mov.w     #0x834, w0
+    35b4:	c0 84 20    	mov.w     #0x84c, w0
     35b6:	90 40 90    	mov.b     [w0+1], w1
-    35b8:	30 c8 21    	mov.w     #0x1c83, w0
+    35b8:	d0 c8 21    	mov.w     #0x1c8d, w0
     35ba:	01 48 78    	mov.b     w1, [w0]
 
 000035bc <.LSM195>:
             USB_request.setup.wValue.w = USB_setup.wValue.w;
-    35bc:	40 83 20    	mov.w     #0x834, w0
+    35bc:	c0 84 20    	mov.w     #0x84c, w0
     35be:	10 00 90    	mov.w     [w0+2], w0
-    35c0:	20 e4 88    	mov.w     w0, 0x1c84
+    35c0:	70 e4 88    	mov.w     w0, 0x1c8e
 
 000035c2 <.LSM196>:
             USB_request.setup.wIndex.w = USB_setup.wIndex.w;
-    35c2:	40 83 20    	mov.w     #0x834, w0
+    35c2:	c0 84 20    	mov.w     #0x84c, w0
     35c4:	20 00 90    	mov.w     [w0+4], w0
-    35c6:	30 e4 88    	mov.w     w0, 0x1c86
+    35c6:	80 e4 88    	mov.w     w0, 0x1c90
 
 000035c8 <.LSM197>:
             USB_request.setup.wLength.w = USB_setup.wLength.w;
-    35c8:	40 83 20    	mov.w     #0x834, w0
+    35c8:	c0 84 20    	mov.w     #0x84c, w0
     35ca:	30 00 90    	mov.w     [w0+6], w0
-    35cc:	40 e4 88    	mov.w     w0, 0x1c88
+    35cc:	90 e4 88    	mov.w     w0, 0x1c92
 
 000035ce <.LSM198>:
             switch (USB_setup.wValue.b[1]) {
-    35ce:	40 83 20    	mov.w     #0x834, w0
+    35ce:	c0 84 20    	mov.w     #0x84c, w0
     35d0:	30 40 90    	mov.b     [w0+3], w0
     35d2:	00 80 fb    	ze        w0, w0
     35d4:	e2 0f 50    	sub.w     w0, #0x2, [w15]
@@ -7665,28 +7665,28 @@ void StandardRequests(void) {
                 case DEVICE:
                     USB_request.data_ptr = Device;
     35e0:	20 13 2a    	mov.w     #0xa132, w0
-    35e2:	50 e4 88    	mov.w     w0, 0x1c8a
+    35e2:	a0 e4 88    	mov.w     w0, 0x1c94
 
 000035e4 <.LSM200>:
                     USB_request.bytes_left.w = (unsigned int)USB_request.data_ptr[0];
-    35e4:	50 e4 80    	mov.w     0x1c8a, w0
+    35e4:	a0 e4 80    	mov.w     0x1c94, w0
     35e6:	10 40 78    	mov.b     [w0], w0
     35e8:	00 80 fb    	ze        w0, w0
-    35ea:	60 e4 88    	mov.w     w0, 0x1c8c
+    35ea:	b0 e4 88    	mov.w     w0, 0x1c96
 
 000035ec <.LSM201>:
                     if (USB_setup.wLength.w<USB_request.bytes_left.w) {
-    35ec:	40 83 20    	mov.w     #0x834, w0
+    35ec:	c0 84 20    	mov.w     #0x84c, w0
     35ee:	b0 00 90    	mov.w     [w0+6], w1
-    35f0:	60 e4 80    	mov.w     0x1c8c, w0
+    35f0:	b0 e4 80    	mov.w     0x1c96, w0
     35f2:	80 8f 50    	sub.w     w1, w0, [w15]
     35f4:	03 00 31    	bra       C, 0x35fc <.L94>
 
 000035f6 <.LSM202>:
                         USB_request.bytes_left.w = USB_setup.wLength.w;
-    35f6:	40 83 20    	mov.w     #0x834, w0
+    35f6:	c0 84 20    	mov.w     #0x84c, w0
     35f8:	30 00 90    	mov.w     [w0+6], w0
-    35fa:	60 e4 88    	mov.w     w0, 0x1c8c
+    35fa:	b0 e4 88    	mov.w     w0, 0x1c96
 
 000035fc <.L94>:
                     }
@@ -7700,7 +7700,7 @@ void StandardRequests(void) {
 00003600 <.L92>:
                 case CONFIGURATION:
                     switch (USB_setup.wValue.b[0]) {
-    3600:	40 83 20    	mov.w     #0x834, w0
+    3600:	c0 84 20    	mov.w     #0x84c, w0
     3602:	20 40 90    	mov.b     [w0+2], w0
     3604:	00 80 fb    	ze        w0, w0
     3606:	00 00 e0    	cp0.w     w0
@@ -7710,7 +7710,7 @@ void StandardRequests(void) {
                         case 0:
                             USB_request.data_ptr = Configuration1;
     360a:	40 14 2a    	mov.w     #0xa144, w0
-    360c:	50 e4 88    	mov.w     w0, 0x1c8a
+    360c:	a0 e4 88    	mov.w     w0, 0x1c94
 
 0000360e <.LSM207>:
                             break;
@@ -7719,14 +7719,14 @@ void StandardRequests(void) {
 00003610 <.L134>:
                         default:
                             USB_error_flags |= 0x01;    // set Request Error Flag
-    3610:	3c c8 bf    	mov.b     0x83c, WREG
+    3610:	54 c8 bf    	mov.b     0x854, WREG
     3612:	00 04 a0    	bset.b    w0, #0x0
-    3614:	3c e8 b7    	mov.b     WREG, 0x83c
+    3614:	54 e8 b7    	mov.b     WREG, 0x854
 
 00003616 <.L98>:
                     }
                     if (!(USB_error_flags&0x01)) {
-    3616:	3c c8 bf    	mov.b     0x83c, WREG
+    3616:	54 c8 bf    	mov.b     0x854, WREG
     3618:	00 80 fb    	ze        w0, w0
     361a:	61 00 60    	and.w     w0, #0x1, w0
     361c:	00 00 e0    	cp0.w     w0
@@ -7734,33 +7734,33 @@ void StandardRequests(void) {
 
 00003620 <.LSM210>:
                         USB_request.bytes_left.b[0] = USB_request.data_ptr[2];    // wTotalLength starting at an offset of 2
-    3620:	50 e4 80    	mov.w     0x1c8a, w0
+    3620:	a0 e4 80    	mov.w     0x1c94, w0
     3622:	00 80 e8    	inc2.w    w0, w0
     3624:	90 40 78    	mov.b     [w0], w1
-    3626:	c0 c8 21    	mov.w     #0x1c8c, w0
+    3626:	60 c9 21    	mov.w     #0x1c96, w0
     3628:	01 48 78    	mov.b     w1, [w0]
 
 0000362a <.LSM211>:
                         USB_request.bytes_left.b[1] = USB_request.data_ptr[3];
-    362a:	50 e4 80    	mov.w     0x1c8a, w0
+    362a:	a0 e4 80    	mov.w     0x1c94, w0
     362c:	63 00 40    	add.w     w0, #0x3, w0
     362e:	90 40 78    	mov.b     [w0], w1
-    3630:	d0 c8 21    	mov.w     #0x1c8d, w0
+    3630:	70 c9 21    	mov.w     #0x1c97, w0
     3632:	01 48 78    	mov.b     w1, [w0]
 
 00003634 <.LSM212>:
                         if (USB_setup.wLength.w<USB_request.bytes_left.w) {
-    3634:	40 83 20    	mov.w     #0x834, w0
+    3634:	c0 84 20    	mov.w     #0x84c, w0
     3636:	b0 00 90    	mov.w     [w0+6], w1
-    3638:	60 e4 80    	mov.w     0x1c8c, w0
+    3638:	b0 e4 80    	mov.w     0x1c96, w0
     363a:	80 8f 50    	sub.w     w1, w0, [w15]
     363c:	03 00 31    	bra       C, 0x3644 <.L100>
 
 0000363e <.LSM213>:
                             USB_request.bytes_left.w = USB_setup.wLength.w;
-    363e:	40 83 20    	mov.w     #0x834, w0
+    363e:	c0 84 20    	mov.w     #0x84c, w0
     3640:	30 00 90    	mov.w     [w0+6], w0
-    3642:	60 e4 88    	mov.w     w0, 0x1c8c
+    3642:	b0 e4 88    	mov.w     w0, 0x1c96
 
 00003644 <.L100>:
                         }
@@ -7775,7 +7775,7 @@ void StandardRequests(void) {
 00003648 <.L93>:
                 case STRING:
                     switch (USB_setup.wValue.b[0]) {
-    3648:	40 83 20    	mov.w     #0x834, w0
+    3648:	c0 84 20    	mov.w     #0x84c, w0
     364a:	20 40 90    	mov.b     [w0+2], w0
     364c:	00 80 fb    	ze        w0, w0
     364e:	e1 0f 50    	sub.w     w0, #0x1, [w15]
@@ -7789,7 +7789,7 @@ void StandardRequests(void) {
                         case 0:
                             USB_request.data_ptr = String0;
     365a:	60 15 2a    	mov.w     #0xa156, w0
-    365c:	50 e4 88    	mov.w     w0, 0x1c8a
+    365c:	a0 e4 88    	mov.w     w0, 0x1c94
 
 0000365e <.LSM218>:
                             break;
@@ -7799,7 +7799,7 @@ void StandardRequests(void) {
                         case 1:
                             USB_request.data_ptr = String1;
     3660:	a0 15 2a    	mov.w     #0xa15a, w0
-    3662:	50 e4 88    	mov.w     w0, 0x1c8a
+    3662:	a0 e4 88    	mov.w     w0, 0x1c94
 
 00003664 <.LSM220>:
                             break;
@@ -7809,7 +7809,7 @@ void StandardRequests(void) {
                         case 2:
                             USB_request.data_ptr = String2;
     3666:	40 17 2a    	mov.w     #0xa174, w0
-    3668:	50 e4 88    	mov.w     w0, 0x1c8a
+    3668:	a0 e4 88    	mov.w     w0, 0x1c94
 
 0000366a <.LSM222>:
                             break;
@@ -7818,14 +7818,14 @@ void StandardRequests(void) {
 0000366c <.L135>:
                         default:
                             USB_error_flags |= 0x01;    // set Request Error Flag
-    366c:	3c c8 bf    	mov.b     0x83c, WREG
+    366c:	54 c8 bf    	mov.b     0x854, WREG
     366e:	00 04 a0    	bset.b    w0, #0x0
-    3670:	3c e8 b7    	mov.b     WREG, 0x83c
+    3670:	54 e8 b7    	mov.b     WREG, 0x854
 
 00003672 <.L105>:
                     }
                     if (!(USB_error_flags&0x01)) {
-    3672:	3c c8 bf    	mov.b     0x83c, WREG
+    3672:	54 c8 bf    	mov.b     0x854, WREG
     3674:	00 80 fb    	ze        w0, w0
     3676:	61 00 60    	and.w     w0, #0x1, w0
     3678:	00 00 e0    	cp0.w     w0
@@ -7833,24 +7833,24 @@ void StandardRequests(void) {
 
 0000367c <.LSM225>:
                         USB_request.bytes_left.w = (unsigned int)USB_request.data_ptr[0];
-    367c:	50 e4 80    	mov.w     0x1c8a, w0
+    367c:	a0 e4 80    	mov.w     0x1c94, w0
     367e:	10 40 78    	mov.b     [w0], w0
     3680:	00 80 fb    	ze        w0, w0
-    3682:	60 e4 88    	mov.w     w0, 0x1c8c
+    3682:	b0 e4 88    	mov.w     w0, 0x1c96
 
 00003684 <.LSM226>:
                         if (USB_setup.wLength.w<USB_request.bytes_left.w) {
-    3684:	40 83 20    	mov.w     #0x834, w0
+    3684:	c0 84 20    	mov.w     #0x84c, w0
     3686:	b0 00 90    	mov.w     [w0+6], w1
-    3688:	60 e4 80    	mov.w     0x1c8c, w0
+    3688:	b0 e4 80    	mov.w     0x1c96, w0
     368a:	80 8f 50    	sub.w     w1, w0, [w15]
     368c:	03 00 31    	bra       C, 0x3694 <.L107>
 
 0000368e <.LSM227>:
                             USB_request.bytes_left.w = USB_setup.wLength.w;
-    368e:	40 83 20    	mov.w     #0x834, w0
+    368e:	c0 84 20    	mov.w     #0x84c, w0
     3690:	30 00 90    	mov.w     [w0+6], w0
-    3692:	60 e4 88    	mov.w     w0, 0x1c8c
+    3692:	b0 e4 88    	mov.w     w0, 0x1c96
 
 00003694 <.L107>:
                         }
@@ -7865,9 +7865,9 @@ void StandardRequests(void) {
 00003698 <.L133>:
                 default:
                     USB_error_flags |= 0x01;            // set Request Error Flag
-    3698:	3c c8 bf    	mov.b     0x83c, WREG
+    3698:	54 c8 bf    	mov.b     0x854, WREG
     369a:	00 04 a0    	bset.b    w0, #0x0
-    369c:	3c e8 b7    	mov.b     WREG, 0x83c
+    369c:	54 e8 b7    	mov.b     WREG, 0x854
 
 0000369e <.LSM231>:
             }
@@ -7881,7 +7881,7 @@ void StandardRequests(void) {
         case GET_CONFIGURATION:
             BD[EP0IN].address[0] = USB_curr_config;          // copy current device configuration to EP0 IN buffer
     36a2:	30 f0 80    	mov.w     0x1e06, w0
-    36a4:	d1 83 20    	mov.w     #0x83d, w1
+    36a4:	51 85 20    	mov.w     #0x855, w1
     36a6:	91 40 78    	mov.b     [w1], w1
     36a8:	01 48 78    	mov.b     w1, [w0]
 
@@ -7904,7 +7904,7 @@ void StandardRequests(void) {
 000036b8 <.L36>:
         case SET_CONFIGURATION:
             if (USB_setup.wValue.b[0]<=NUM_CONFIGURATIONS) {
-    36b8:	40 83 20    	mov.w     #0x834, w0
+    36b8:	c0 84 20    	mov.w     #0x84c, w0
     36ba:	20 40 90    	mov.b     [w0+2], w0
     36bc:	e1 4f 50    	sub.b     w0, #0x1, [w15]
     36be:	22 00 3e    	bra       GTU, 0x3704 <.L108>
@@ -7939,10 +7939,10 @@ void StandardRequests(void) {
 
 000036de <.LSM241>:
                 switch (USB_curr_config = USB_setup.wValue.b[0]) {
-    36de:	40 83 20    	mov.w     #0x834, w0
+    36de:	c0 84 20    	mov.w     #0x84c, w0
     36e0:	20 40 90    	mov.b     [w0+2], w0
-    36e2:	3d e8 b7    	mov.b     WREG, 0x83d
-    36e4:	3d c8 bf    	mov.b     0x83d, WREG
+    36e2:	55 e8 b7    	mov.b     WREG, 0x855
+    36e4:	55 c8 bf    	mov.b     0x855, WREG
     36e6:	00 80 fb    	ze        w0, w0
     36e8:	00 00 e0    	cp0.w     w0
     36ea:	03 00 3a    	bra       NZ, 0x36f2 <.L136>
@@ -7951,7 +7951,7 @@ void StandardRequests(void) {
                     case 0:
                         USB_USWSTAT = ADDRESS_STATE;
     36ec:	20 c0 b3    	mov.b     #0x2, w0
-    36ee:	40 e8 b7    	mov.b     WREG, 0x840
+    36ee:	58 e8 b7    	mov.b     WREG, 0x858
 
 000036f0 <.LSM243>:
 #ifdef SHOW_ENUM_STATUS
@@ -7965,7 +7965,7 @@ void StandardRequests(void) {
                     default:
                         USB_USWSTAT = CONFIG_STATE;
     36f2:	30 c0 b3    	mov.b     #0x3, w0
-    36f4:	40 e8 b7    	mov.b     WREG, 0x840
+    36f4:	58 e8 b7    	mov.b     WREG, 0x858
 
 000036f6 <.L113>:
 #ifdef SHOW_ENUM_STATUS
@@ -7992,9 +7992,9 @@ void StandardRequests(void) {
     3702:	43 00 37    	bra       0x378a <.L29>
 
 00003704 <.L108>:
-    3704:	3c c8 bf    	mov.b     0x83c, WREG
+    3704:	54 c8 bf    	mov.b     0x854, WREG
     3706:	00 04 a0    	bset.b    w0, #0x0
-    3708:	3c e8 b7    	mov.b     WREG, 0x83c
+    3708:	54 e8 b7    	mov.b     WREG, 0x854
 
 0000370a <.LSM249>:
     370a:	3f 00 37    	bra       0x378a <.L29>
@@ -8002,7 +8002,7 @@ void StandardRequests(void) {
 0000370c <.L37>:
         case GET_INTERFACE:
             switch (USB_USWSTAT) {
-    370c:	40 c8 bf    	mov.b     0x840, WREG
+    370c:	58 c8 bf    	mov.b     0x858, WREG
     370e:	00 80 fb    	ze        w0, w0
     3710:	e3 0f 50    	sub.w     w0, #0x3, [w15]
     3712:	13 00 3a    	bra       NZ, 0x373a <.L137>
@@ -8010,7 +8010,7 @@ void StandardRequests(void) {
 00003714 <.LSM251>:
                 case CONFIG_STATE:
                     if (USB_setup.wIndex.b[0]<NUM_INTERFACES) {
-    3714:	40 83 20    	mov.w     #0x834, w0
+    3714:	c0 84 20    	mov.w     #0x84c, w0
     3716:	40 40 90    	mov.b     [w0+4], w0
     3718:	00 04 e0    	cp0.b     w0
     371a:	0a 00 3a    	bra       NZ, 0x3730 <.L117>
@@ -8037,9 +8037,9 @@ void StandardRequests(void) {
 00003730 <.L117>:
                     } else {
                         USB_error_flags |= 0x01;        // set Request Error Flag
-    3730:	3c c8 bf    	mov.b     0x83c, WREG
+    3730:	54 c8 bf    	mov.b     0x854, WREG
     3732:	00 04 a0    	bset.b    w0, #0x0
-    3734:	3c e8 b7    	mov.b     WREG, 0x83c
+    3734:	54 e8 b7    	mov.b     WREG, 0x854
 
 00003736 <.L118>:
                     }
@@ -8054,9 +8054,9 @@ void StandardRequests(void) {
     3738:	28 00 37    	bra       0x378a <.L29>
 
 0000373a <.L137>:
-    373a:	3c c8 bf    	mov.b     0x83c, WREG
+    373a:	54 c8 bf    	mov.b     0x854, WREG
     373c:	00 04 a0    	bset.b    w0, #0x0
-    373e:	3c e8 b7    	mov.b     WREG, 0x83c
+    373e:	54 e8 b7    	mov.b     WREG, 0x854
 
 00003740 <.LSM259>:
     3740:	24 00 37    	bra       0x378a <.L29>
@@ -8064,7 +8064,7 @@ void StandardRequests(void) {
 00003742 <.L38>:
         case SET_INTERFACE:
             switch (USB_USWSTAT) {
-    3742:	40 c8 bf    	mov.b     0x840, WREG
+    3742:	58 c8 bf    	mov.b     0x858, WREG
     3744:	00 80 fb    	ze        w0, w0
     3746:	e3 0f 50    	sub.w     w0, #0x3, [w15]
     3748:	19 00 3a    	bra       NZ, 0x377c <.L138>
@@ -8072,14 +8072,14 @@ void StandardRequests(void) {
 0000374a <.LSM261>:
                 case CONFIG_STATE:
                     if (USB_setup.wIndex.b[0]<NUM_INTERFACES) {
-    374a:	40 83 20    	mov.w     #0x834, w0
+    374a:	c0 84 20    	mov.w     #0x84c, w0
     374c:	40 40 90    	mov.b     [w0+4], w0
     374e:	00 04 e0    	cp0.b     w0
     3750:	10 00 3a    	bra       NZ, 0x3772 <.L122>
 
 00003752 <.LSM262>:
                         switch (USB_setup.wValue.b[0]) {
-    3752:	40 83 20    	mov.w     #0x834, w0
+    3752:	c0 84 20    	mov.w     #0x84c, w0
     3754:	20 40 90    	mov.b     [w0+2], w0
     3756:	00 80 fb    	ze        w0, w0
     3758:	00 00 e0    	cp0.w     w0
@@ -8105,18 +8105,18 @@ void StandardRequests(void) {
 0000376a <.L139>:
                             default:
                                 USB_error_flags |= 0x01;    // set Request Error Flag
-    376a:	3c c8 bf    	mov.b     0x83c, WREG
+    376a:	54 c8 bf    	mov.b     0x854, WREG
     376c:	00 04 a0    	bset.b    w0, #0x0
-    376e:	3c e8 b7    	mov.b     WREG, 0x83c
+    376e:	54 e8 b7    	mov.b     WREG, 0x854
     3770:	03 00 37    	bra       0x3778 <.L126>
 
 00003772 <.L122>:
                         }
                     } else {
                         USB_error_flags |= 0x01;        // set Request Error Flag
-    3772:	3c c8 bf    	mov.b     0x83c, WREG
+    3772:	54 c8 bf    	mov.b     0x854, WREG
     3774:	00 04 a0    	bset.b    w0, #0x0
-    3776:	3c e8 b7    	mov.b     WREG, 0x83c
+    3776:	54 e8 b7    	mov.b     WREG, 0x854
 
 00003778 <.L126>:
                     }
@@ -8131,9 +8131,9 @@ void StandardRequests(void) {
     377a:	07 00 37    	bra       0x378a <.L29>
 
 0000377c <.L138>:
-    377c:	3c c8 bf    	mov.b     0x83c, WREG
+    377c:	54 c8 bf    	mov.b     0x854, WREG
     377e:	00 04 a0    	bset.b    w0, #0x0
-    3780:	3c e8 b7    	mov.b     WREG, 0x83c
+    3780:	54 e8 b7    	mov.b     WREG, 0x854
 
 00003782 <.LSM271>:
     3782:	03 00 37    	bra       0x378a <.L29>
@@ -8143,9 +8143,9 @@ void StandardRequests(void) {
         case SYNCH_FRAME:
         default:
             USB_error_flags |= 0x01;                    // set Request Error Flag
-    3784:	3c c8 bf    	mov.b     0x83c, WREG
+    3784:	54 c8 bf    	mov.b     0x854, WREG
     3786:	00 04 a0    	bset.b    w0, #0x0
-    3788:	3c e8 b7    	mov.b     WREG, 0x83c
+    3788:	54 e8 b7    	mov.b     WREG, 0x854
 
 0000378a <.L29>:
     }
@@ -8160,7 +8160,7 @@ void ProcessInToken(void) {
 
 00003790 <.LSM275>:
     switch (USB_USTAT&0xF0) {    // extract the EP bits
-    3790:	3f c8 bf    	mov.b     0x83f, WREG
+    3790:	57 c8 bf    	mov.b     0x857, WREG
     3792:	80 80 fb    	ze        w0, w1
     3794:	00 0f 20    	mov.w     #0xf0, w0
     3796:	00 80 60    	and.w     w1, w0, w0
@@ -8170,7 +8170,7 @@ void ProcessInToken(void) {
 0000379c <.LSM276>:
         case EP0:
             switch (USB_request.setup.bmRequestType&0x60) {   // extract request type bits
-    379c:	20 c8 21    	mov.w     #0x1c82, w0
+    379c:	c0 c8 21    	mov.w     #0x1c8c, w0
     379e:	10 40 78    	mov.b     [w0], w0
     37a0:	80 80 fb    	ze        w0, w1
     37a2:	00 06 20    	mov.w     #0x60, w0
@@ -8187,7 +8187,7 @@ void ProcessInToken(void) {
 000037b6 <.LSM277>:
                 case STANDARD_REQ:
                     switch (USB_request.setup.bRequest) {
-    37b6:	30 c8 21    	mov.w     #0x1c83, w0
+    37b6:	d0 c8 21    	mov.w     #0x1c8d, w0
     37b8:	10 40 78    	mov.b     [w0], w0
     37ba:	00 80 fb    	ze        w0, w0
     37bc:	e5 0f 50    	sub.w     w0, #0x5, [w15]
@@ -8221,7 +8221,7 @@ void ProcessInToken(void) {
     37c4:	13 00 37    	bra       0x37ec <.L143>
 
 000037c6 <.L148>:
-    37c6:	40 c8 21    	mov.w     #0x1c84, w0
+    37c6:	e0 c8 21    	mov.w     #0x1c8e, w0
     37c8:	10 40 78    	mov.b     [w0], w0
     37ca:	00 80 fb    	ze        w0, w0
     37cc:	b0 24 88    	mov.w     w0, 0x496
@@ -8231,14 +8231,14 @@ void ProcessInToken(void) {
 
 000037d4 <.LSM280>:
     37d4:	10 c0 b3    	mov.b     #0x1, w0
-    37d6:	40 e8 b7    	mov.b     WREG, 0x840
+    37d6:	58 e8 b7    	mov.b     WREG, 0x858
 
 000037d8 <.LSM281>:
     37d8:	02 00 37    	bra       0x37de <.L152>
 
 000037da <.L153>:
     37da:	20 c0 b3    	mov.b     #0x2, w0
-    37dc:	40 e8 b7    	mov.b     WREG, 0x840
+    37dc:	58 e8 b7    	mov.b     WREG, 0x858
 
 000037de <.L152>:
     37de:	02 00 37    	bra       0x37e4 <.L147>
@@ -8288,7 +8288,7 @@ void ProcessOutToken(void) {
 
 000037f8 <.LSM293>:
     switch (USB_USTAT&0xF0) {    // extract the EP bits
-    37f8:	3f c8 bf    	mov.b     0x83f, WREG
+    37f8:	57 c8 bf    	mov.b     0x857, WREG
     37fa:	80 80 fb    	ze        w0, w1
     37fc:	00 0f 20    	mov.w     #0xf0, w0
     37fe:	00 80 60    	and.w     w1, w0, w0
@@ -8298,7 +8298,7 @@ void ProcessOutToken(void) {
 00003804 <.LSM294>:
         case EP0:
             switch (USB_request.setup.bmRequestType&0x60) {   // extract request type bits
-    3804:	20 c8 21    	mov.w     #0x1c82, w0
+    3804:	c0 c8 21    	mov.w     #0x1c8c, w0
     3806:	10 40 78    	mov.b     [w0], w0
     3808:	80 80 fb    	ze        w0, w1
     380a:	00 06 20    	mov.w     #0x60, w0
@@ -8374,30 +8374,30 @@ void SendDataPacket(void) {
     BYTE packet_length, n;
 
     if (USB_request.bytes_left.w<MAX_PACKET_SIZE) {
-    3844:	61 e4 80    	mov.w     0x1c8c, w1
+    3844:	b1 e4 80    	mov.w     0x1c96, w1
     3846:	f0 03 20    	mov.w     #0x3f, w0
     3848:	80 8f 50    	sub.w     w1, w0, [w15]
     384a:	0b 00 3e    	bra       GTU, 0x3862 <.L166>
 
 0000384c <.LSM307>:
         packet_length = (BYTE)USB_request.bytes_left.w;
-    384c:	60 e4 80    	mov.w     0x1c8c, w0
+    384c:	b0 e4 80    	mov.w     0x1c96, w0
     384e:	00 4f 78    	mov.b     w0, [w14]
 
 00003850 <.LSM308>:
         USB_request.bytes_left.w = 0;
     3850:	00 00 eb    	clr.w     w0
-    3852:	60 e4 88    	mov.w     w0, 0x1c8c
+    3852:	b0 e4 88    	mov.w     w0, 0x1c96
 
 00003854 <.LSM309>:
         USB_request.setup.bmRequestType = NO_REQUEST;    // sending a short packet, so clear device request
-    3854:	20 c8 21    	mov.w     #0x1c82, w0
+    3854:	c0 c8 21    	mov.w     #0x1c8c, w0
     3856:	80 c0 eb    	setm.b    w1
     3858:	01 48 78    	mov.b     w1, [w0]
 
 0000385a <.LSM310>:
         USB_request.setup.bRequest = NO_REQUEST;
-    385a:	30 c8 21    	mov.w     #0x1c83, w0
+    385a:	d0 c8 21    	mov.w     #0x1c8d, w0
     385c:	80 c0 eb    	setm.b    w1
     385e:	01 48 78    	mov.b     w1, [w0]
     3860:	05 00 37    	bra       0x386c <.L167>
@@ -8410,9 +8410,9 @@ void SendDataPacket(void) {
 
 00003866 <.LSM312>:
         USB_request.bytes_left.w -= MAX_PACKET_SIZE;
-    3866:	60 e4 80    	mov.w     0x1c8c, w0
+    3866:	b0 e4 80    	mov.w     0x1c96, w0
     3868:	00 04 b1    	sub.w     #0x40, w0
-    386a:	60 e4 88    	mov.w     w0, 0x1c8c
+    386a:	b0 e4 88    	mov.w     w0, 0x1c96
 
 0000386c <.L167>:
     }
@@ -8427,11 +8427,11 @@ void SendDataPacket(void) {
     3874:	1e 40 90    	mov.b     [w14+1], w0
     3876:	00 80 fb    	ze        w0, w0
     3878:	80 80 40    	add.w     w1, w0, w1
-    387a:	50 e4 80    	mov.w     0x1c8a, w0
+    387a:	a0 e4 80    	mov.w     0x1c94, w0
     387c:	10 41 78    	mov.b     [w0], w2
     387e:	82 48 78    	mov.b     w2, [w1]
     3880:	00 00 e8    	inc.w     w0, w0
-    3882:	50 e4 88    	mov.w     w0, 0x1c8a
+    3882:	a0 e4 88    	mov.w     w0, 0x1c94
 
 00003884 <.LSM315>:
     3884:	1e 40 90    	mov.b     [w14+1], w0
@@ -8607,7 +8607,7 @@ void __attribute__((interrupt, auto_psv)) _T1Interrupt(void) {
 
 00003944 <.LSM13>:
     timer_serviceInterrupt(&timer1);
-    3944:	e0 c8 21    	mov.w     #0x1c8e, w0
+    3944:	80 c9 21    	mov.w     #0x1c98, w0
     3946:	c9 ff 07    	rcall     0x38da <_timer_serviceInterrupt>
 
 00003948 <.LSM14>:
@@ -8640,7 +8640,7 @@ void __attribute__((interrupt, auto_psv)) _T2Interrupt(void) {
 
 00003972 <.LSM16>:
     timer_serviceInterrupt(&timer2);
-    3972:	40 ca 21    	mov.w     #0x1ca4, w0
+    3972:	e0 ca 21    	mov.w     #0x1cae, w0
     3974:	b2 ff 07    	rcall     0x38da <_timer_serviceInterrupt>
 
 00003976 <.LSM17>:
@@ -8673,7 +8673,7 @@ void __attribute__((interrupt, auto_psv)) _T3Interrupt(void) {
 
 000039a0 <.LSM19>:
     timer_serviceInterrupt(&timer3);
-    39a0:	a0 cb 21    	mov.w     #0x1cba, w0
+    39a0:	40 cc 21    	mov.w     #0x1cc4, w0
     39a2:	9b ff 07    	rcall     0x38da <_timer_serviceInterrupt>
 
 000039a4 <.LSM20>:
@@ -8706,7 +8706,7 @@ void __attribute__((interrupt, auto_psv)) _T4Interrupt(void) {
 
 000039ce <.LSM22>:
     timer_serviceInterrupt(&timer4);
-    39ce:	00 cd 21    	mov.w     #0x1cd0, w0
+    39ce:	a0 cd 21    	mov.w     #0x1cda, w0
     39d0:	84 ff 07    	rcall     0x38da <_timer_serviceInterrupt>
 
 000039d2 <.LSM23>:
@@ -8739,7 +8739,7 @@ void __attribute__((interrupt, auto_psv)) _T5Interrupt(void) {
 
 000039fc <.LSM25>:
     timer_serviceInterrupt(&timer5);
-    39fc:	60 ce 21    	mov.w     #0x1ce6, w0
+    39fc:	00 cf 21    	mov.w     #0x1cf0, w0
     39fe:	6d ff 07    	rcall     0x38da <_timer_serviceInterrupt>
 
 00003a00 <.LSM26>:
@@ -8770,7 +8770,7 @@ void init_timer(void) {
     3a20:	03 10 20    	mov.w     #0x100, w3
     3a22:	22 10 20    	mov.w     #0x102, w2
     3a24:	41 10 20    	mov.w     #0x104, w1
-    3a26:	e0 c8 21    	mov.w     #0x1c8e, w0
+    3a26:	80 c9 21    	mov.w     #0x1c98, w0
     3a28:	33 00 07    	rcall     0x3a90 <_timer_init>
     3a2a:	8f 87 e9    	dec2.w    w15, w15
 
@@ -8786,7 +8786,7 @@ void init_timer(void) {
     3a38:	63 10 20    	mov.w     #0x106, w3
     3a3a:	c2 10 20    	mov.w     #0x10c, w2
     3a3c:	01 11 20    	mov.w     #0x110, w1
-    3a3e:	40 ca 21    	mov.w     #0x1ca4, w0
+    3a3e:	e0 ca 21    	mov.w     #0x1cae, w0
     3a40:	27 00 07    	rcall     0x3a90 <_timer_init>
     3a42:	8f 87 e9    	dec2.w    w15, w15
 
@@ -8802,7 +8802,7 @@ void init_timer(void) {
     3a50:	a3 10 20    	mov.w     #0x10a, w3
     3a52:	e2 10 20    	mov.w     #0x10e, w2
     3a54:	21 11 20    	mov.w     #0x112, w1
-    3a56:	a0 cb 21    	mov.w     #0x1cba, w0
+    3a56:	40 cc 21    	mov.w     #0x1cc4, w0
     3a58:	1b 00 07    	rcall     0x3a90 <_timer_init>
     3a5a:	8f 87 e9    	dec2.w    w15, w15
 
@@ -8818,7 +8818,7 @@ void init_timer(void) {
     3a68:	43 11 20    	mov.w     #0x114, w3
     3a6a:	a2 11 20    	mov.w     #0x11a, w2
     3a6c:	e1 11 20    	mov.w     #0x11e, w1
-    3a6e:	00 cd 21    	mov.w     #0x1cd0, w0
+    3a6e:	a0 cd 21    	mov.w     #0x1cda, w0
     3a70:	0f 00 07    	rcall     0x3a90 <_timer_init>
     3a72:	8f 87 e9    	dec2.w    w15, w15
 
@@ -8834,7 +8834,7 @@ void init_timer(void) {
     3a80:	83 11 20    	mov.w     #0x118, w3
     3a82:	c2 11 20    	mov.w     #0x11c, w2
     3a84:	01 12 20    	mov.w     #0x120, w1
-    3a86:	60 ce 21    	mov.w     #0x1ce6, w0
+    3a86:	00 cf 21    	mov.w     #0x1cf0, w0
     3a88:	03 00 07    	rcall     0x3a90 <_timer_init>
     3a8a:	8f 87 e9    	dec2.w    w15, w15
 
@@ -9145,7 +9145,7 @@ float timer_period(_TIMER *self) {
     return timer_multipliers[prescalar]*((float)peek(self->PRx)+1.);
     3bf6:	1e 00 78    	mov.w     [w14], w0
     3bf8:	c2 00 dd    	sl.w      w0, #0x2, w1
-    3bfa:	20 d8 21    	mov.w     #0x1d82, w0
+    3bfa:	c0 d8 21    	mov.w     #0x1d8c, w0
     3bfc:	00 80 40    	add.w     w1, w0, w0
     3bfe:	10 04 be    	mov.d     [w0], w8
     3c00:	1e 00 90    	mov.w     [w14+2], w0
@@ -9232,7 +9232,7 @@ float timer_time(_TIMER *self) {
     return timer_multipliers[prescalar]*((float)peek(self->PRx)+1.);
     3c60:	1e 00 78    	mov.w     [w14], w0
     3c62:	c2 00 dd    	sl.w      w0, #0x2, w1
-    3c64:	20 d8 21    	mov.w     #0x1d82, w0
+    3c64:	c0 d8 21    	mov.w     #0x1d8c, w0
     3c66:	00 80 40    	add.w     w1, w0, w0
     3c68:	10 04 be    	mov.d     [w0], w8
     3c6a:	1e 00 90    	mov.w     [w14+2], w0
@@ -9721,7 +9721,7 @@ void init_pin(void) {
     3e76:	80 01 eb    	clr.w     w3
     3e78:	82 2d 20    	mov.w     #0x2d8, w2
     3e7a:	a1 2d 20    	mov.w     #0x2da, w1
-    3e7c:	a0 a4 21    	mov.w     #0x1a4a, w0
+    3e7c:	40 a5 21    	mov.w     #0x1a54, w0
     3e7e:	08 01 07    	rcall     0x4090 <_pin_init>
     3e80:	8f 87 e9    	dec2.w    w15, w15
 
@@ -9737,7 +9737,7 @@ void init_pin(void) {
     3e8e:	80 01 eb    	clr.w     w3
     3e90:	82 2d 20    	mov.w     #0x2d8, w2
     3e92:	a1 2d 20    	mov.w     #0x2da, w1
-    3e94:	00 a6 21    	mov.w     #0x1a60, w0
+    3e94:	a0 a6 21    	mov.w     #0x1a6a, w0
     3e96:	fc 00 07    	rcall     0x4090 <_pin_init>
     3e98:	8f 87 e9    	dec2.w    w15, w15
 
@@ -9753,7 +9753,7 @@ void init_pin(void) {
     3ea6:	80 01 eb    	clr.w     w3
     3ea8:	82 2e 20    	mov.w     #0x2e8, w2
     3eaa:	a1 2e 20    	mov.w     #0x2ea, w1
-    3eac:	60 a7 21    	mov.w     #0x1a76, w0
+    3eac:	00 a8 21    	mov.w     #0x1a80, w0
     3eae:	f0 00 07    	rcall     0x4090 <_pin_init>
     3eb0:	8f 87 e9    	dec2.w    w15, w15
 
@@ -9769,7 +9769,7 @@ void init_pin(void) {
     3ebe:	80 01 eb    	clr.w     w3
     3ec0:	82 2e 20    	mov.w     #0x2e8, w2
     3ec2:	a1 2e 20    	mov.w     #0x2ea, w1
-    3ec4:	c0 a8 21    	mov.w     #0x1a8c, w0
+    3ec4:	60 a9 21    	mov.w     #0x1a96, w0
     3ec6:	e4 00 07    	rcall     0x4090 <_pin_init>
     3ec8:	8f 87 e9    	dec2.w    w15, w15
 
@@ -9785,7 +9785,7 @@ void init_pin(void) {
     3ed6:	23 4e 20    	mov.w     #0x4e2, w3
     3ed8:	82 2c 20    	mov.w     #0x2c8, w2
     3eda:	a1 2c 20    	mov.w     #0x2ca, w1
-    3edc:	20 aa 21    	mov.w     #0x1aa2, w0
+    3edc:	c0 aa 21    	mov.w     #0x1aac, w0
     3ede:	d8 00 07    	rcall     0x4090 <_pin_init>
     3ee0:	8f 87 e9    	dec2.w    w15, w15
 
@@ -9801,7 +9801,7 @@ void init_pin(void) {
     3eee:	80 01 eb    	clr.w     w3
     3ef0:	82 2e 20    	mov.w     #0x2e8, w2
     3ef2:	a1 2e 20    	mov.w     #0x2ea, w1
-    3ef4:	80 ab 21    	mov.w     #0x1ab8, w0
+    3ef4:	20 ac 21    	mov.w     #0x1ac2, w0
     3ef6:	cc 00 07    	rcall     0x4090 <_pin_init>
     3ef8:	8f 87 e9    	dec2.w    w15, w15
 
@@ -9817,7 +9817,7 @@ void init_pin(void) {
     3f06:	80 01 eb    	clr.w     w3
     3f08:	82 2d 20    	mov.w     #0x2d8, w2
     3f0a:	a1 2d 20    	mov.w     #0x2da, w1
-    3f0c:	e0 ac 21    	mov.w     #0x1ace, w0
+    3f0c:	80 ad 21    	mov.w     #0x1ad8, w0
     3f0e:	c0 00 07    	rcall     0x4090 <_pin_init>
     3f10:	8f 87 e9    	dec2.w    w15, w15
 
@@ -9833,7 +9833,7 @@ void init_pin(void) {
     3f1e:	80 01 eb    	clr.w     w3
     3f20:	82 2d 20    	mov.w     #0x2d8, w2
     3f22:	a1 2d 20    	mov.w     #0x2da, w1
-    3f24:	40 ae 21    	mov.w     #0x1ae4, w0
+    3f24:	e0 ae 21    	mov.w     #0x1aee, w0
     3f26:	b4 00 07    	rcall     0x4090 <_pin_init>
     3f28:	8f 87 e9    	dec2.w    w15, w15
 
@@ -9849,7 +9849,7 @@ void init_pin(void) {
     3f36:	80 01 eb    	clr.w     w3
     3f38:	82 2d 20    	mov.w     #0x2d8, w2
     3f3a:	a1 2d 20    	mov.w     #0x2da, w1
-    3f3c:	a0 af 21    	mov.w     #0x1afa, w0
+    3f3c:	40 b0 21    	mov.w     #0x1b04, w0
     3f3e:	a8 00 07    	rcall     0x4090 <_pin_init>
     3f40:	8f 87 e9    	dec2.w    w15, w15
 
@@ -9865,7 +9865,7 @@ void init_pin(void) {
     3f4e:	80 01 eb    	clr.w     w3
     3f50:	82 2d 20    	mov.w     #0x2d8, w2
     3f52:	a1 2d 20    	mov.w     #0x2da, w1
-    3f54:	00 b1 21    	mov.w     #0x1b10, w0
+    3f54:	a0 b1 21    	mov.w     #0x1b1a, w0
     3f56:	9c 00 07    	rcall     0x4090 <_pin_init>
     3f58:	8f 87 e9    	dec2.w    w15, w15
 
@@ -9881,7 +9881,7 @@ void init_pin(void) {
     3f66:	80 01 eb    	clr.w     w3
     3f68:	82 2d 20    	mov.w     #0x2d8, w2
     3f6a:	a1 2d 20    	mov.w     #0x2da, w1
-    3f6c:	60 b2 21    	mov.w     #0x1b26, w0
+    3f6c:	00 b3 21    	mov.w     #0x1b30, w0
     3f6e:	90 00 07    	rcall     0x4090 <_pin_init>
     3f70:	8f 87 e9    	dec2.w    w15, w15
 
@@ -9897,7 +9897,7 @@ void init_pin(void) {
     3f7e:	80 01 eb    	clr.w     w3
     3f80:	82 2d 20    	mov.w     #0x2d8, w2
     3f82:	a1 2d 20    	mov.w     #0x2da, w1
-    3f84:	c0 b3 21    	mov.w     #0x1b3c, w0
+    3f84:	60 b4 21    	mov.w     #0x1b46, w0
     3f86:	84 00 07    	rcall     0x4090 <_pin_init>
     3f88:	8f 87 e9    	dec2.w    w15, w15
 
@@ -9913,7 +9913,7 @@ void init_pin(void) {
     3f96:	80 01 eb    	clr.w     w3
     3f98:	82 2d 20    	mov.w     #0x2d8, w2
     3f9a:	a1 2d 20    	mov.w     #0x2da, w1
-    3f9c:	20 b5 21    	mov.w     #0x1b52, w0
+    3f9c:	c0 b5 21    	mov.w     #0x1b5c, w0
     3f9e:	78 00 07    	rcall     0x4090 <_pin_init>
     3fa0:	8f 87 e9    	dec2.w    w15, w15
 
@@ -9929,7 +9929,7 @@ void init_pin(void) {
     3fae:	80 01 eb    	clr.w     w3
     3fb0:	82 2d 20    	mov.w     #0x2d8, w2
     3fb2:	a1 2d 20    	mov.w     #0x2da, w1
-    3fb4:	80 b6 21    	mov.w     #0x1b68, w0
+    3fb4:	20 b7 21    	mov.w     #0x1b72, w0
     3fb6:	6c 00 07    	rcall     0x4090 <_pin_init>
     3fb8:	8f 87 e9    	dec2.w    w15, w15
 
@@ -9945,7 +9945,7 @@ void init_pin(void) {
     3fc6:	23 4e 20    	mov.w     #0x4e2, w3
     3fc8:	82 2c 20    	mov.w     #0x2c8, w2
     3fca:	a1 2c 20    	mov.w     #0x2ca, w1
-    3fcc:	c0 be 21    	mov.w     #0x1bec, w0
+    3fcc:	60 bf 21    	mov.w     #0x1bf6, w0
     3fce:	60 00 07    	rcall     0x4090 <_pin_init>
     3fd0:	8f 87 e9    	dec2.w    w15, w15
 
@@ -9961,7 +9961,7 @@ void init_pin(void) {
     3fde:	23 4e 20    	mov.w     #0x4e2, w3
     3fe0:	82 2c 20    	mov.w     #0x2c8, w2
     3fe2:	a1 2c 20    	mov.w     #0x2ca, w1
-    3fe4:	60 bd 21    	mov.w     #0x1bd6, w0
+    3fe4:	00 be 21    	mov.w     #0x1be0, w0
     3fe6:	54 00 07    	rcall     0x4090 <_pin_init>
     3fe8:	8f 87 e9    	dec2.w    w15, w15
 
@@ -9977,7 +9977,7 @@ void init_pin(void) {
     3ff6:	23 4e 20    	mov.w     #0x4e2, w3
     3ff8:	82 2c 20    	mov.w     #0x2c8, w2
     3ffa:	a1 2c 20    	mov.w     #0x2ca, w1
-    3ffc:	00 bc 21    	mov.w     #0x1bc0, w0
+    3ffc:	a0 bc 21    	mov.w     #0x1bca, w0
     3ffe:	48 00 07    	rcall     0x4090 <_pin_init>
     4000:	8f 87 e9    	dec2.w    w15, w15
 
@@ -9993,7 +9993,7 @@ void init_pin(void) {
     400e:	23 4e 20    	mov.w     #0x4e2, w3
     4010:	82 2c 20    	mov.w     #0x2c8, w2
     4012:	a1 2c 20    	mov.w     #0x2ca, w1
-    4014:	a0 ba 21    	mov.w     #0x1baa, w0
+    4014:	40 bb 21    	mov.w     #0x1bb4, w0
     4016:	3c 00 07    	rcall     0x4090 <_pin_init>
     4018:	8f 87 e9    	dec2.w    w15, w15
 
@@ -10009,7 +10009,7 @@ void init_pin(void) {
     4026:	23 4e 20    	mov.w     #0x4e2, w3
     4028:	82 2c 20    	mov.w     #0x2c8, w2
     402a:	a1 2c 20    	mov.w     #0x2ca, w1
-    402c:	40 b9 21    	mov.w     #0x1b94, w0
+    402c:	e0 b9 21    	mov.w     #0x1b9e, w0
     402e:	30 00 07    	rcall     0x4090 <_pin_init>
     4030:	8f 87 e9    	dec2.w    w15, w15
 
@@ -10025,7 +10025,7 @@ void init_pin(void) {
     403e:	23 4e 20    	mov.w     #0x4e2, w3
     4040:	82 2c 20    	mov.w     #0x2c8, w2
     4042:	a1 2c 20    	mov.w     #0x2ca, w1
-    4044:	e0 b7 21    	mov.w     #0x1b7e, w0
+    4044:	80 b8 21    	mov.w     #0x1b88, w0
     4046:	24 00 07    	rcall     0x4090 <_pin_init>
     4048:	8f 87 e9    	dec2.w    w15, w15
 
@@ -10041,7 +10041,7 @@ void init_pin(void) {
     4050:	1e 00 78    	mov.w     [w14], w0
     4052:	76 00 b9    	mul.su    w0, #0x16, w0
     4054:	80 00 78    	mov.w     w0, w1
-    4056:	a0 a4 21    	mov.w     #0x1a4a, w0
+    4056:	40 a5 21    	mov.w     #0x1a54, w0
     4058:	00 80 40    	add.w     w1, w0, w0
     405a:	46 00 07    	rcall     0x40e8 <_pin_digitalIn>
 
@@ -10064,7 +10064,7 @@ void init_pin(void) {
     406a:	1e 00 78    	mov.w     [w14], w0
     406c:	76 00 b9    	mul.su    w0, #0x16, w0
     406e:	80 00 78    	mov.w     w0, w1
-    4070:	e0 b7 21    	mov.w     #0x1b7e, w0
+    4070:	80 b8 21    	mov.w     #0x1b88, w0
     4072:	00 80 40    	add.w     w1, w0, w0
     4074:	95 00 07    	rcall     0x41a0 <_pin_analogIn>
 
@@ -10563,8 +10563,8 @@ uint16_t pin_read(_PIN *self) {
     42a6:	00 00 06    	return    
 
 000042a8 <_VendorRequests>:
-uint16_t rocket_state, counter, coin;
 uint16_t rocket_speed, rocket_tilt;
+uint16_t throttle, tilt;
 uint8_t rec_msg[64], tx_msg[64];
 
 void VendorRequests(void) {
@@ -10573,7 +10573,7 @@ void VendorRequests(void) {
 000042aa <.LSM1>:
     WORD temp;
     switch (USB_setup.bRequest) {
-    42aa:	40 83 20    	mov.w     #0x834, w0
+    42aa:	c0 84 20    	mov.w     #0x84c, w0
     42ac:	10 40 90    	mov.b     [w0+1], w0
     42ae:	00 80 fb    	ze        w0, w0
     42b0:	e1 0f 50    	sub.w     w0, #0x1, [w15]
@@ -10604,7 +10604,7 @@ void VendorRequests(void) {
 000042ca <.L4>:
     case GET_VALS:
         temp.w = rocket_tilt;
-    42ca:	80 42 80    	mov.w     0x850, w0
+    42ca:	10 42 80    	mov.w     0x842, w0
     42cc:	00 0f 78    	mov.w     w0, [w14]
 
 000042ce <.LSM6>:
@@ -10622,7 +10622,7 @@ void VendorRequests(void) {
 
 000042dc <.LSM8>:
         temp.w = uart1.TXbuffer.tail;
-    42dc:	f0 43 80    	mov.w     0x87e, w0
+    42dc:	40 44 80    	mov.w     0x888, w0
     42de:	00 0f 78    	mov.w     w0, [w14]
 
 000042e0 <.LSM9>:
@@ -10641,7 +10641,7 @@ void VendorRequests(void) {
 
 000042f0 <.LSM11>:
         temp.w = uart1.TXbuffer.count;
-    42f0:	00 44 80    	mov.w     0x880, w0
+    42f0:	50 44 80    	mov.w     0x88a, w0
     42f2:	00 0f 78    	mov.w     w0, [w14]
 
 000042f4 <.LSM12>:
@@ -10661,7 +10661,7 @@ void VendorRequests(void) {
 00004304 <.LSM14>:
 
         temp.w = uart1.RXbuffer.head;
-    4304:	30 44 80    	mov.w     0x886, w0
+    4304:	80 44 80    	mov.w     0x890, w0
     4306:	00 0f 78    	mov.w     w0, [w14]
 
 00004308 <.LSM15>:
@@ -10680,7 +10680,7 @@ void VendorRequests(void) {
 
 00004318 <.LSM17>:
         temp.w = uart1.RXbuffer.tail;
-    4318:	40 44 80    	mov.w     0x888, w0
+    4318:	90 44 80    	mov.w     0x892, w0
     431a:	00 0f 78    	mov.w     w0, [w14]
 
 0000431c <.LSM18>:
@@ -10699,7 +10699,7 @@ void VendorRequests(void) {
 
 0000432c <.LSM20>:
         temp.w = uart1.RXbuffer.count;
-    432c:	50 44 80    	mov.w     0x88a, w0
+    432c:	a0 44 80    	mov.w     0x894, w0
     432e:	00 0f 78    	mov.w     w0, [w14]
 
 00004330 <.LSM21>:
@@ -10736,7 +10736,7 @@ void VendorRequests(void) {
 
     case GET_ROCKET_INFO:
         temp.w = rocket_tilt;
-    434e:	80 42 80    	mov.w     0x850, w0
+    434e:	10 42 80    	mov.w     0x842, w0
     4350:	00 0f 78    	mov.w     w0, [w14]
 
 00004352 <.LSM27>:
@@ -10754,7 +10754,7 @@ void VendorRequests(void) {
 
 00004360 <.LSM29>:
         temp.w = rocket_speed;
-    4360:	70 42 80    	mov.w     0x84e, w0
+    4360:	00 42 80    	mov.w     0x840, w0
     4362:	00 0f 78    	mov.w     w0, [w14]
 
 00004364 <.LSM30>:
@@ -10773,7 +10773,7 @@ void VendorRequests(void) {
 
 00004374 <.LSM32>:
         temp.w = rocket_state;
-    4374:	40 42 80    	mov.w     0x848, w0
+    4374:	f0 42 80    	mov.w     0x85e, w0
     4376:	00 0f 78    	mov.w     w0, [w14]
 
 00004378 <.LSM33>:
@@ -10809,9 +10809,9 @@ void VendorRequests(void) {
 00004396 <.L7>:
     default:
         USB_error_flags |= 0x01;    // set Request Error Flag
-    4396:	3c c8 bf    	mov.b     0x83c, WREG
+    4396:	54 c8 bf    	mov.b     0x854, WREG
     4398:	00 04 a0    	bset.b    w0, #0x0
-    439a:	3c e8 b7    	mov.b     WREG, 0x83c
+    439a:	54 e8 b7    	mov.b     WREG, 0x854
 
 0000439c <.L1>:
     }
@@ -10828,9 +10828,9 @@ void VendorRequestsIn(void) {
     switch (USB_request.setup.bRequest) {
     default:
         USB_error_flags |= 0x01;                    // set Request Error Flag
-    43a2:	3c c8 bf    	mov.b     0x83c, WREG
+    43a2:	54 c8 bf    	mov.b     0x854, WREG
     43a4:	00 04 a0    	bset.b    w0, #0x0
-    43a6:	3c e8 b7    	mov.b     WREG, 0x83c
+    43a6:	54 e8 b7    	mov.b     WREG, 0x854
 
 000043a8 <.LSM42>:
     }
@@ -10847,9 +10847,9 @@ void VendorRequestsOut(void) {
     switch (USB_request.setup.bRequest) {
     default:
         USB_error_flags |= 0x01;                    // set Request Error Flag
-    43ae:	3c c8 bf    	mov.b     0x83c, WREG
+    43ae:	54 c8 bf    	mov.b     0x854, WREG
     43b0:	00 04 a0    	bset.b    w0, #0x0
-    43b2:	3c e8 b7    	mov.b     WREG, 0x83c
+    43b2:	54 e8 b7    	mov.b     WREG, 0x854
 
 000043b4 <.LSM45>:
     }
@@ -10870,7 +10870,7 @@ void UART_ctl(uint8_t cmd, uint8_t value) {
     43c0:	00 81 fb    	ze        w0, w2
     43c2:	5e 40 90    	mov.b     [w14+5], w0
     43c4:	80 80 fb    	ze        w0, w1
-    43c6:	a0 a0 21    	mov.w     #0x1a0a, w0
+    43c6:	40 a1 21    	mov.w     #0x1a14, w0
     43c8:	82 1f 78    	mov.w     w2, [w15++]
     43ca:	81 1f 78    	mov.w     w1, [w15++]
     43cc:	41 19 2a    	mov.w     #0xa194, w1
@@ -10880,8 +10880,8 @@ void UART_ctl(uint8_t cmd, uint8_t value) {
 
 000043d4 <.LSM48>:
     uart_puts(&uart1, tx_msg);
-    43d4:	a1 a0 21    	mov.w     #0x1a0a, w1
-    43d6:	60 85 20    	mov.w     #0x856, w0
+    43d4:	41 a1 21    	mov.w     #0x1a14, w1
+    43d6:	00 86 20    	mov.w     #0x860, w0
     43d8:	56 f5 07    	rcall     0x2e86 <_uart_puts>
 
 000043da <.LSM49>:
@@ -10893,13 +10893,13 @@ void UART_ctl(uint8_t cmd, uint8_t value) {
 000043e0 <.LBB2>:
         uart_gets(&uart1, rec_msg, 64);
     43e0:	02 04 20    	mov.w     #0x40, w2
-    43e2:	a1 9c 21    	mov.w     #0x19ca, w1
-    43e4:	60 85 20    	mov.w     #0x856, w0
+    43e2:	41 9d 21    	mov.w     #0x19d4, w1
+    43e4:	00 86 20    	mov.w     #0x860, w0
     43e6:	f4 f5 07    	rcall     0x2fd0 <_uart_gets>
 
 000043e8 <.LSM51>:
         uint32_t decoded_msg = (uint32_t)strtol(rec_msg, NULL, 16);
-    43e8:	a0 9c 21    	mov.w     #0x19ca, w0
+    43e8:	40 9d 21    	mov.w     #0x19d4, w0
     43ea:	02 01 20    	mov.w     #0x10, w2
     43ec:	80 00 eb    	clr.w     w1
     43ee:	a5 e8 07    	rcall     0x153a <_strtol>
@@ -10926,7 +10926,7 @@ void UART_ctl(uint8_t cmd, uint8_t value) {
     4412:	40 18 de    	lsr.w     w3, #0x0, w0
     4414:	01 00 20    	mov.w     #0x0, w1
     4416:	00 00 78    	mov.w     w0, w0
-    4418:	70 42 88    	mov.w     w0, 0x84e
+    4418:	00 42 88    	mov.w     w0, 0x840
 
 0000441a <.LSM53>:
         rocket_tilt = (uint16_t)((decoded_msg & 0xFF00) >> 8);
@@ -10951,14 +10951,14 @@ void UART_ctl(uint8_t cmd, uint8_t value) {
     443e:	00 00 72    	ior.w     w4, w0, w0
     4440:	c8 18 de    	lsr.w     w3, #0x8, w1
     4442:	00 00 78    	mov.w     w0, w0
-    4444:	80 42 88    	mov.w     w0, 0x850
+    4444:	10 42 88    	mov.w     w0, 0x842
 
 00004446 <.LSM54>:
         rocket_state = decoded_msg & 0xFF;
     4446:	9e 00 78    	mov.w     [w14], w1
     4448:	f0 0f 20    	mov.w     #0xff, w0
     444a:	00 80 60    	and.w     w1, w0, w0
-    444c:	40 42 88    	mov.w     w0, 0x848
+    444c:	f0 42 88    	mov.w     w0, 0x85e
 
 0000444e <.L10>:
     }
@@ -10977,14 +10977,14 @@ void setup_uart() {
     Uses uart1 for inter-PIC communications. Rx on D[0], Tx on D[1].
     Automatically uses uart2 for stdout, stderr to PC via audio jack.
     */
-    uart_open(&uart1, &D[1], &D[0], NULL, NULL, 19200., 'N', 1,
+    uart_open(&uart1, &TX2, &RX2, NULL, NULL, 115200., 'N', 1,
     4454:	00 40 20    	mov.w     #0x400, w0
     4456:	80 1f 78    	mov.w     w0, [w15++]
-    4458:	a0 5c 21    	mov.w     #0x15ca, w0
+    4458:	40 5d 21    	mov.w     #0x15d4, w0
     445a:	80 1f 78    	mov.w     w0, [w15++]
     445c:	00 40 20    	mov.w     #0x400, w0
     445e:	80 1f 78    	mov.w     w0, [w15++]
-    4460:	a0 1c 21    	mov.w     #0x11ca, w0
+    4460:	40 1d 21    	mov.w     #0x11d4, w0
     4462:	80 1f 78    	mov.w     w0, [w15++]
     4464:	00 00 eb    	clr.w     w0
     4466:	80 1f 78    	mov.w     w0, [w15++]
@@ -10992,12 +10992,12 @@ void setup_uart() {
     446a:	80 1f 78    	mov.w     w0, [w15++]
     446c:	e5 c4 b3    	mov.b     #0x4e, w5
     446e:	06 00 20    	mov.w     #0x0, w6
-    4470:	67 69 24    	mov.w     #0x4696, w7
+    4470:	17 7e 24    	mov.w     #0x47e1, w7
     4472:	00 02 eb    	clr.w     w4
     4474:	80 01 eb    	clr.w     w3
-    4476:	a2 a4 21    	mov.w     #0x1a4a, w2
-    4478:	01 a6 21    	mov.w     #0x1a60, w1
-    447a:	60 85 20    	mov.w     #0x856, w0
+    4476:	22 99 20    	mov.w     #0x992, w2
+    4478:	c1 97 20    	mov.w     #0x97c, w1
+    447a:	00 86 20    	mov.w     #0x860, w0
     447c:	ad f1 07    	rcall     0x27d8 <_uart_open>
     447e:	ec 87 57    	sub.w     w15, #0xc, w15
 
@@ -11014,32 +11014,32 @@ void idle(void) {
 
 00004486 <.LSM60>:
     if (state != last_state) {  // if we are entering the state, do initialization stuff
-    4486:	11 42 80    	mov.w     0x842, w1
-    4488:	20 42 80    	mov.w     0x844, w0
+    4486:	b1 41 80    	mov.w     0x836, w1
+    4488:	c0 41 80    	mov.w     0x838, w0
     448a:	80 8f 50    	sub.w     w1, w0, [w15]
     448c:	05 00 32    	bra       Z, 0x4498 <.L14>
 
 0000448e <.LSM61>:
         last_state = state;
-    448e:	10 42 80    	mov.w     0x842, w0
-    4490:	20 42 88    	mov.w     w0, 0x844
+    448e:	b0 41 80    	mov.w     0x836, w0
+    4490:	c0 41 88    	mov.w     w0, 0x838
 
 00004492 <.LSM62>:
         trials = 0;
-    4492:	46 68 ef    	clr.b     0x846
+    4492:	3a 68 ef    	clr.b     0x83a
 
 00004494 <.LSM63>:
         led_on(&led1);
     4494:	00 80 20    	mov.w     #0x800, w0
-    4496:	12 01 07    	rcall     0x46bc <_led_on>
+    4496:	50 01 07    	rcall     0x4738 <_led_on>
 
 00004498 <.L14>:
     }
 
     coin = pin_read(&D[2]); //digital read of the coin acceptor.
-    4498:	60 a7 21    	mov.w     #0x1a76, w0
+    4498:	00 a8 21    	mov.w     #0x1a80, w0
     449a:	f8 fe 07    	rcall     0x428c <_pin_read>
-    449c:	60 42 88    	mov.w     w0, 0x84c
+    449c:	f0 41 88    	mov.w     w0, 0x83e
 
 0000449e <.LSM65>:
 
@@ -11049,28 +11049,28 @@ void idle(void) {
 
     // Check for state transitions
     if (coin == 0) {
-    449e:	60 42 80    	mov.w     0x84c, w0
+    449e:	f0 41 80    	mov.w     0x83e, w0
     44a0:	00 00 e0    	cp0.w     w0
     44a2:	02 00 3a    	bra       NZ, 0x44a8 <.L15>
 
 000044a4 <.LSM66>:
         state = reset;
     44a4:	80 4b 24    	mov.w     #0x44b8, w0
-    44a6:	10 42 88    	mov.w     w0, 0x842
+    44a6:	b0 41 88    	mov.w     w0, 0x836
 
 000044a8 <.L15>:
     }
 
     if (state != last_state) {
-    44a8:	11 42 80    	mov.w     0x842, w1
-    44aa:	20 42 80    	mov.w     0x844, w0
+    44a8:	b1 41 80    	mov.w     0x836, w1
+    44aa:	c0 41 80    	mov.w     0x838, w0
     44ac:	80 8f 50    	sub.w     w1, w0, [w15]
     44ae:	02 00 32    	bra       Z, 0x44b4 <.L13>
 
 000044b0 <.LSM68>:
         led_off(&led1);  // if we are leaving the state, do clean up stuff
     44b0:	00 80 20    	mov.w     #0x800, w0
-    44b2:	14 01 07    	rcall     0x46dc <_led_off>
+    44b2:	52 01 07    	rcall     0x4758 <_led_off>
 
 000044b4 <.L13>:
     }
@@ -11085,20 +11085,20 @@ void reset(void) {
 
 000044ba <.LSM71>:
     if (state != last_state) {  // if we are entering the state, do initialization stuff
-    44ba:	11 42 80    	mov.w     0x842, w1
-    44bc:	20 42 80    	mov.w     0x844, w0
+    44ba:	b1 41 80    	mov.w     0x836, w1
+    44bc:	c0 41 80    	mov.w     0x838, w0
     44be:	80 8f 50    	sub.w     w1, w0, [w15]
     44c0:	04 00 32    	bra       Z, 0x44ca <.L18>
 
 000044c2 <.LSM72>:
         last_state = state;
-    44c2:	10 42 80    	mov.w     0x842, w0
-    44c4:	20 42 88    	mov.w     w0, 0x844
+    44c2:	b0 41 80    	mov.w     0x836, w0
+    44c4:	c0 41 88    	mov.w     w0, 0x838
 
 000044c6 <.LSM73>:
         led_on(&led2);
     44c6:	80 80 20    	mov.w     #0x808, w0
-    44c8:	f9 00 07    	rcall     0x46bc <_led_on>
+    44c8:	37 01 07    	rcall     0x4738 <_led_on>
 
 000044ca <.L18>:
     }
@@ -11108,41 +11108,41 @@ void reset(void) {
     // Check for state transitions
 
     if (trials == 3){
-    44ca:	46 c8 bf    	mov.b     0x846, WREG
+    44ca:	3a c8 bf    	mov.b     0x83a, WREG
     44cc:	e3 4f 50    	sub.b     w0, #0x3, [w15]
     44ce:	02 00 3a    	bra       NZ, 0x44d4 <.L19>
 
 000044d0 <.LSM75>:
         state = idle;
     44d0:	40 48 24    	mov.w     #0x4484, w0
-    44d2:	10 42 88    	mov.w     w0, 0x842
+    44d2:	b0 41 88    	mov.w     w0, 0x836
 
 000044d4 <.L19>:
     }
 
     if (rocket_state == READY) {
-    44d4:	40 42 80    	mov.w     0x848, w0
+    44d4:	f0 42 80    	mov.w     0x85e, w0
     44d6:	e3 0f 50    	sub.w     w0, #0x3, [w15]
     44d8:	02 00 3a    	bra       NZ, 0x44de <.L20>
 
 000044da <.LSM77>:
         state = flying;
     44da:	e0 4e 24    	mov.w     #0x44ee, w0
-    44dc:	10 42 88    	mov.w     w0, 0x842
+    44dc:	b0 41 88    	mov.w     w0, 0x836
 
 000044de <.L20>:
     }
 
     if (state != last_state) {
-    44de:	11 42 80    	mov.w     0x842, w1
-    44e0:	20 42 80    	mov.w     0x844, w0
+    44de:	b1 41 80    	mov.w     0x836, w1
+    44e0:	c0 41 80    	mov.w     0x838, w0
     44e2:	80 8f 50    	sub.w     w1, w0, [w15]
     44e4:	02 00 32    	bra       Z, 0x44ea <.L17>
 
 000044e6 <.LSM79>:
         led_off(&led2);  // if we are leaving the state, do clean up stuff
     44e6:	80 80 20    	mov.w     #0x808, w0
-    44e8:	f9 00 07    	rcall     0x46dc <_led_off>
+    44e8:	37 01 07    	rcall     0x4758 <_led_off>
 
 000044ea <.L17>:
     }
@@ -11157,762 +11157,803 @@ void flying(void) {
 
 000044f0 <.LSM82>:
     if (state != last_state) {  // if we are entering the state, do initialization stuff
-    44f0:	11 42 80    	mov.w     0x842, w1
-    44f2:	20 42 80    	mov.w     0x844, w0
+    44f0:	b1 41 80    	mov.w     0x836, w1
+    44f2:	c0 41 80    	mov.w     0x838, w0
     44f4:	80 8f 50    	sub.w     w1, w0, [w15]
-    44f6:	02 00 32    	bra       Z, 0x44fc <.L23>
+    44f6:	04 00 32    	bra       Z, 0x4500 <.L23>
 
 000044f8 <.LSM83>:
         last_state = state;
-    44f8:	10 42 80    	mov.w     0x842, w0
-    44fa:	20 42 88    	mov.w     w0, 0x844
+    44f8:	b0 41 80    	mov.w     0x836, w0
+    44fa:	c0 41 88    	mov.w     w0, 0x838
 
-000044fc <.L23>:
+000044fc <.LSM84>:
+        rocket_state = FLYING;
+    44fc:	20 00 20    	mov.w     #0x2, w0
+    44fe:	f0 42 88    	mov.w     w0, 0x85e
+
+00004500 <.L23>:
     }
 
     // Perform state tasks
+    // Tilt check
+    if (pin_read(LEFT)) {
+    4500:	80 41 80    	mov.w     0x830, w0
+    4502:	c4 fe 07    	rcall     0x428c <_pin_read>
+    4504:	00 00 e0    	cp0.w     w0
+    4506:	05 00 32    	bra       Z, 0x4512 <.L24>
+
+00004508 <.LSM86>:
+        led_on(&led3);
+    4508:	00 81 20    	mov.w     #0x810, w0
+    450a:	16 01 07    	rcall     0x4738 <_led_on>
+
+0000450c <.LSM87>:
+        // Send command to tilt rocket to left
+        tilt = 2;
+    450c:	20 00 20    	mov.w     #0x2, w0
+    450e:	30 42 88    	mov.w     w0, 0x846
+    4510:	0c 00 37    	bra       0x452a <.L25>
+
+00004512 <.L24>:
+    }
+    else if (pin_read(RIGHT)) {
+    4512:	90 41 80    	mov.w     0x832, w0
+    4514:	bb fe 07    	rcall     0x428c <_pin_read>
+    4516:	00 00 e0    	cp0.w     w0
+    4518:	05 00 32    	bra       Z, 0x4524 <.L26>
+
+0000451a <.LSM89>:
+        led_on(&led3);
+    451a:	00 81 20    	mov.w     #0x810, w0
+    451c:	0d 01 07    	rcall     0x4738 <_led_on>
+
+0000451e <.LSM90>:
+        // Send command to tilt rocket to right   
+        tilt = 1;
+    451e:	10 00 20    	mov.w     #0x1, w0
+    4520:	30 42 88    	mov.w     w0, 0x846
+    4522:	03 00 37    	bra       0x452a <.L25>
+
+00004524 <.L26>:
+    }
+    else {
+        led_off(&led3);
+    4524:	00 81 20    	mov.w     #0x810, w0
+    4526:	18 01 07    	rcall     0x4758 <_led_off>
+
+00004528 <.LSM92>:
+        tilt = 0;
+    4528:	46 28 ef    	clr.w     0x846
+
+0000452a <.L25>:
+    }
+
+    // Throttle check
+    if (pin_read(THROTTLE)) {
+    452a:	a0 41 80    	mov.w     0x834, w0
+    452c:	af fe 07    	rcall     0x428c <_pin_read>
+    452e:	00 00 e0    	cp0.w     w0
+    4530:	05 00 32    	bra       Z, 0x453c <.L27>
+
+00004532 <.LSM94>:
+        throttle = 1;
+    4532:	10 00 20    	mov.w     #0x1, w0
+    4534:	20 42 88    	mov.w     w0, 0x844
+
+00004536 <.LSM95>:
+        led_on(&led1);
+    4536:	00 80 20    	mov.w     #0x800, w0
+    4538:	ff 00 07    	rcall     0x4738 <_led_on>
+    453a:	03 00 37    	bra       0x4542 <.L28>
+
+0000453c <.L27>:
+    }
+    else {
+        throttle = 0;
+    453c:	44 28 ef    	clr.w     0x844
+
+0000453e <.LSM97>:
+        led_off(&led1);
+    453e:	00 80 20    	mov.w     #0x800, w0
+    4540:	0b 01 07    	rcall     0x4758 <_led_off>
+
+00004542 <.L28>:
+    }
 
     // Check for state transitions
     if (rocket_state == CRASHED) {
-    44fc:	40 42 80    	mov.w     0x848, w0
-    44fe:	e1 0f 50    	sub.w     w0, #0x1, [w15]
-    4500:	02 00 3a    	bra       NZ, 0x4506 <.L24>
+    4542:	f0 42 80    	mov.w     0x85e, w0
+    4544:	e1 0f 50    	sub.w     w0, #0x1, [w15]
+    4546:	02 00 3a    	bra       NZ, 0x454c <.L29>
 
-00004502 <.LSM85>:
+00004548 <.LSM99>:
         state = lose;
-    4502:	40 51 24    	mov.w     #0x4514, w0
-    4504:	10 42 88    	mov.w     w0, 0x842
+    4548:	60 56 24    	mov.w     #0x4566, w0
+    454a:	b0 41 88    	mov.w     w0, 0x836
 
-00004506 <.L24>:
+0000454c <.L29>:
     }
 
     if (rocket_state == LANDED){
-    4506:	40 42 80    	mov.w     0x848, w0
-    4508:	00 00 e0    	cp0.w     w0
-    450a:	02 00 3a    	bra       NZ, 0x4510 <.L25>
+    454c:	f0 42 80    	mov.w     0x85e, w0
+    454e:	00 00 e0    	cp0.w     w0
+    4550:	02 00 3a    	bra       NZ, 0x4556 <.L30>
 
-0000450c <.LSM87>:
+00004552 <.LSM101>:
         state = win;
-    450c:	a0 55 24    	mov.w     #0x455a, w0
-    450e:	10 42 88    	mov.w     w0, 0x842
+    4552:	c0 5a 24    	mov.w     #0x45ac, w0
+    4554:	b0 41 88    	mov.w     w0, 0x836
 
-00004510 <.L25>:
+00004556 <.L30>:
     }
 
     if (state != last_state) {  // if we are leaving the state, do clean up stuff
+    4556:	b1 41 80    	mov.w     0x836, w1
+    4558:	c0 41 80    	mov.w     0x838, w0
+    455a:	80 8f 50    	sub.w     w1, w0, [w15]
+    455c:	02 00 32    	bra       Z, 0x4562 <.L22>
+
+0000455e <.LSM103>:
+        // turn off tilt stick led before exiting state
+        led_off(&led3);
+    455e:	00 81 20    	mov.w     #0x810, w0
+    4560:	fb 00 07    	rcall     0x4758 <_led_off>
+
+00004562 <.L22>:
     }
 }
-    4510:	00 80 fa    	ulnk      
-    4512:	00 00 06    	return    
+    4562:	00 80 fa    	ulnk      
+    4564:	00 00 06    	return    
 
-00004514 <_lose>:
+00004566 <_lose>:
 
 void lose(void) {
-    4514:	00 00 fa    	lnk       #0x0
-
-00004516 <.LSM90>:
-    if (state != last_state) {  // if we are entering the state, do initialization stuff
-    4516:	11 42 80    	mov.w     0x842, w1
-    4518:	20 42 80    	mov.w     0x844, w0
-    451a:	80 8f 50    	sub.w     w1, w0, [w15]
-    451c:	05 00 32    	bra       Z, 0x4528 <.L27>
-
-0000451e <.LSM91>:
-        last_state = state;
-    451e:	10 42 80    	mov.w     0x842, w0
-    4520:	20 42 88    	mov.w     w0, 0x844
-
-00004522 <.LSM92>:
-        timer_start(&timer1);
-    4522:	e0 c8 21    	mov.w     #0x1c8e, w0
-    4524:	b0 fb 07    	rcall     0x3c86 <_timer_start>
-
-00004526 <.LSM93>:
-        counter = 0;
-    4526:	4a 28 ef    	clr.w     0x84a
-
-00004528 <.L27>:
-    }
-
-    if (timer_flag(&timer1)) {
-    4528:	e0 c8 21    	mov.w     #0x1c8e, w0
-    452a:	cb fb 07    	rcall     0x3cc2 <_timer_flag>
-    452c:	00 00 e0    	cp0.w     w0
-    452e:	05 00 32    	bra       Z, 0x453a <.L28>
-
-00004530 <.LSM95>:
-        timer_lower(&timer1);
-    4530:	e0 c8 21    	mov.w     #0x1c8e, w0
-    4532:	d8 fb 07    	rcall     0x3ce4 <_timer_lower>
-
-00004534 <.LSM96>:
-        counter++;
-    4534:	50 42 80    	mov.w     0x84a, w0
-    4536:	00 00 e8    	inc.w     w0, w0
-    4538:	50 42 88    	mov.w     w0, 0x84a
-
-0000453a <.L28>:
-    }
-
-    // Check for state transitions
-    if (counter == 10) {
-    453a:	50 42 80    	mov.w     0x84a, w0
-    453c:	ea 0f 50    	sub.w     w0, #0xa, [w15]
-    453e:	02 00 3a    	bra       NZ, 0x4544 <.L29>
-
-00004540 <.LSM98>:
-        state = reset;
-    4540:	80 4b 24    	mov.w     #0x44b8, w0
-    4542:	10 42 88    	mov.w     w0, 0x842
-
-00004544 <.L29>:
-    }
-
-    if (state != last_state) {
-    4544:	11 42 80    	mov.w     0x842, w1
-    4546:	20 42 80    	mov.w     0x844, w0
-    4548:	80 8f 50    	sub.w     w1, w0, [w15]
-    454a:	05 00 32    	bra       Z, 0x4556 <.L26>
-
-0000454c <.LSM100>:
-        timer_stop(&timer1);
-    454c:	e0 c8 21    	mov.w     #0x1c8e, w0
-    454e:	ad fb 07    	rcall     0x3caa <_timer_stop>
-
-00004550 <.LSM101>:
-        trials++;  // if we are leaving the state, do clean up stuff
-    4550:	46 c8 bf    	mov.b     0x846, WREG
-    4552:	00 40 e8    	inc.b     w0, w0
-    4554:	46 e8 b7    	mov.b     WREG, 0x846
-
-00004556 <.L26>:
-    }
-}
-    4556:	00 80 fa    	ulnk      
-    4558:	00 00 06    	return    
-
-0000455a <_win>:
-
-void win(void) {
-    455a:	00 00 fa    	lnk       #0x0
-
-0000455c <.LSM104>:
-    if (state != last_state) {  // if we are entering the state, do initialization stuff
-    455c:	11 42 80    	mov.w     0x842, w1
-    455e:	20 42 80    	mov.w     0x844, w0
-    4560:	80 8f 50    	sub.w     w1, w0, [w15]
-    4562:	05 00 32    	bra       Z, 0x456e <.L32>
-
-00004564 <.LSM105>:
-        last_state = state;
-    4564:	10 42 80    	mov.w     0x842, w0
-    4566:	20 42 88    	mov.w     w0, 0x844
+    4566:	00 00 fa    	lnk       #0x0
 
 00004568 <.LSM106>:
+    if (state != last_state) {  // if we are entering the state, do initialization stuff
+    4568:	b1 41 80    	mov.w     0x836, w1
+    456a:	c0 41 80    	mov.w     0x838, w0
+    456c:	80 8f 50    	sub.w     w1, w0, [w15]
+    456e:	05 00 32    	bra       Z, 0x457a <.L33>
+
+00004570 <.LSM107>:
+        last_state = state;
+    4570:	b0 41 80    	mov.w     0x836, w0
+    4572:	c0 41 88    	mov.w     w0, 0x838
+
+00004574 <.LSM108>:
         timer_start(&timer1);
-    4568:	e0 c8 21    	mov.w     #0x1c8e, w0
-    456a:	8d fb 07    	rcall     0x3c86 <_timer_start>
+    4574:	80 c9 21    	mov.w     #0x1c98, w0
+    4576:	87 fb 07    	rcall     0x3c86 <_timer_start>
 
-0000456c <.LSM107>:
+00004578 <.LSM109>:
         counter = 0;
-    456c:	4a 28 ef    	clr.w     0x84a
+    4578:	3c 28 ef    	clr.w     0x83c
 
-0000456e <.L32>:
+0000457a <.L33>:
     }
 
     if (timer_flag(&timer1)) {
-    456e:	e0 c8 21    	mov.w     #0x1c8e, w0
-    4570:	a8 fb 07    	rcall     0x3cc2 <_timer_flag>
-    4572:	00 00 e0    	cp0.w     w0
-    4574:	05 00 32    	bra       Z, 0x4580 <.L33>
+    457a:	80 c9 21    	mov.w     #0x1c98, w0
+    457c:	a2 fb 07    	rcall     0x3cc2 <_timer_flag>
+    457e:	00 00 e0    	cp0.w     w0
+    4580:	05 00 32    	bra       Z, 0x458c <.L34>
 
-00004576 <.LSM109>:
+00004582 <.LSM111>:
         timer_lower(&timer1);
-    4576:	e0 c8 21    	mov.w     #0x1c8e, w0
-    4578:	b5 fb 07    	rcall     0x3ce4 <_timer_lower>
+    4582:	80 c9 21    	mov.w     #0x1c98, w0
+    4584:	af fb 07    	rcall     0x3ce4 <_timer_lower>
 
-0000457a <.LSM110>:
+00004586 <.LSM112>:
         counter++;
-    457a:	50 42 80    	mov.w     0x84a, w0
-    457c:	00 00 e8    	inc.w     w0, w0
-    457e:	50 42 88    	mov.w     w0, 0x84a
+    4586:	e0 41 80    	mov.w     0x83c, w0
+    4588:	00 00 e8    	inc.w     w0, w0
+    458a:	e0 41 88    	mov.w     w0, 0x83c
 
-00004580 <.L33>:
+0000458c <.L34>:
     }
 
     // Check for state transitions
     if (counter == 10) {
-    4580:	50 42 80    	mov.w     0x84a, w0
-    4582:	ea 0f 50    	sub.w     w0, #0xa, [w15]
-    4584:	02 00 3a    	bra       NZ, 0x458a <.L34>
+    458c:	e0 41 80    	mov.w     0x83c, w0
+    458e:	ea 0f 50    	sub.w     w0, #0xa, [w15]
+    4590:	02 00 3a    	bra       NZ, 0x4596 <.L35>
 
-00004586 <.LSM112>:
+00004592 <.LSM114>:
         state = reset;
-    4586:	80 4b 24    	mov.w     #0x44b8, w0
-    4588:	10 42 88    	mov.w     w0, 0x842
+    4592:	80 4b 24    	mov.w     #0x44b8, w0
+    4594:	b0 41 88    	mov.w     w0, 0x836
 
-0000458a <.L34>:
+00004596 <.L35>:
     }
 
     if (state != last_state) {
-    458a:	11 42 80    	mov.w     0x842, w1
-    458c:	20 42 80    	mov.w     0x844, w0
-    458e:	80 8f 50    	sub.w     w1, w0, [w15]
-    4590:	05 00 32    	bra       Z, 0x459c <.L31>
+    4596:	b1 41 80    	mov.w     0x836, w1
+    4598:	c0 41 80    	mov.w     0x838, w0
+    459a:	80 8f 50    	sub.w     w1, w0, [w15]
+    459c:	05 00 32    	bra       Z, 0x45a8 <.L32>
 
-00004592 <.LSM114>:
+0000459e <.LSM116>:
         timer_stop(&timer1);
-    4592:	e0 c8 21    	mov.w     #0x1c8e, w0
-    4594:	8a fb 07    	rcall     0x3caa <_timer_stop>
+    459e:	80 c9 21    	mov.w     #0x1c98, w0
+    45a0:	84 fb 07    	rcall     0x3caa <_timer_stop>
 
-00004596 <.LSM115>:
+000045a2 <.LSM117>:
         trials++;  // if we are leaving the state, do clean up stuff
-    4596:	46 c8 bf    	mov.b     0x846, WREG
-    4598:	00 40 e8    	inc.b     w0, w0
-    459a:	46 e8 b7    	mov.b     WREG, 0x846
+    45a2:	3a c8 bf    	mov.b     0x83a, WREG
+    45a4:	00 40 e8    	inc.b     w0, w0
+    45a6:	3a e8 b7    	mov.b     WREG, 0x83a
 
-0000459c <.L31>:
+000045a8 <.L32>:
     }
 }
-    459c:	00 80 fa    	ulnk      
-    459e:	00 00 06    	return    
+    45a8:	00 80 fa    	ulnk      
+    45aa:	00 00 06    	return    
 
-000045a0 <_setup>:
+000045ac <_win>:
 
+void win(void) {
+    45ac:	00 00 fa    	lnk       #0x0
 
-
-
-
-
-void setup() {
-    45a0:	00 00 fa    	lnk       #0x0
-
-000045a2 <.LSM118>:
-    timer_setPeriod(&timer1, 1);  // Timer for LED operation/status blink
-    45a2:	02 00 20    	mov.w     #0x0, w2
-    45a4:	03 f8 23    	mov.w     #0x3f80, w3
-    45a6:	e0 c8 21    	mov.w     #0x1c8e, w0
-    45a8:	9f fa 07    	rcall     0x3ae8 <_timer_setPeriod>
-
-000045aa <.LSM119>:
-    timer_setPeriod(&timer2, 0.5);
-    45aa:	02 00 20    	mov.w     #0x0, w2
-    45ac:	03 f0 23    	mov.w     #0x3f00, w3
-    45ae:	40 ca 21    	mov.w     #0x1ca4, w0
-    45b0:	9b fa 07    	rcall     0x3ae8 <_timer_setPeriod>
-
-000045b2 <.LSM120>:
-    timer_start(&timer1);
-    45b2:	e0 c8 21    	mov.w     #0x1c8e, w0
-    45b4:	68 fb 07    	rcall     0x3c86 <_timer_start>
+000045ae <.LSM120>:
+    if (state != last_state) {  // if we are entering the state, do initialization stuff
+    45ae:	b1 41 80    	mov.w     0x836, w1
+    45b0:	c0 41 80    	mov.w     0x838, w0
+    45b2:	80 8f 50    	sub.w     w1, w0, [w15]
+    45b4:	05 00 32    	bra       Z, 0x45c0 <.L38>
 
 000045b6 <.LSM121>:
-    timer_start(&timer2);
-    45b6:	40 ca 21    	mov.w     #0x1ca4, w0
-    45b8:	66 fb 07    	rcall     0x3c86 <_timer_start>
+        last_state = state;
+    45b6:	b0 41 80    	mov.w     0x836, w0
+    45b8:	c0 41 88    	mov.w     w0, 0x838
 
 000045ba <.LSM122>:
+        timer_start(&timer1);
+    45ba:	80 c9 21    	mov.w     #0x1c98, w0
+    45bc:	64 fb 07    	rcall     0x3c86 <_timer_start>
+
+000045be <.LSM123>:
+        counter = 0;
+    45be:	3c 28 ef    	clr.w     0x83c
+
+000045c0 <.L38>:
+    }
+
+    if (timer_flag(&timer1)) {
+    45c0:	80 c9 21    	mov.w     #0x1c98, w0
+    45c2:	7f fb 07    	rcall     0x3cc2 <_timer_flag>
+    45c4:	00 00 e0    	cp0.w     w0
+    45c6:	05 00 32    	bra       Z, 0x45d2 <.L39>
+
+000045c8 <.LSM125>:
+        timer_lower(&timer1);
+    45c8:	80 c9 21    	mov.w     #0x1c98, w0
+    45ca:	8c fb 07    	rcall     0x3ce4 <_timer_lower>
+
+000045cc <.LSM126>:
+        counter++;
+    45cc:	e0 41 80    	mov.w     0x83c, w0
+    45ce:	00 00 e8    	inc.w     w0, w0
+    45d0:	e0 41 88    	mov.w     w0, 0x83c
+
+000045d2 <.L39>:
+    }
+
+    // Check for state transitions
+    if (counter == 10) {
+    45d2:	e0 41 80    	mov.w     0x83c, w0
+    45d4:	ea 0f 50    	sub.w     w0, #0xa, [w15]
+    45d6:	02 00 3a    	bra       NZ, 0x45dc <.L40>
+
+000045d8 <.LSM128>:
+        state = reset;
+    45d8:	80 4b 24    	mov.w     #0x44b8, w0
+    45da:	b0 41 88    	mov.w     w0, 0x836
+
+000045dc <.L40>:
+    }
+
+    if (state != last_state) {
+    45dc:	b1 41 80    	mov.w     0x836, w1
+    45de:	c0 41 80    	mov.w     0x838, w0
+    45e0:	80 8f 50    	sub.w     w1, w0, [w15]
+    45e2:	05 00 32    	bra       Z, 0x45ee <.L37>
+
+000045e4 <.LSM130>:
+        timer_stop(&timer1);
+    45e4:	80 c9 21    	mov.w     #0x1c98, w0
+    45e6:	61 fb 07    	rcall     0x3caa <_timer_stop>
+
+000045e8 <.LSM131>:
+        trials++;  // if we are leaving the state, do clean up stuff
+    45e8:	3a c8 bf    	mov.b     0x83a, WREG
+    45ea:	00 40 e8    	inc.b     w0, w0
+    45ec:	3a e8 b7    	mov.b     WREG, 0x83a
+
+000045ee <.L37>:
+    }
+}
+    45ee:	00 80 fa    	ulnk      
+    45f0:	00 00 06    	return    
+
+000045f2 <_setup>:
+
+void setup() {
+    45f2:	00 00 fa    	lnk       #0x0
+
+000045f4 <.LSM134>:
+    timer_setPeriod(&timer1, 1);  // Timer for LED operation/status blink
+    45f4:	02 00 20    	mov.w     #0x0, w2
+    45f6:	03 f8 23    	mov.w     #0x3f80, w3
+    45f8:	80 c9 21    	mov.w     #0x1c98, w0
+    45fa:	76 fa 07    	rcall     0x3ae8 <_timer_setPeriod>
+
+000045fc <.LSM135>:
+    timer_setPeriod(&timer2, 0.5);
+    45fc:	02 00 20    	mov.w     #0x0, w2
+    45fe:	03 f0 23    	mov.w     #0x3f00, w3
+    4600:	e0 ca 21    	mov.w     #0x1cae, w0
+    4602:	72 fa 07    	rcall     0x3ae8 <_timer_setPeriod>
+
+00004604 <.LSM136>:
+    timer_setPeriod(&timer3, 0.001);
+    4604:	f2 26 21    	mov.w     #0x126f, w2
+    4606:	33 a8 23    	mov.w     #0x3a83, w3
+    4608:	40 cc 21    	mov.w     #0x1cc4, w0
+    460a:	6e fa 07    	rcall     0x3ae8 <_timer_setPeriod>
+
+0000460c <.LSM137>:
+    timer_start(&timer1);
+    460c:	80 c9 21    	mov.w     #0x1c98, w0
+    460e:	3b fb 07    	rcall     0x3c86 <_timer_start>
+
+00004610 <.LSM138>:
+    timer_start(&timer2);
+    4610:	e0 ca 21    	mov.w     #0x1cae, w0
+    4612:	39 fb 07    	rcall     0x3c86 <_timer_start>
+
+00004614 <.LSM139>:
 
     setup_uart();
-    45ba:	4b ff 07    	rcall     0x4452 <_setup_uart>
+    4614:	1e ff 07    	rcall     0x4452 <_setup_uart>
 
-000045bc <.LSM123>:
+00004616 <.LSM140>:
     rocket_tilt, rocket_speed = 0;
-    45bc:	4e 28 ef    	clr.w     0x84e
+    4616:	40 28 ef    	clr.w     0x840
 
-000045be <.LSM124>:
+00004618 <.LSM141>:
+
+
+    // Declare tilt digital I/O
+    LEFT = &D[0];
+    4618:	40 a5 21    	mov.w     #0x1a54, w0
+    461a:	80 41 88    	mov.w     w0, 0x830
+
+0000461c <.LSM142>:
+    RIGHT = &D[1];
+    461c:	a0 a6 21    	mov.w     #0x1a6a, w0
+    461e:	90 41 88    	mov.w     w0, 0x832
+
+00004620 <.LSM143>:
+    THROTTLE = &D[3];
+    4620:	60 a9 21    	mov.w     #0x1a96, w0
+    4622:	a0 41 88    	mov.w     w0, 0x834
+
+00004624 <.LSM144>:
 }
-    45be:	00 80 fa    	ulnk      
-    45c0:	00 00 06    	return    
+    4624:	00 80 fa    	ulnk      
+    4626:	00 00 06    	return    
 
-000045c2 <_main>:
+00004628 <_main>:
 
 int16_t main(void) {
-    45c2:	42 00 fa    	lnk       #0x42
+    4628:	44 00 fa    	lnk       #0x44
 
-000045c4 <.LSM126>:
+0000462a <.LSM146>:
     // printf("Starting Master Controller...\r\n");
     init_clock();
-    45c4:	00 10 20    	mov.w     #0x100, w0
-    45c6:	20 3a 88    	mov.w     w0, 0x744
+    462a:	00 10 20    	mov.w     #0x100, w0
+    462c:	20 3a 88    	mov.w     w0, 0x744
 
-000045c8 <.LSM127>:
+0000462e <.LSM147>:
     init_ui();
-    45c8:	17 00 07    	rcall     0x45f8 <_init_ui>
+    462e:	22 00 07    	rcall     0x4674 <_init_ui>
 
-000045ca <.LSM128>:
+00004630 <.LSM148>:
     init_timer();
-    45ca:	23 fa 07    	rcall     0x3a12 <_init_timer>
+    4630:	f0 f9 07    	rcall     0x3a12 <_init_timer>
 
-000045cc <.LSM129>:
+00004632 <.LSM149>:
     init_uart();
-    45cc:	cc ef 07    	rcall     0x2566 <_init_uart>
+    4632:	99 ef 07    	rcall     0x2566 <_init_uart>
 
-000045ce <.LSM130>:
+00004634 <.LSM150>:
     init_pin();
-    45ce:	4c fc 07    	rcall     0x3e68 <_init_pin>
+    4634:	19 fc 07    	rcall     0x3e68 <_init_pin>
 
-000045d0 <.LSM131>:
+00004636 <.LSM151>:
     setup();
-    45d0:	e7 ff 07    	rcall     0x45a0 <_setup>
+    4636:	dd ff 07    	rcall     0x45f2 <_setup>
 
-000045d2 <.LSM132>:
+00004638 <.LSM152>:
     uint16_t counter = 0;
-    45d2:	00 00 eb    	clr.w     w0
-    45d4:	00 0f 78    	mov.w     w0, [w14]
+    4638:	00 00 eb    	clr.w     w0
+    463a:	00 0f 78    	mov.w     w0, [w14]
 
-000045d6 <.LSM133>:
+0000463c <.LSM153>:
     uint8_t status_msg [64];
     pin_digitalIn(&D[2]);
-    45d6:	60 a7 21    	mov.w     #0x1a76, w0
-    45d8:	87 fd 07    	rcall     0x40e8 <_pin_digitalIn>
+    463c:	00 a8 21    	mov.w     #0x1a80, w0
+    463e:	54 fd 07    	rcall     0x40e8 <_pin_digitalIn>
 
-000045da <.LSM134>:
+00004640 <.LSM154>:
 
     InitUSB();
-    45da:	35 f5 07    	rcall     0x3046 <_InitUSB>
+    4640:	02 f5 07    	rcall     0x3046 <_InitUSB>
 
-000045dc <.LSM135>:
+00004642 <.LSM155>:
     U1IE = 0xFF; //setting up ISR for USB requests
-    45dc:	f0 0f 20    	mov.w     #0xff, w0
-    45de:	60 24 88    	mov.w     w0, 0x48c
+    4642:	f0 0f 20    	mov.w     #0xff, w0
+    4644:	60 24 88    	mov.w     w0, 0x48c
 
-000045e0 <.LSM136>:
+00004646 <.LSM156>:
     U1EIE = 0xFF;
-    45e0:	f0 0f 20    	mov.w     #0xff, w0
-    45e2:	80 24 88    	mov.w     w0, 0x490
+    4646:	f0 0f 20    	mov.w     #0xff, w0
+    4648:	80 24 88    	mov.w     w0, 0x490
 
-000045e4 <.LSM137>:
+0000464a <.LSM157>:
     IFS5bits.USB1IF = 0; //flag
-    45e4:	8e c0 a9    	bclr.b    0x8e, #0x6
+    464a:	8e c0 a9    	bclr.b    0x8e, #0x6
 
-000045e6 <.LSM138>:
+0000464c <.LSM158>:
     IEC5bits.USB1IE = 1; //enable
-    45e6:	9e c0 a8    	bset.b    0x9e, #0x6
+    464c:	9e c0 a8    	bset.b    0x9e, #0x6
 
-000045e8 <.LSM139>:
-    state = idle;
-    45e8:	40 48 24    	mov.w     #0x4484, w0
-    45ea:	10 42 88    	mov.w     w0, 0x842
+0000464e <.LSM159>:
+    // normallly start in idle; using flying for now
+    state = flying;
+    464e:	e0 4e 24    	mov.w     #0x44ee, w0
+    4650:	b0 41 88    	mov.w     w0, 0x836
 
-000045ec <.LSM140>:
+00004652 <.LSM160>:
     last_state = (STATE_HANDLER_T)NULL;
-    45ec:	44 28 ef    	clr.w     0x844
+    4652:	38 28 ef    	clr.w     0x838
 
-000045ee <.LSM141>:
+00004654 <.LSM161>:
     led_off(&led1);
-    45ee:	00 80 20    	mov.w     #0x800, w0
-    45f0:	75 00 07    	rcall     0x46dc <_led_off>
+    4654:	00 80 20    	mov.w     #0x800, w0
+    4656:	80 00 07    	rcall     0x4758 <_led_off>
 
-000045f2 <.L38>:
+00004658 <.L44>:
 
     while (1) {
+        // concatenate throttle+tilt into value
+        uint16_t val = (tilt << 1) + throttle;
+    4658:	30 42 80    	mov.w     0x846, w0
+    465a:	00 00 40    	add.w     w0, w0, w0
+    465c:	80 00 78    	mov.w     w0, w1
+    465e:	20 42 80    	mov.w     0x844, w0
+    4660:	00 80 40    	add.w     w1, w0, w0
+    4662:	10 07 98    	mov.w     w0, [w14+2]
+
+00004664 <.LSM163>:
+        UART_ctl(SEND_ROCKET_COMMANDS, val);
+    4664:	1e 00 90    	mov.w     [w14+2], w0
+    4666:	00 40 78    	mov.b     w0, w0
+    4668:	80 40 78    	mov.b     w0, w1
+    466a:	20 c0 b3    	mov.b     #0x2, w0
+    466c:	a5 fe 07    	rcall     0x43b8 <_UART_ctl>
+
+0000466e <.LSM164>:
         state();
-    45f2:	10 42 80    	mov.w     0x842, w0
-    45f4:	00 00 01    	call      w0
+    466e:	b0 41 80    	mov.w     0x836, w0
+    4670:	00 00 01    	call      w0
 
-000045f6 <.LSM143>:
+00004672 <.LBE3>:
     }
-    45f6:	fd ff 37    	bra       0x45f2 <.L38>
+    4672:	f2 ff 37    	bra       0x4658 <.L44>
 
-000045f8 <_init_ui>:
+00004674 <_init_ui>:
 
 _LED led1, led2, led3;
 _SW sw1, sw2, sw3;
 
 void init_ui(void) {
-    45f8:	00 00 fa    	lnk       #0x0
+    4674:	00 00 fa    	lnk       #0x0
 
-000045fa <.LSM1>:
+00004676 <.LSM1>:
     led_init(&led1, (uint16_t *)&PORTD, (uint16_t *)&TRISD, 
-    45fa:	74 c0 b3    	mov.b     #0x7, w4
-    45fc:	63 4e 20    	mov.w     #0x4e6, w3
-    45fe:	82 2d 20    	mov.w     #0x2d8, w2
-    4600:	a1 2d 20    	mov.w     #0x2da, w1
-    4602:	00 80 20    	mov.w     #0x800, w0
-    4604:	20 00 07    	rcall     0x4646 <_led_init>
+    4676:	74 c0 b3    	mov.b     #0x7, w4
+    4678:	63 4e 20    	mov.w     #0x4e6, w3
+    467a:	82 2d 20    	mov.w     #0x2d8, w2
+    467c:	a1 2d 20    	mov.w     #0x2da, w1
+    467e:	00 80 20    	mov.w     #0x800, w0
+    4680:	20 00 07    	rcall     0x46c2 <_led_init>
 
-00004606 <.LSM2>:
+00004682 <.LSM2>:
              (uint16_t *)&ANSD, 7);
     led_init(&led2, (uint16_t *)&PORTF, (uint16_t *)&TRISF, 
-    4606:	00 42 eb    	clr.b     w4
-    4608:	a3 4e 20    	mov.w     #0x4ea, w3
-    460a:	82 2e 20    	mov.w     #0x2e8, w2
-    460c:	a1 2e 20    	mov.w     #0x2ea, w1
-    460e:	80 80 20    	mov.w     #0x808, w0
-    4610:	1a 00 07    	rcall     0x4646 <_led_init>
+    4682:	00 42 eb    	clr.b     w4
+    4684:	a3 4e 20    	mov.w     #0x4ea, w3
+    4686:	82 2e 20    	mov.w     #0x2e8, w2
+    4688:	a1 2e 20    	mov.w     #0x2ea, w1
+    468a:	80 80 20    	mov.w     #0x808, w0
+    468c:	1a 00 07    	rcall     0x46c2 <_led_init>
 
-00004612 <.LSM3>:
+0000468e <.LSM3>:
              (uint16_t *)&ANSF, 0);
     led_init(&led3, (uint16_t *)&PORTF, (uint16_t *)&TRISF, 
-    4612:	14 c0 b3    	mov.b     #0x1, w4
-    4614:	a3 4e 20    	mov.w     #0x4ea, w3
-    4616:	82 2e 20    	mov.w     #0x2e8, w2
-    4618:	a1 2e 20    	mov.w     #0x2ea, w1
-    461a:	00 81 20    	mov.w     #0x810, w0
-    461c:	14 00 07    	rcall     0x4646 <_led_init>
+    468e:	14 c0 b3    	mov.b     #0x1, w4
+    4690:	a3 4e 20    	mov.w     #0x4ea, w3
+    4692:	82 2e 20    	mov.w     #0x2e8, w2
+    4694:	a1 2e 20    	mov.w     #0x2ea, w1
+    4696:	00 81 20    	mov.w     #0x810, w0
+    4698:	14 00 07    	rcall     0x46c2 <_led_init>
 
-0000461e <.LSM4>:
+0000469a <.LSM4>:
              (uint16_t *)&ANSF, 1);
     sw_init(&sw1, (uint16_t *)&PORTC, (uint16_t *)&TRISC, 
-    461e:	f4 c0 b3    	mov.b     #0xf, w4
-    4620:	43 4e 20    	mov.w     #0x4e4, w3
-    4622:	02 2d 20    	mov.w     #0x2d0, w2
-    4624:	21 2d 20    	mov.w     #0x2d2, w1
-    4626:	80 81 20    	mov.w     #0x818, w0
-    4628:	ad 00 07    	rcall     0x4784 <_sw_init>
+    469a:	f4 c0 b3    	mov.b     #0xf, w4
+    469c:	43 4e 20    	mov.w     #0x4e4, w3
+    469e:	02 2d 20    	mov.w     #0x2d0, w2
+    46a0:	21 2d 20    	mov.w     #0x2d2, w1
+    46a2:	80 81 20    	mov.w     #0x818, w0
+    46a4:	ad 00 07    	rcall     0x4800 <_sw_init>
 
-0000462a <.LSM5>:
+000046a6 <.LSM5>:
             (uint16_t *)&ANSC, 15);
     sw_init(&sw2, (uint16_t *)&PORTC, (uint16_t *)&TRISC, 
-    462a:	c4 c0 b3    	mov.b     #0xc, w4
-    462c:	43 4e 20    	mov.w     #0x4e4, w3
-    462e:	02 2d 20    	mov.w     #0x2d0, w2
-    4630:	21 2d 20    	mov.w     #0x2d2, w1
-    4632:	00 82 20    	mov.w     #0x820, w0
-    4634:	a7 00 07    	rcall     0x4784 <_sw_init>
+    46a6:	c4 c0 b3    	mov.b     #0xc, w4
+    46a8:	43 4e 20    	mov.w     #0x4e4, w3
+    46aa:	02 2d 20    	mov.w     #0x2d0, w2
+    46ac:	21 2d 20    	mov.w     #0x2d2, w1
+    46ae:	00 82 20    	mov.w     #0x820, w0
+    46b0:	a7 00 07    	rcall     0x4800 <_sw_init>
 
-00004636 <.LSM6>:
+000046b2 <.LSM6>:
             (uint16_t *)&ANSC, 12);
     sw_init(&sw3, (uint16_t *)&PORTB, (uint16_t *)&TRISB, 
-    4636:	c4 c0 b3    	mov.b     #0xc, w4
-    4638:	23 4e 20    	mov.w     #0x4e2, w3
-    463a:	82 2c 20    	mov.w     #0x2c8, w2
-    463c:	a1 2c 20    	mov.w     #0x2ca, w1
-    463e:	80 82 20    	mov.w     #0x828, w0
-    4640:	a1 00 07    	rcall     0x4784 <_sw_init>
+    46b2:	c4 c0 b3    	mov.b     #0xc, w4
+    46b4:	23 4e 20    	mov.w     #0x4e2, w3
+    46b6:	82 2c 20    	mov.w     #0x2c8, w2
+    46b8:	a1 2c 20    	mov.w     #0x2ca, w1
+    46ba:	80 82 20    	mov.w     #0x828, w0
+    46bc:	a1 00 07    	rcall     0x4800 <_sw_init>
 
-00004642 <.LSM7>:
+000046be <.LSM7>:
             (uint16_t *)&ANSB, 12);
 }
-    4642:	00 80 fa    	ulnk      
-    4644:	00 00 06    	return    
+    46be:	00 80 fa    	ulnk      
+    46c0:	00 00 06    	return    
 
-00004646 <_led_init>:
+000046c2 <_led_init>:
 
 void led_init(_LED *self, uint16_t *port, uint16_t *tris, 
               uint16_t *ans, uint8_t bit) {
-    4646:	0a 00 fa    	lnk       #0xa
-    4648:	00 0f 78    	mov.w     w0, [w14]
-    464a:	11 07 98    	mov.w     w1, [w14+2]
-    464c:	22 07 98    	mov.w     w2, [w14+4]
-    464e:	33 07 98    	mov.w     w3, [w14+6]
-    4650:	04 4f 98    	mov.b     w4, [w14+8]
+    46c2:	0a 00 fa    	lnk       #0xa
+    46c4:	00 0f 78    	mov.w     w0, [w14]
+    46c6:	11 07 98    	mov.w     w1, [w14+2]
+    46c8:	22 07 98    	mov.w     w2, [w14+4]
+    46ca:	33 07 98    	mov.w     w3, [w14+6]
+    46cc:	04 4f 98    	mov.b     w4, [w14+8]
 
-00004652 <.LSM9>:
+000046ce <.LSM9>:
     self->port = port;
-    4652:	1e 00 78    	mov.w     [w14], w0
-    4654:	9e 00 90    	mov.w     [w14+2], w1
-    4656:	01 08 78    	mov.w     w1, [w0]
+    46ce:	1e 00 78    	mov.w     [w14], w0
+    46d0:	9e 00 90    	mov.w     [w14+2], w1
+    46d2:	01 08 78    	mov.w     w1, [w0]
 
-00004658 <.LSM10>:
+000046d4 <.LSM10>:
     self->tris = tris;
-    4658:	1e 00 78    	mov.w     [w14], w0
-    465a:	ae 00 90    	mov.w     [w14+4], w1
-    465c:	11 00 98    	mov.w     w1, [w0+2]
+    46d4:	1e 00 78    	mov.w     [w14], w0
+    46d6:	ae 00 90    	mov.w     [w14+4], w1
+    46d8:	11 00 98    	mov.w     w1, [w0+2]
 
-0000465e <.LSM11>:
+000046da <.LSM11>:
     self->ans = ans;
-    465e:	1e 00 78    	mov.w     [w14], w0
-    4660:	be 00 90    	mov.w     [w14+6], w1
-    4662:	21 00 98    	mov.w     w1, [w0+4]
+    46da:	1e 00 78    	mov.w     [w14], w0
+    46dc:	be 00 90    	mov.w     [w14+6], w1
+    46de:	21 00 98    	mov.w     w1, [w0+4]
 
-00004664 <.LSM12>:
+000046e0 <.LSM12>:
     self->bit = bit;
-    4664:	1e 00 78    	mov.w     [w14], w0
-    4666:	8e 48 90    	mov.b     [w14+8], w1
-    4668:	61 40 98    	mov.b     w1, [w0+6]
+    46e0:	1e 00 78    	mov.w     [w14], w0
+    46e2:	8e 48 90    	mov.b     [w14+8], w1
+    46e4:	61 40 98    	mov.b     w1, [w0+6]
 
-0000466a <.LSM13>:
+000046e6 <.LSM13>:
 
     bitclear(self->ans, self->bit);
-    466a:	1e 00 78    	mov.w     [w14], w0
-    466c:	20 00 90    	mov.w     [w0+4], w0
-    466e:	9e 00 78    	mov.w     [w14], w1
-    4670:	a1 00 90    	mov.w     [w1+4], w1
-    4672:	11 01 78    	mov.w     [w1], w2
-    4674:	9e 00 78    	mov.w     [w14], w1
-    4676:	e1 40 90    	mov.b     [w1+6], w1
-    4678:	81 80 fb    	ze        w1, w1
-    467a:	13 00 20    	mov.w     #0x1, w3
-    467c:	81 18 dd    	sl.w      w3, w1, w1
-    467e:	81 80 ea    	com.w     w1, w1
-    4680:	81 00 61    	and.w     w2, w1, w1
-    4682:	01 08 78    	mov.w     w1, [w0]
-
-00004684 <.LSM14>:
-    bitclear(self->port, self->bit);
-    4684:	1e 00 78    	mov.w     [w14], w0
-    4686:	10 00 78    	mov.w     [w0], w0
-    4688:	9e 00 78    	mov.w     [w14], w1
-    468a:	91 00 78    	mov.w     [w1], w1
-    468c:	11 01 78    	mov.w     [w1], w2
-    468e:	9e 00 78    	mov.w     [w14], w1
-    4690:	e1 40 90    	mov.b     [w1+6], w1
-    4692:	81 80 fb    	ze        w1, w1
-    4694:	13 00 20    	mov.w     #0x1, w3
-    4696:	81 18 dd    	sl.w      w3, w1, w1
-    4698:	81 80 ea    	com.w     w1, w1
-    469a:	81 00 61    	and.w     w2, w1, w1
-    469c:	01 08 78    	mov.w     w1, [w0]
-
-0000469e <.LSM15>:
-    bitclear(self->tris, self->bit);
-    469e:	1e 00 78    	mov.w     [w14], w0
-    46a0:	10 00 90    	mov.w     [w0+2], w0
-    46a2:	9e 00 78    	mov.w     [w14], w1
-    46a4:	91 00 90    	mov.w     [w1+2], w1
-    46a6:	11 01 78    	mov.w     [w1], w2
-    46a8:	9e 00 78    	mov.w     [w14], w1
-    46aa:	e1 40 90    	mov.b     [w1+6], w1
-    46ac:	81 80 fb    	ze        w1, w1
-    46ae:	13 00 20    	mov.w     #0x1, w3
-    46b0:	81 18 dd    	sl.w      w3, w1, w1
-    46b2:	81 80 ea    	com.w     w1, w1
-    46b4:	81 00 61    	and.w     w2, w1, w1
-    46b6:	01 08 78    	mov.w     w1, [w0]
-
-000046b8 <.LSM16>:
-}
-    46b8:	00 80 fa    	ulnk      
-    46ba:	00 00 06    	return    
-
-000046bc <_led_on>:
-
-void led_on(_LED *self) {
-    46bc:	02 00 fa    	lnk       #0x2
-    46be:	00 0f 78    	mov.w     w0, [w14]
-
-000046c0 <.LSM18>:
-    bitset(self->port, self->bit);
-    46c0:	1e 00 78    	mov.w     [w14], w0
-    46c2:	10 00 78    	mov.w     [w0], w0
-    46c4:	9e 00 78    	mov.w     [w14], w1
-    46c6:	91 00 78    	mov.w     [w1], w1
-    46c8:	11 01 78    	mov.w     [w1], w2
-    46ca:	9e 00 78    	mov.w     [w14], w1
-    46cc:	e1 40 90    	mov.b     [w1+6], w1
-    46ce:	81 80 fb    	ze        w1, w1
-    46d0:	13 00 20    	mov.w     #0x1, w3
-    46d2:	81 18 dd    	sl.w      w3, w1, w1
-    46d4:	82 80 70    	ior.w     w1, w2, w1
-    46d6:	01 08 78    	mov.w     w1, [w0]
-
-000046d8 <.LSM19>:
-}
-    46d8:	00 80 fa    	ulnk      
-    46da:	00 00 06    	return    
-
-000046dc <_led_off>:
-
-void led_off(_LED *self) {
-    46dc:	02 00 fa    	lnk       #0x2
-    46de:	00 0f 78    	mov.w     w0, [w14]
-
-000046e0 <.LSM21>:
-    bitclear(self->port, self->bit);
-    46e0:	1e 00 78    	mov.w     [w14], w0
-    46e2:	10 00 78    	mov.w     [w0], w0
-    46e4:	9e 00 78    	mov.w     [w14], w1
-    46e6:	91 00 78    	mov.w     [w1], w1
-    46e8:	11 01 78    	mov.w     [w1], w2
+    46e6:	1e 00 78    	mov.w     [w14], w0
+    46e8:	20 00 90    	mov.w     [w0+4], w0
     46ea:	9e 00 78    	mov.w     [w14], w1
-    46ec:	e1 40 90    	mov.b     [w1+6], w1
-    46ee:	81 80 fb    	ze        w1, w1
-    46f0:	13 00 20    	mov.w     #0x1, w3
-    46f2:	81 18 dd    	sl.w      w3, w1, w1
-    46f4:	81 80 ea    	com.w     w1, w1
-    46f6:	81 00 61    	and.w     w2, w1, w1
-    46f8:	01 08 78    	mov.w     w1, [w0]
+    46ec:	a1 00 90    	mov.w     [w1+4], w1
+    46ee:	11 01 78    	mov.w     [w1], w2
+    46f0:	9e 00 78    	mov.w     [w14], w1
+    46f2:	e1 40 90    	mov.b     [w1+6], w1
+    46f4:	81 80 fb    	ze        w1, w1
+    46f6:	13 00 20    	mov.w     #0x1, w3
+    46f8:	81 18 dd    	sl.w      w3, w1, w1
+    46fa:	81 80 ea    	com.w     w1, w1
+    46fc:	81 00 61    	and.w     w2, w1, w1
+    46fe:	01 08 78    	mov.w     w1, [w0]
 
-000046fa <.LSM22>:
-}
-    46fa:	00 80 fa    	ulnk      
-    46fc:	00 00 06    	return    
-
-000046fe <_led_toggle>:
-
-void led_toggle(_LED *self) {
-    46fe:	02 00 fa    	lnk       #0x2
-    4700:	00 0f 78    	mov.w     w0, [w14]
-
-00004702 <.LSM24>:
-    bitflip(self->port, self->bit);
-    4702:	1e 00 78    	mov.w     [w14], w0
-    4704:	10 00 78    	mov.w     [w0], w0
-    4706:	9e 00 78    	mov.w     [w14], w1
-    4708:	91 00 78    	mov.w     [w1], w1
-    470a:	11 01 78    	mov.w     [w1], w2
-    470c:	9e 00 78    	mov.w     [w14], w1
-    470e:	e1 40 90    	mov.b     [w1+6], w1
-    4710:	81 80 fb    	ze        w1, w1
-    4712:	13 00 20    	mov.w     #0x1, w3
-    4714:	81 18 dd    	sl.w      w3, w1, w1
-    4716:	81 00 69    	xor.w     w2, w1, w1
+00004700 <.LSM14>:
+    bitclear(self->port, self->bit);
+    4700:	1e 00 78    	mov.w     [w14], w0
+    4702:	10 00 78    	mov.w     [w0], w0
+    4704:	9e 00 78    	mov.w     [w14], w1
+    4706:	91 00 78    	mov.w     [w1], w1
+    4708:	11 01 78    	mov.w     [w1], w2
+    470a:	9e 00 78    	mov.w     [w14], w1
+    470c:	e1 40 90    	mov.b     [w1+6], w1
+    470e:	81 80 fb    	ze        w1, w1
+    4710:	13 00 20    	mov.w     #0x1, w3
+    4712:	81 18 dd    	sl.w      w3, w1, w1
+    4714:	81 80 ea    	com.w     w1, w1
+    4716:	81 00 61    	and.w     w2, w1, w1
     4718:	01 08 78    	mov.w     w1, [w0]
 
-0000471a <.LSM25>:
+0000471a <.LSM15>:
+    bitclear(self->tris, self->bit);
+    471a:	1e 00 78    	mov.w     [w14], w0
+    471c:	10 00 90    	mov.w     [w0+2], w0
+    471e:	9e 00 78    	mov.w     [w14], w1
+    4720:	91 00 90    	mov.w     [w1+2], w1
+    4722:	11 01 78    	mov.w     [w1], w2
+    4724:	9e 00 78    	mov.w     [w14], w1
+    4726:	e1 40 90    	mov.b     [w1+6], w1
+    4728:	81 80 fb    	ze        w1, w1
+    472a:	13 00 20    	mov.w     #0x1, w3
+    472c:	81 18 dd    	sl.w      w3, w1, w1
+    472e:	81 80 ea    	com.w     w1, w1
+    4730:	81 00 61    	and.w     w2, w1, w1
+    4732:	01 08 78    	mov.w     w1, [w0]
+
+00004734 <.LSM16>:
 }
-    471a:	00 80 fa    	ulnk      
-    471c:	00 00 06    	return    
+    4734:	00 80 fa    	ulnk      
+    4736:	00 00 06    	return    
 
-0000471e <_led_write>:
+00004738 <_led_on>:
 
-void led_write(_LED *self, uint16_t val) {
-    471e:	04 00 fa    	lnk       #0x4
-    4720:	00 0f 78    	mov.w     w0, [w14]
-    4722:	11 07 98    	mov.w     w1, [w14+2]
+void led_on(_LED *self) {
+    4738:	02 00 fa    	lnk       #0x2
+    473a:	00 0f 78    	mov.w     w0, [w14]
 
-00004724 <.LSM27>:
-    if (val)
-    4724:	1e 00 90    	mov.w     [w14+2], w0
-    4726:	00 00 e0    	cp0.w     w0
-    4728:	0d 00 32    	bra       Z, 0x4744 <.L7>
+0000473c <.LSM18>:
+    bitset(self->port, self->bit);
+    473c:	1e 00 78    	mov.w     [w14], w0
+    473e:	10 00 78    	mov.w     [w0], w0
+    4740:	9e 00 78    	mov.w     [w14], w1
+    4742:	91 00 78    	mov.w     [w1], w1
+    4744:	11 01 78    	mov.w     [w1], w2
+    4746:	9e 00 78    	mov.w     [w14], w1
+    4748:	e1 40 90    	mov.b     [w1+6], w1
+    474a:	81 80 fb    	ze        w1, w1
+    474c:	13 00 20    	mov.w     #0x1, w3
+    474e:	81 18 dd    	sl.w      w3, w1, w1
+    4750:	82 80 70    	ior.w     w1, w2, w1
+    4752:	01 08 78    	mov.w     w1, [w0]
 
-0000472a <.LSM28>:
-        bitset(self->port, self->bit);
-    472a:	1e 00 78    	mov.w     [w14], w0
-    472c:	10 00 78    	mov.w     [w0], w0
-    472e:	9e 00 78    	mov.w     [w14], w1
-    4730:	91 00 78    	mov.w     [w1], w1
-    4732:	11 01 78    	mov.w     [w1], w2
-    4734:	9e 00 78    	mov.w     [w14], w1
-    4736:	e1 40 90    	mov.b     [w1+6], w1
-    4738:	81 80 fb    	ze        w1, w1
-    473a:	13 00 20    	mov.w     #0x1, w3
-    473c:	81 18 dd    	sl.w      w3, w1, w1
-    473e:	82 80 70    	ior.w     w1, w2, w1
-    4740:	01 08 78    	mov.w     w1, [w0]
-    4742:	0d 00 37    	bra       0x475e <.L6>
-
-00004744 <.L7>:
-    else
-        bitclear(self->port, self->bit);
-    4744:	1e 00 78    	mov.w     [w14], w0
-    4746:	10 00 78    	mov.w     [w0], w0
-    4748:	9e 00 78    	mov.w     [w14], w1
-    474a:	91 00 78    	mov.w     [w1], w1
-    474c:	11 01 78    	mov.w     [w1], w2
-    474e:	9e 00 78    	mov.w     [w14], w1
-    4750:	e1 40 90    	mov.b     [w1+6], w1
-    4752:	81 80 fb    	ze        w1, w1
-    4754:	13 00 20    	mov.w     #0x1, w3
-    4756:	81 18 dd    	sl.w      w3, w1, w1
-    4758:	81 80 ea    	com.w     w1, w1
-    475a:	81 00 61    	and.w     w2, w1, w1
-    475c:	01 08 78    	mov.w     w1, [w0]
-
-0000475e <.L6>:
+00004754 <.LSM19>:
 }
-    475e:	00 80 fa    	ulnk      
-    4760:	00 00 06    	return    
+    4754:	00 80 fa    	ulnk      
+    4756:	00 00 06    	return    
 
-00004762 <_led_read>:
+00004758 <_led_off>:
 
-uint16_t led_read(_LED *self) {
-    4762:	02 00 fa    	lnk       #0x2
-    4764:	00 0f 78    	mov.w     w0, [w14]
+void led_off(_LED *self) {
+    4758:	02 00 fa    	lnk       #0x2
+    475a:	00 0f 78    	mov.w     w0, [w14]
 
-00004766 <.LSM32>:
-    return bitread(self->port, self->bit);
-    4766:	1e 00 78    	mov.w     [w14], w0
-    4768:	10 00 78    	mov.w     [w0], w0
-    476a:	90 00 78    	mov.w     [w0], w1
-    476c:	1e 00 78    	mov.w     [w14], w0
-    476e:	60 40 90    	mov.b     [w0+6], w0
-    4770:	00 80 fb    	ze        w0, w0
-    4772:	12 00 20    	mov.w     #0x1, w2
-    4774:	00 10 dd    	sl.w      w2, w0, w0
-    4776:	00 80 60    	and.w     w1, w0, w0
-    4778:	00 f0 a7    	btsc.w    w0, #0xf
-    477a:	00 00 ea    	neg.w     w0, w0
-    477c:	00 00 ea    	neg.w     w0, w0
-    477e:	4f 00 de    	lsr.w     w0, #0xf, w0
+0000475c <.LSM21>:
+    bitclear(self->port, self->bit);
+    475c:	1e 00 78    	mov.w     [w14], w0
+    475e:	10 00 78    	mov.w     [w0], w0
+    4760:	9e 00 78    	mov.w     [w14], w1
+    4762:	91 00 78    	mov.w     [w1], w1
+    4764:	11 01 78    	mov.w     [w1], w2
+    4766:	9e 00 78    	mov.w     [w14], w1
+    4768:	e1 40 90    	mov.b     [w1+6], w1
+    476a:	81 80 fb    	ze        w1, w1
+    476c:	13 00 20    	mov.w     #0x1, w3
+    476e:	81 18 dd    	sl.w      w3, w1, w1
+    4770:	81 80 ea    	com.w     w1, w1
+    4772:	81 00 61    	and.w     w2, w1, w1
+    4774:	01 08 78    	mov.w     w1, [w0]
 
-00004780 <.LSM33>:
+00004776 <.LSM22>:
 }
-    4780:	00 80 fa    	ulnk      
-    4782:	00 00 06    	return    
+    4776:	00 80 fa    	ulnk      
+    4778:	00 00 06    	return    
 
-00004784 <_sw_init>:
+0000477a <_led_toggle>:
 
-void sw_init(_SW *self, uint16_t *port, uint16_t *tris, 
-             uint16_t *ans, uint8_t bit) {
-    4784:	0a 00 fa    	lnk       #0xa
-    4786:	00 0f 78    	mov.w     w0, [w14]
-    4788:	11 07 98    	mov.w     w1, [w14+2]
-    478a:	22 07 98    	mov.w     w2, [w14+4]
-    478c:	33 07 98    	mov.w     w3, [w14+6]
-    478e:	04 4f 98    	mov.b     w4, [w14+8]
+void led_toggle(_LED *self) {
+    477a:	02 00 fa    	lnk       #0x2
+    477c:	00 0f 78    	mov.w     w0, [w14]
 
-00004790 <.LSM35>:
-    self->port = port;
-    4790:	1e 00 78    	mov.w     [w14], w0
-    4792:	9e 00 90    	mov.w     [w14+2], w1
+0000477e <.LSM24>:
+    bitflip(self->port, self->bit);
+    477e:	1e 00 78    	mov.w     [w14], w0
+    4780:	10 00 78    	mov.w     [w0], w0
+    4782:	9e 00 78    	mov.w     [w14], w1
+    4784:	91 00 78    	mov.w     [w1], w1
+    4786:	11 01 78    	mov.w     [w1], w2
+    4788:	9e 00 78    	mov.w     [w14], w1
+    478a:	e1 40 90    	mov.b     [w1+6], w1
+    478c:	81 80 fb    	ze        w1, w1
+    478e:	13 00 20    	mov.w     #0x1, w3
+    4790:	81 18 dd    	sl.w      w3, w1, w1
+    4792:	81 00 69    	xor.w     w2, w1, w1
     4794:	01 08 78    	mov.w     w1, [w0]
 
-00004796 <.LSM36>:
-    self->tris = tris;
-    4796:	1e 00 78    	mov.w     [w14], w0
-    4798:	ae 00 90    	mov.w     [w14+4], w1
-    479a:	11 00 98    	mov.w     w1, [w0+2]
+00004796 <.LSM25>:
+}
+    4796:	00 80 fa    	ulnk      
+    4798:	00 00 06    	return    
 
-0000479c <.LSM37>:
-    self->ans = ans;
-    479c:	1e 00 78    	mov.w     [w14], w0
-    479e:	be 00 90    	mov.w     [w14+6], w1
-    47a0:	21 00 98    	mov.w     w1, [w0+4]
+0000479a <_led_write>:
 
-000047a2 <.LSM38>:
-    self->bit = bit;
-    47a2:	1e 00 78    	mov.w     [w14], w0
-    47a4:	8e 48 90    	mov.b     [w14+8], w1
-    47a6:	61 40 98    	mov.b     w1, [w0+6]
+void led_write(_LED *self, uint16_t val) {
+    479a:	04 00 fa    	lnk       #0x4
+    479c:	00 0f 78    	mov.w     w0, [w14]
+    479e:	11 07 98    	mov.w     w1, [w14+2]
 
-000047a8 <.LSM39>:
+000047a0 <.LSM27>:
+    if (val)
+    47a0:	1e 00 90    	mov.w     [w14+2], w0
+    47a2:	00 00 e0    	cp0.w     w0
+    47a4:	0d 00 32    	bra       Z, 0x47c0 <.L7>
 
-    bitclear(self->ans, self->bit);
-    47a8:	1e 00 78    	mov.w     [w14], w0
-    47aa:	20 00 90    	mov.w     [w0+4], w0
-    47ac:	9e 00 78    	mov.w     [w14], w1
-    47ae:	a1 00 90    	mov.w     [w1+4], w1
-    47b0:	11 01 78    	mov.w     [w1], w2
-    47b2:	9e 00 78    	mov.w     [w14], w1
-    47b4:	e1 40 90    	mov.b     [w1+6], w1
-    47b6:	81 80 fb    	ze        w1, w1
-    47b8:	13 00 20    	mov.w     #0x1, w3
-    47ba:	81 18 dd    	sl.w      w3, w1, w1
-    47bc:	81 80 ea    	com.w     w1, w1
-    47be:	81 00 61    	and.w     w2, w1, w1
-    47c0:	01 08 78    	mov.w     w1, [w0]
+000047a6 <.LSM28>:
+        bitset(self->port, self->bit);
+    47a6:	1e 00 78    	mov.w     [w14], w0
+    47a8:	10 00 78    	mov.w     [w0], w0
+    47aa:	9e 00 78    	mov.w     [w14], w1
+    47ac:	91 00 78    	mov.w     [w1], w1
+    47ae:	11 01 78    	mov.w     [w1], w2
+    47b0:	9e 00 78    	mov.w     [w14], w1
+    47b2:	e1 40 90    	mov.b     [w1+6], w1
+    47b4:	81 80 fb    	ze        w1, w1
+    47b6:	13 00 20    	mov.w     #0x1, w3
+    47b8:	81 18 dd    	sl.w      w3, w1, w1
+    47ba:	82 80 70    	ior.w     w1, w2, w1
+    47bc:	01 08 78    	mov.w     w1, [w0]
+    47be:	0d 00 37    	bra       0x47da <.L6>
 
-000047c2 <.LSM40>:
-    bitset(self->tris, self->bit);
-    47c2:	1e 00 78    	mov.w     [w14], w0
-    47c4:	10 00 90    	mov.w     [w0+2], w0
-    47c6:	9e 00 78    	mov.w     [w14], w1
-    47c8:	91 00 90    	mov.w     [w1+2], w1
-    47ca:	11 01 78    	mov.w     [w1], w2
-    47cc:	9e 00 78    	mov.w     [w14], w1
-    47ce:	e1 40 90    	mov.b     [w1+6], w1
-    47d0:	81 80 fb    	ze        w1, w1
-    47d2:	13 00 20    	mov.w     #0x1, w3
-    47d4:	81 18 dd    	sl.w      w3, w1, w1
-    47d6:	82 80 70    	ior.w     w1, w2, w1
+000047c0 <.L7>:
+    else
+        bitclear(self->port, self->bit);
+    47c0:	1e 00 78    	mov.w     [w14], w0
+    47c2:	10 00 78    	mov.w     [w0], w0
+    47c4:	9e 00 78    	mov.w     [w14], w1
+    47c6:	91 00 78    	mov.w     [w1], w1
+    47c8:	11 01 78    	mov.w     [w1], w2
+    47ca:	9e 00 78    	mov.w     [w14], w1
+    47cc:	e1 40 90    	mov.b     [w1+6], w1
+    47ce:	81 80 fb    	ze        w1, w1
+    47d0:	13 00 20    	mov.w     #0x1, w3
+    47d2:	81 18 dd    	sl.w      w3, w1, w1
+    47d4:	81 80 ea    	com.w     w1, w1
+    47d6:	81 00 61    	and.w     w2, w1, w1
     47d8:	01 08 78    	mov.w     w1, [w0]
 
-000047da <.LSM41>:
+000047da <.L6>:
 }
     47da:	00 80 fa    	ulnk      
     47dc:	00 00 06    	return    
 
-000047de <_sw_read>:
+000047de <_led_read>:
 
-uint16_t sw_read(_SW *self) {
+uint16_t led_read(_LED *self) {
     47de:	02 00 fa    	lnk       #0x2
     47e0:	00 0f 78    	mov.w     w0, [w14]
 
-000047e2 <.LSM43>:
+000047e2 <.LSM32>:
     return bitread(self->port, self->bit);
     47e2:	1e 00 78    	mov.w     [w14], w0
     47e4:	10 00 78    	mov.w     [w0], w0
@@ -11928,112 +11969,215 @@ uint16_t sw_read(_SW *self) {
     47f8:	00 00 ea    	neg.w     w0, w0
     47fa:	4f 00 de    	lsr.w     w0, #0xf, w0
 
-000047fc <.LSM44>:
+000047fc <.LSM33>:
 }
     47fc:	00 80 fa    	ulnk      
     47fe:	00 00 06    	return    
+
+00004800 <_sw_init>:
+
+void sw_init(_SW *self, uint16_t *port, uint16_t *tris, 
+             uint16_t *ans, uint8_t bit) {
+    4800:	0a 00 fa    	lnk       #0xa
+    4802:	00 0f 78    	mov.w     w0, [w14]
+    4804:	11 07 98    	mov.w     w1, [w14+2]
+    4806:	22 07 98    	mov.w     w2, [w14+4]
+    4808:	33 07 98    	mov.w     w3, [w14+6]
+    480a:	04 4f 98    	mov.b     w4, [w14+8]
+
+0000480c <.LSM35>:
+    self->port = port;
+    480c:	1e 00 78    	mov.w     [w14], w0
+    480e:	9e 00 90    	mov.w     [w14+2], w1
+    4810:	01 08 78    	mov.w     w1, [w0]
+
+00004812 <.LSM36>:
+    self->tris = tris;
+    4812:	1e 00 78    	mov.w     [w14], w0
+    4814:	ae 00 90    	mov.w     [w14+4], w1
+    4816:	11 00 98    	mov.w     w1, [w0+2]
+
+00004818 <.LSM37>:
+    self->ans = ans;
+    4818:	1e 00 78    	mov.w     [w14], w0
+    481a:	be 00 90    	mov.w     [w14+6], w1
+    481c:	21 00 98    	mov.w     w1, [w0+4]
+
+0000481e <.LSM38>:
+    self->bit = bit;
+    481e:	1e 00 78    	mov.w     [w14], w0
+    4820:	8e 48 90    	mov.b     [w14+8], w1
+    4822:	61 40 98    	mov.b     w1, [w0+6]
+
+00004824 <.LSM39>:
+
+    bitclear(self->ans, self->bit);
+    4824:	1e 00 78    	mov.w     [w14], w0
+    4826:	20 00 90    	mov.w     [w0+4], w0
+    4828:	9e 00 78    	mov.w     [w14], w1
+    482a:	a1 00 90    	mov.w     [w1+4], w1
+    482c:	11 01 78    	mov.w     [w1], w2
+    482e:	9e 00 78    	mov.w     [w14], w1
+    4830:	e1 40 90    	mov.b     [w1+6], w1
+    4832:	81 80 fb    	ze        w1, w1
+    4834:	13 00 20    	mov.w     #0x1, w3
+    4836:	81 18 dd    	sl.w      w3, w1, w1
+    4838:	81 80 ea    	com.w     w1, w1
+    483a:	81 00 61    	and.w     w2, w1, w1
+    483c:	01 08 78    	mov.w     w1, [w0]
+
+0000483e <.LSM40>:
+    bitset(self->tris, self->bit);
+    483e:	1e 00 78    	mov.w     [w14], w0
+    4840:	10 00 90    	mov.w     [w0+2], w0
+    4842:	9e 00 78    	mov.w     [w14], w1
+    4844:	91 00 90    	mov.w     [w1+2], w1
+    4846:	11 01 78    	mov.w     [w1], w2
+    4848:	9e 00 78    	mov.w     [w14], w1
+    484a:	e1 40 90    	mov.b     [w1+6], w1
+    484c:	81 80 fb    	ze        w1, w1
+    484e:	13 00 20    	mov.w     #0x1, w3
+    4850:	81 18 dd    	sl.w      w3, w1, w1
+    4852:	82 80 70    	ior.w     w1, w2, w1
+    4854:	01 08 78    	mov.w     w1, [w0]
+
+00004856 <.LSM41>:
+}
+    4856:	00 80 fa    	ulnk      
+    4858:	00 00 06    	return    
+
+0000485a <_sw_read>:
+
+uint16_t sw_read(_SW *self) {
+    485a:	02 00 fa    	lnk       #0x2
+    485c:	00 0f 78    	mov.w     w0, [w14]
+
+0000485e <.LSM43>:
+    return bitread(self->port, self->bit);
+    485e:	1e 00 78    	mov.w     [w14], w0
+    4860:	10 00 78    	mov.w     [w0], w0
+    4862:	90 00 78    	mov.w     [w0], w1
+    4864:	1e 00 78    	mov.w     [w14], w0
+    4866:	60 40 90    	mov.b     [w0+6], w0
+    4868:	00 80 fb    	ze        w0, w0
+    486a:	12 00 20    	mov.w     #0x1, w2
+    486c:	00 10 dd    	sl.w      w2, w0, w0
+    486e:	00 80 60    	and.w     w1, w0, w0
+    4870:	00 f0 a7    	btsc.w    w0, #0xf
+    4872:	00 00 ea    	neg.w     w0, w0
+    4874:	00 00 ea    	neg.w     w0, w0
+    4876:	4f 00 de    	lsr.w     w0, #0xf, w0
+
+00004878 <.LSM44>:
+}
+    4878:	00 80 fa    	ulnk      
+    487a:	00 00 06    	return    
 Disassembly of section .dinit:
 
-00004800 <.dinit>:
-    4800:	ca 11 00    	nop       
-    4802:	80 08 00    	nop       
-    4804:	80 00 00    	nop       
-    4806:	42 08 00    	nop       
-    4808:	10 00 00    	nop       
-    480a:	80 00 00    	nop       
-    480c:	4a 1a 00    	nop       
-    480e:	b8 01 00    	nop       
-    4810:	80 00 00    	nop       
-    4812:	00 08 00    	nop       
-    4814:	30 00 00    	nop       
-    4816:	80 00 00    	nop       
-    4818:	82 1d 00    	nop       
-    481a:	10 00 00    	nop       
-    481c:	82 00 00    	nop       
-    481e:	bd 37 86    	mov.w     0xc6f6, w13
-    4820:	33 bd 37    	bra       0xffffc288
-    4822:	06 35 bd    	subr.w    0x1506
-    4824:	37 86 36    	bra       LEU, 0xffff5494
-    4826:	bd 37 86    	mov.w     0xc6f6, w13
-    4828:	37 00 00    	nop       
-    482a:	8e 1c 00    	nop       
-    482c:	6e 00 00    	nop       
-    482e:	80 00 00    	nop       
-    4830:	02 1c 00    	nop       
-    4832:	8c 00 00    	nop       
-    4834:	80 00 00    	nop       
-    4836:	00 1e 00    	nop       
-    4838:	80 00 00    	nop       
-    483a:	80 00 00    	nop       
-    483c:	30 08 00    	nop       
-    483e:	12 00 00    	nop       
-    4840:	80 00 00    	nop       
-    4842:	56 08 00    	nop       
-    4844:	74 09 00    	nop       
-    4846:	80 00 00    	nop       
-    4848:	52 08 00    	nop       
-    484a:	04 00 00    	nop       
-    484c:	80 00 00    	nop       
-    484e:	fc 1c 00    	nop       
-    4850:	4a 00 00    	nop       
-    4852:	82 00 00    	nop       
-    4854:	30 31 32    	bra       Z, 0xaab6
-    4856:	33 34 35    	bra       LT, 0xb0be
-    4858:	36 37 38    	bra       NOV, 0xb6c6
-    485a:	39 61 62    	and.b     w4, [w9++], [--w2]
-    485c:	63 64 65    	and.b     w10, #0x3, [--w8]
-    485e:	66 67 68    	xor.b     w0, #0x6, [--w14]
-    4860:	69 6a 6b    	xor.b     w6, #0x9, [++w4]
-    4862:	6c 6d 6e    	xor.b     w12, #0xc, [++w10]
-    4864:	6f 70 71    	.pword 0x71706f
-    4866:	72 73 74    	.pword 0x747372
-    4868:	75 76 77    	.pword 0x777675
-    486a:	78 79 7a    	.pword 0x7a7978
-    486c:	00 00 00    	nop       
-    486e:	21 15 11    	subr.w    w2, [w1--], [w10--]
-    4870:	0e 0d 0c    	bra       OA, 0x628e
-    4872:	0b 0b 0a    	bfins     #0xb, #0x0, w9, w10
-    4874:	0a 09 09 
-    4876:	09 09 09    	repeat    #0x909
-    4878:	08 08 08    	do        #0x808, 0x588c
-    487a:	08 08 08 
-    487c:	08 07 07    	rcall     0x568e
-    487e:	07 07 07    	rcall     0x568e
-    4880:	07 07 07    	rcall     0x5690
-    4882:	07 07 07    	rcall     0x5692
-    4884:	07 07 00    	nop       
-    4886:	92 1d 00    	nop       
-    4888:	04 00 00    	nop       
-    488a:	80 00 00    	nop       
-    488c:	68 1d 00    	nop       
-    488e:	1a 00 00    	nop       
-    4890:	82 00 00    	nop       
-    4892:	68 6a 6c    	xor.b     w8, #0x8, [++w4]
-    4894:	74 7a 4c    	.pword 0x4c7a74
-    4896:	00 00 01    	call      w0
-    4898:	00 02 00    	nop       
-    489a:	04 00 08    	do        #0x4, 0x689e
-    489c:	00 10 00 
-    489e:	00 00 20    	mov.w     #0x0, w0
-    48a0:	2b 2d 23    	mov.w     #0x32d2, w11
-    48a2:	30 00 00    	nop       
-    48a4:	46 1d 00    	nop       
-    48a6:	22 00 00    	nop       
-    48a8:	82 00 00    	nop       
-    48aa:	30 31 32    	bra       Z, 0xab0c
-    48ac:	33 34 35    	bra       LT, 0xb114
-    48ae:	36 37 38    	bra       NOV, 0xb71c
-    48b0:	39 41 42    	add.b     w4, [w9++], w2
-    48b2:	43 44 45    	add.b     w10, [--w3], w8
-    48b4:	46 00 30    	bra       OV, 0x4942
-    48b6:	31 32 33    	bra       N, 0xad1a
-    48b8:	34 35 36    	bra       LEU, 0xb322
-    48ba:	37 38 39    	bra       NC, 0xb92a
-    48bc:	61 62 63    	and.b     w6, #0x1, [--w4]
-    48be:	64 65 66    	and.b     w12, #0x4, [--w10]
+0000487c <.dinit>:
+    487c:	d4 11 00    	nop       
+    487e:	80 08 00    	nop       
+    4880:	80 00 00    	nop       
+    4882:	30 08 00    	nop       
+    4884:	18 00 00    	nop       
+    4886:	80 00 00    	nop       
+    4888:	5e 08 00    	nop       
+    488a:	02 00 00    	nop       
+    488c:	82 00 00    	nop       
+    488e:	03 00 00    	nop       
+    4890:	54 1a 00    	nop       
+    4892:	b8 01 00    	nop       
+    4894:	80 00 00    	nop       
+    4896:	00 08 00    	nop       
+    4898:	30 00 00    	nop       
+    489a:	80 00 00    	nop       
+    489c:	8c 1d 00    	nop       
+    489e:	10 00 00    	nop       
+    48a0:	82 00 00    	nop       
+    48a2:	bd 37 86    	mov.w     0xc6f6, w13
+    48a4:	33 bd 37    	bra       0xffffc30c
+    48a6:	06 35 bd    	subr.w    0x1506
+    48a8:	37 86 36    	bra       LEU, 0xffff5518
+    48aa:	bd 37 86    	mov.w     0xc6f6, w13
+    48ac:	37 00 00    	nop       
+    48ae:	98 1c 00    	nop       
+    48b0:	6e 00 00    	nop       
+    48b2:	80 00 00    	nop       
+    48b4:	0c 1c 00    	nop       
+    48b6:	8c 00 00    	nop       
+    48b8:	80 00 00    	nop       
+    48ba:	00 1e 00    	nop       
+    48bc:	80 00 00    	nop       
+    48be:	80 00 00    	nop       
+    48c0:	48 08 00    	nop       
+    48c2:	12 00 00    	nop       
+    48c4:	80 00 00    	nop       
+    48c6:	60 08 00    	nop       
+    48c8:	74 09 00    	nop       
+    48ca:	80 00 00    	nop       
+    48cc:	5a 08 00    	nop       
+    48ce:	04 00 00    	nop       
+    48d0:	80 00 00    	nop       
+    48d2:	06 1d 00    	nop       
+    48d4:	4a 00 00    	nop       
+    48d6:	82 00 00    	nop       
+    48d8:	30 31 32    	bra       Z, 0xab3a
+    48da:	33 34 35    	bra       LT, 0xb142
+    48dc:	36 37 38    	bra       NOV, 0xb74a
+    48de:	39 61 62    	and.b     w4, [w9++], [--w2]
+    48e0:	63 64 65    	and.b     w10, #0x3, [--w8]
+    48e2:	66 67 68    	xor.b     w0, #0x6, [--w14]
+    48e4:	69 6a 6b    	xor.b     w6, #0x9, [++w4]
+    48e6:	6c 6d 6e    	xor.b     w12, #0xc, [++w10]
+    48e8:	6f 70 71    	.pword 0x71706f
+    48ea:	72 73 74    	.pword 0x747372
+    48ec:	75 76 77    	.pword 0x777675
+    48ee:	78 79 7a    	.pword 0x7a7978
+    48f0:	00 00 00    	nop       
+    48f2:	21 15 11    	subr.w    w2, [w1--], [w10--]
+    48f4:	0e 0d 0c    	bra       OA, 0x6312
+    48f6:	0b 0b 0a    	bfins     #0xb, #0x0, w9, w10
+    48f8:	0a 09 09 
+    48fa:	09 09 09    	repeat    #0x909
+    48fc:	08 08 08    	do        #0x808, 0x5910
+    48fe:	08 08 08 
+    4900:	08 07 07    	rcall     0x5712
+    4902:	07 07 07    	rcall     0x5712
+    4904:	07 07 07    	rcall     0x5714
+    4906:	07 07 07    	rcall     0x5716
+    4908:	07 07 00    	nop       
+    490a:	9c 1d 00    	nop       
+    490c:	04 00 00    	nop       
+    490e:	80 00 00    	nop       
+    4910:	72 1d 00    	nop       
+    4912:	1a 00 00    	nop       
+    4914:	82 00 00    	nop       
+    4916:	68 6a 6c    	xor.b     w8, #0x8, [++w4]
+    4918:	74 7a 4c    	.pword 0x4c7a74
+    491a:	00 00 01    	call      w0
+    491c:	00 02 00    	nop       
+    491e:	04 00 08    	do        #0x4, 0x6922
+    4920:	00 10 00 
+    4922:	00 00 20    	mov.w     #0x0, w0
+    4924:	2b 2d 23    	mov.w     #0x32d2, w11
+    4926:	30 00 00    	nop       
+    4928:	50 1d 00    	nop       
+    492a:	22 00 00    	nop       
+    492c:	82 00 00    	nop       
+    492e:	30 31 32    	bra       Z, 0xab90
+    4930:	33 34 35    	bra       LT, 0xb198
+    4932:	36 37 38    	bra       NOV, 0xb7a0
+    4934:	39 41 42    	add.b     w4, [w9++], w2
+    4936:	43 44 45    	add.b     w10, [--w3], w8
+    4938:	46 00 30    	bra       OV, 0x49c6
+    493a:	31 32 33    	bra       N, 0xad9e
+    493c:	34 35 36    	bra       LEU, 0xb3a6
+    493e:	37 38 39    	bra       NC, 0xb9ae
+    4940:	61 62 63    	and.b     w6, #0x1, [--w4]
+    4942:	64 65 66    	and.b     w12, #0x4, [--w10]
 	...
 Disassembly of section .isr:
 
-000048c4 <__DefaultInterrupt>:
-    48c4:	00 40 da    	.pword 0xda4000
-    48c6:	00 00 fe    	reset     
+00004948 <__DefaultInterrupt>:
+    4948:	00 40 da    	.pword 0xda4000
+    494a:	00 00 fe    	reset     

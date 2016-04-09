@@ -1,5 +1,5 @@
 /*
-** Copyright (c) 2016, Evan Dorsky
+** Copyright (c) 2016, Mason del Rosario
 ** All rights reserved.
 **
 ** Redistribution and use in source and binary forms, with or without
@@ -39,18 +39,18 @@ typedef struct {
     uint16_t step_size;
     uint8_t state;
     uint16_t duty_cyc;
-    _PIN *pins[8];
+    _PIN *pins[4];
     _OC *oc;
 } _ST;
 
 extern _ST st_d;
 
-void st_init(_ST *self, _PIN *pin1, _PIN *pin2, _PIN *pin3, _PIN *pin4, _PIN *pin5, _PIN *pin6, _PIN *pin7, _PIN *pin8, _OC *oc, uint16_t duty_cyc);
+void st_init(_ST *self, _PIN *pin1, _PIN *pin2, _PIN *pin3, _PIN *pin4, _OC *oc, uint16_t duty_cyc);
 
 void st_speed(_ST *self, float speed);
 void st_state(_ST *self, uint8_t state);
 void st_mode(_ST *self, uint16_t mode);
 void st_direction(_ST *self, uint8_t dir);
-void st_step_size(_ST *self, uint8_t size);
+// void st_step_size(_ST *self, uint8_t size);
 
 #endif

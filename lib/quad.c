@@ -16,7 +16,7 @@ _QUAD quad1, quad2;
 
 void quad_read(_QUAD *self) {
     disable_interrupts();
-    pin_set(&D[2]);
+    // pin_set(&D[2]);  // debug pin
     self -> a_curr = pin_read(self -> A);
     self -> b_curr = pin_read(self -> B);
     unsigned char latest_read = (self -> a_curr << 1) + self -> b_curr;
@@ -39,7 +39,7 @@ void quad_read(_QUAD *self) {
     
     self -> a_prev = self -> a_curr;
     self -> b_prev = self -> b_curr;
-    pin_clear(&D[2]);
+    // pin_clear(&D[2]);    // debug pin
     enable_interrupts();
 }
 
