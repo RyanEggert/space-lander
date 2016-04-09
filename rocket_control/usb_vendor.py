@@ -123,3 +123,28 @@ class PIC_USB(object):
             self.dev.ctrl_transfer(0x40, self.COMMAND_DCMOTOR, int(speed), int(direction))
         except usb.core.USBError:
             print "Could not send COMMAND_DCMOTOR vendor request."
+
+    def debug_servo_set_pos(self, pos):
+        try:
+            self.dev.ctrl_transfer(0x40, self.DEBUG_SERVO_SET_POS, int(pos))
+        except usb.core.USBError:
+            print "Could not send DEBUG_SERVO_SET_POS vendor request."
+
+    def debug_servo_set_freq(self, freq):
+        shift_freq = freq * 10
+        try:
+            self.dev.ctrl_transfer(0x40, self.DEBUG_SERVO_SET_FREQ, int(shift_freq))
+        except usb.core.USBError:
+            print "Could not send DEBUG_SERVO_SET_FREQ vendor request."
+
+    def debug_servo_sleep(self):
+        try:
+            self.dev.ctrl_transfer(0x40, self.DEBUG_SERVO_SLEEP, 0)
+        except usb.core.USBError:
+            print "Could not send DEBUG_SERVO_SLEEP vendor request."
+
+    def debug_servo_wake(self):
+        try:
+            self.dev.ctrl_transfer(0x40, self.DEBUG_SERVO_WAKE, 0)
+        except usb.core.USBError:
+            print "Could not send DEBUG_SERVO_WAKE vendor request."

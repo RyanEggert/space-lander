@@ -77,7 +77,7 @@ void VendorRequests(void) {
 
     case DEBUG_SERVO_SET_POS:
         temp.w = USB_setup.wValue.w;
-        servo_set(&servo4, temp.w, 0);
+        servo_set(&servo4, temp.w, (float)(temp.w)/10);
         BD[EP0IN].bytecount = 0;    // set EP0 IN byte count to 0
         BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
         break;
@@ -85,6 +85,18 @@ void VendorRequests(void) {
     case DEBUG_SERVO_SET_FREQ:
         temp.w = USB_setup.wValue.w;
         servo_driver_set_pwm_freq(&sd1, 60);
+        BD[EP0IN].bytecount = 0;    // set EP0 IN byte count to 0
+        BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
+        break;
+
+    case DEBUG_SERVO_SLEEP:
+        servo_driver_sleep(&sd1);
+        BD[EP0IN].bytecount = 0;    // set EP0 IN byte count to 0
+        BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
+        break;
+
+    case DEBUG_SERVO_WAKE:
+        servo_driver_wake(&sd1);
         BD[EP0IN].bytecount = 0;    // set EP0 IN byte count to 0
         BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
         break;
