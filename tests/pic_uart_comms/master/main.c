@@ -1,6 +1,6 @@
 #include <p24FJ128GB206.h>
 #include <stdio.h>
-#include <stdlib.h>
+#include <stdlib.h> 
 #include "config.h"
 #include "common.h"
 #include "pin.h"
@@ -88,7 +88,7 @@ void VendorRequestsOut(void) {
 }
 
 void UART_ctl(uint8_t cmd, uint8_t value) {
-    sprintf(tx_msg, "%01x%01x\r", value, cmd); //value could be state or command
+    sprintf(tx_msg, "%01x%01x\r", value, cmd);  //  value could be state or command
     uart_puts(&uart1, tx_msg);
     if (cmd == GET_ROCKET_VALS) {
         uart_gets(&uart1, rec_msg, 64);

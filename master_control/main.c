@@ -6,14 +6,20 @@
 #include "pin.h"
 #include "ui.h"
 #include "timer.h"
+#include "i2c.h"
 #include "uart.h"
 #include "usb.h"
+#include "servo.h"
 #include "msgs.h"
 
 #define SET_STATE    0   // Vendor request that receives 2 unsigned integer values
 #define GET_VALS    1   // Vendor request that returns 2 unsigned integer values 
 #define GET_ROCKET_INFO 2  // Vendor request that returns rocket state, speed, and tilt
 
+#define DEBUG_SERVO_SET_POS 60
+#define DEBUG_SERVO_SET_FREQ 61
+#define DEBUG_SERVO_SLEEP 62
+#define DEBUG_SERVO_WAKE 63
 uint8_t RC_TXBUF[1024], RC_RXBUF[1024];
 
 
@@ -68,6 +74,21 @@ void VendorRequests(void) {
         BD[EP0IN].bytecount = 6;    // set EP0 IN byte count to 4
         BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
         break;
+
+    case DEBUG_SERVO_SET_POS:
+        temp.w = USB_setup.wValue.w;
+        servo_set(&servo4, temp.w, 0);
+        BD[EP0IN].bytecount = 0;    // set EP0 IN byte count to 0
+        BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
+        break;
+
+    case DEBUG_SERVO_SET_FREQ:
+        temp.w = USB_setup.wValue.w;
+        servo_driver_set_pwm_freq(&sd1, 60);
+        BD[EP0IN].bytecount = 0;    // set EP0 IN byte count to 0
+        BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
+        break;
+
     default:
         USB_error_flags |= 0x01;    // set Request Error Flag
     }
@@ -114,9 +135,11 @@ void setup() {
     timer_setPeriod(&timer2, 0.5);
     timer_start(&timer1);
     timer_start(&timer2);
+    // servo_driver_set_pwm_freq(&sd1, 50);
 
     setup_uart();
     rocket_tilt, rocket_speed = 0;
+
 }
 
 int16_t main(void) {
@@ -125,6 +148,9 @@ int16_t main(void) {
     init_ui();
     init_timer();
     init_uart();
+    init_i2c();
+    init_servo_driver(&sd1, &i2c3, 16000., 0x0);
+    init_servo(&servo4, &sd1, 14);
     setup();
     uint16_t counter = 0;
     uint8_t status_msg [64];
@@ -134,19 +160,19 @@ int16_t main(void) {
     U1EIE = 0xFF;
     IFS5bits.USB1IF = 0; //flag
     IEC5bits.USB1IE = 1; //enable
-
     while (1) {
         if (timer_flag(&timer1)) {
             // Blink green light to show normal operation.
             timer_lower(&timer1);
             led_toggle(&led2);
+            servo_set(&servo4, 1500, 0);
         }
         if (timer_flag(&timer2)) {
             // Transmit UART data
             timer_lower(&timer2);
             // UART_ctl(SEND_ROCKET_COMMANDS, 0b11);
             // UART_ctl(SET_ROCKET_STATE, IDLE);
-            UART_ctl(GET_ROCKET_VALS, 0b0);
+            // UART_ctl(GET_ROCKET_VALS, 0b0);
         }
     }
 }
