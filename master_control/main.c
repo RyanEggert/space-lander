@@ -16,10 +16,6 @@
 #define GET_VALS    1   // Vendor request that returns 2 unsigned integer values 
 #define GET_ROCKET_INFO 2  // Vendor request that returns rocket state, speed, and tilt
 
-#define DEBUG_SERVO_SET_POS 60
-#define DEBUG_SERVO_SET_FREQ 61
-#define DEBUG_SERVO_SLEEP 62
-#define DEBUG_SERVO_WAKE 63
 uint8_t RC_TXBUF[1024], RC_RXBUF[1024];
 
 
@@ -72,32 +68,6 @@ void VendorRequests(void) {
         BD[EP0IN].address[4] = temp.b[0];
         BD[EP0IN].address[5] = temp.b[1];
         BD[EP0IN].bytecount = 6;    // set EP0 IN byte count to 4
-        BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
-        break;
-
-    case DEBUG_SERVO_SET_POS:
-        temp.w = USB_setup.wValue.w;
-        servo_set(&servo4, temp.w, (float)(temp.w)/10);
-        BD[EP0IN].bytecount = 0;    // set EP0 IN byte count to 0
-        BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
-        break;
-
-    case DEBUG_SERVO_SET_FREQ:
-        temp.w = USB_setup.wValue.w;
-        servo_driver_set_pwm_freq(&sd1, 60);
-        BD[EP0IN].bytecount = 0;    // set EP0 IN byte count to 0
-        BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
-        break;
-
-    case DEBUG_SERVO_SLEEP:
-        servo_driver_sleep(&sd1);
-        BD[EP0IN].bytecount = 0;    // set EP0 IN byte count to 0
-        BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
-        break;
-
-    case DEBUG_SERVO_WAKE:
-        servo_driver_wake(&sd1);
-        BD[EP0IN].bytecount = 0;    // set EP0 IN byte count to 0
         BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
         break;
 
@@ -161,8 +131,6 @@ int16_t main(void) {
     init_timer();
     init_uart();
     init_i2c();
-    init_servo_driver(&sd1, &i2c3, 16000., 0x0);
-    init_servo(&servo4, &sd1, 14);
     setup();
     uint16_t counter = 0;
     uint8_t status_msg [64];
@@ -177,7 +145,6 @@ int16_t main(void) {
             // Blink green light to show normal operation.
             timer_lower(&timer1);
             led_toggle(&led2);
-            servo_set(&servo4, 1500, 0);
         }
         if (timer_flag(&timer2)) {
             // Transmit UART data
