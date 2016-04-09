@@ -30,6 +30,8 @@ uint8_t throttle, tilt; //commands
 uint8_t rocketstuff[64], rec_msg[64];
 uint8_t cmd, value;
 uint16_t val1, val2;
+volatile uint16_t sw_state = 0;
+volatile uint16_t sw_out;
 
 void VendorRequests(void) {
     disable_interrupts();
@@ -164,6 +166,18 @@ void setup() {
 
 }
 
+void read_limitsw(_TIMER *timer){ //debounce the things
+    sw_state = (sw_state<<1) | pin_read(&D[4]) | 0xe000;
+    if(sw_state==0xf000){
+        sw_out = 1;
+    }
+
+    if(sw_state==0xefff){
+        sw_out = 0;
+    }
+}
+
+
 int16_t main(void) {
     // printf("Starting Rocket Controller...\r\n");
     init_clock();
@@ -175,6 +189,11 @@ int16_t main(void) {
     init_oc();
     init_dcm();
     setup();
+
+    pin_digitalIn(&D[4]);
+
+    timer_every(&timer4, .0001, read_limitsw);
+
     // oc_pwm(&oc1, &D[4], &timer4, 3000, 32000);
     uint16_t counter = 0;
     uint64_t msg;
@@ -186,23 +205,14 @@ int16_t main(void) {
     IFS5bits.USB1IF = 0; //flag
     IEC5bits.USB1IE = 1; //enable
 
-    dcm_velocity(&dcm1, 64000, 1);
+    // dcm_velocity(&dcm1, 64000, 1);
     while (1) {
-        if (timer_flag(&timer1)) {
-            // Blink green light to show normal operation.
-            timer_lower(&timer1);
-            led_toggle(&led2);
+        if (sw_out==1){
+            led_on(&led3);
+        }
+        else{
+            led_off(&led3);
         }
 
-        if (timer_flag(&timer2)) {
-            timer_lower(&timer2);
-            // UARTrequests();
-            if (quad1.counter > 5000)
-            {
-                led_on(&led1);
-            } else {
-                led_off(&led1);
-            }
-        }
     }
 }
