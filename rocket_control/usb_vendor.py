@@ -98,6 +98,8 @@ class PIC_USB(object):
             out["tilt"] = self.parse16(ret, 0)
             out["speed"] = self.parse16(ret, 2)
             out["state"] = self.parse16(ret, 4)
+            # out["motor_speed"] = self.parse16(ret, 6)
+            # out["stepper_speed"] = self.parse16(ret, 8)
             return out
 
     def get_quad_info(self):

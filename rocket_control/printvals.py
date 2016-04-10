@@ -5,11 +5,11 @@ comms = PIC_USB(0x0005)
 
 def main():
     print("START")
-    loop_time = .05  # How often to run the main loop, in seconds
+    loop_time = .1  # How often to run the main loop, in seconds
     while True:
         start_time = time.clock()
-        quad_info()
-
+        # quad_info()
+        rocket_info()
         while (time.clock() - start_time) < loop_time:
             pass
 
@@ -19,6 +19,8 @@ def rocket_info():
         info["tilt"],
         info["speed"],
         info["state"]
+        # info["motor_speed"],
+        # info["stepper_speed"],
     )
 
 
