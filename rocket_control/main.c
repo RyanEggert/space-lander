@@ -30,7 +30,7 @@ uint8_t RC_TXBUF[1024], RC_RXBUF[1024];
 #define GET_ROCKET_INFO 2
 #define DEBUG_UART_BUFFERS 3
 #define GET_QUAD_INFO 4
-
+//
 // endstop pins
 _PIN *Y_END_TOP, *Y_END_BOT, *X_END_L, *X_END_R;
 
