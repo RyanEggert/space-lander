@@ -24,14 +24,20 @@ uint8_t RC_TXBUF[1024], RC_RXBUF[1024];
 #define DEBUG_UART_BUFFERS 3
 #define GET_QUAD_INFO 4
 
+
 uint16_t rocket_state;
 uint16_t rocket_speed, rocket_tilt;
 uint8_t throttle, tilt; //commands
 uint8_t rocketstuff[64], rec_msg[64];
 uint8_t cmd, value;
 uint16_t val1, val2;
+
 volatile uint16_t sw_state = 0;
-volatile uint16_t sw_out;
+volatile uint16_t sw_state2 = 0;
+volatile uint16_t sw_state3 = 0;
+volatile uint16_t sw_state4 = 0;
+
+volatile bool TOP_DSTOP, BOT_DSTOP, RT_DSTOP, LT_DSTOP;
 
 void VendorRequests(void) {
     disable_interrupts();
@@ -169,11 +175,38 @@ void setup() {
 void read_limitsw(_TIMER *timer){ //debounce the things
     sw_state = (sw_state<<1) | pin_read(&D[4]) | 0xe000;
     if(sw_state==0xf000){
-        sw_out = 1;
+        TOP_DSTOP = 1;
     }
 
     if(sw_state==0xefff){
-        sw_out = 0;
+        TOP_DSTOP = 0;
+    }
+
+    sw_state2 = (sw_state2<<1) | pin_read(&D[8]) | 0xe000; //changed from d5
+    if(sw_state2==0xf000){
+        BOT_DSTOP = 1;
+    }
+
+    if(sw_state2==0xefff){
+        BOT_DSTOP = 0;
+    }
+
+    sw_state3 = (sw_state3<<1) | pin_read(&D[6]) | 0xe000;
+    if(sw_state3==0xf000){
+        LT_DSTOP = 1;
+    }
+
+    if(sw_state3==0xefff){
+        LT_DSTOP = 0;
+    }
+
+    sw_state4 = (sw_state4<<1) | pin_read(&D[7]) | 0xe000;
+    if(sw_state4==0xf000){
+        RT_DSTOP = 1;
+    }
+
+    if(sw_state4==0xefff){
+        RT_DSTOP = 0;
     }
 }
 
@@ -190,9 +223,12 @@ int16_t main(void) {
     init_dcm();
     setup();
 
-    pin_digitalIn(&D[4]);
+    pin_digitalIn(&D[4]); //TOP
+    pin_digitalIn(&D[8]); //changed from d5 BOTTOM
+    pin_digitalIn(&D[6]); //LEFT
+    pin_digitalIn(&D[7]); //RIGHT
 
-    timer_every(&timer4, .0001, read_limitsw);
+    timer_every(&timer4, .001, read_limitsw);
 
     // oc_pwm(&oc1, &D[4], &timer4, 3000, 32000);
     uint16_t counter = 0;
@@ -207,11 +243,25 @@ int16_t main(void) {
 
     // dcm_velocity(&dcm1, 64000, 1);
     while (1) {
-        if (sw_out==1){
+        if (TOP_DSTOP==1){
             led_on(&led3);
         }
         else{
             led_off(&led3);
+        }
+
+        if (BOT_DSTOP==1){
+            led_on(&led2);
+        }
+        else{
+            led_off(&led2);
+        }
+
+        if (LT_DSTOP==1){
+            led_on(&led1);
+        }
+        else{
+            led_off(&led1);
         }
 
     }
