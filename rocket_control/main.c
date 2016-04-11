@@ -24,6 +24,7 @@ uint8_t RC_TXBUF[1024], RC_RXBUF[1024];
 #define CRASHED 1
 //flying is already defined as 2
 #define READY 3 //rocket has been zeroed
+#define TESTING 4
 
 #define SET_STATE    0   // Vendor request that receives 2 unsigned integer values
 #define GET_VALS    1   // Vendor request that returns 2 unsigned integer values 
@@ -340,7 +341,6 @@ void flying(void) {
     if (tilt == 1) {
         // drive servo to CCW
         led_on(&led3);
-        // Send command to tilt rocket to left
         if (rocket_tilt < tilt_max) {
             rocket_tilt += 1;    
         }
@@ -348,7 +348,6 @@ void flying(void) {
     else if (tilt == 2) {
         // drive servo CW
         led_on(&led3);
-        // Send command to tilt rocket to right; i2c to servo driver
         if (rocket_tilt > tilt_min) {
             rocket_tilt -= 1;    
         }
@@ -356,6 +355,9 @@ void flying(void) {
     else {
         led_off(&led3);
     }
+
+    // Write tilt to servo
+    // servo_set(&orientation_servo, rocket_tilt, 0);
 
     // Handle throttle
     if (throttle) {
@@ -386,6 +388,31 @@ void flying(void) {
         // turn off tilt stick led before exiting state
         led_off(&led3);
     }
+}
+
+void testing(void ){
+    if (state != last_state) {  // if we are entering the state, do initialization stuff
+        last_state = state;
+        timer_start(&timer1);
+        counter = 0;
+        motor_speed = 0;
+        stepper_speed = 0;
+    }
+
+    if (timer_flag(&timer1)) {
+        timer_lower(&timer1);
+        counter++;
+    }
+
+    // Check for state transitions
+    if (counter == 10) {
+        state = reset;
+    }
+
+    if (state != last_state) {
+        timer_stop(&timer1);
+        // trials++;  // if we are leaving the state, do clean up stuff
+    }    
 }
 
 void lose(void) {
@@ -454,7 +481,7 @@ void setup() {
 
     // Init endstop switches
     Y_END_TOP = &D[4];
-    Y_END_BOT = &D[5];
+    Y_END_BOT = &D[12];
     X_END_L = &D[6];
     X_END_R = &D[7];
 
@@ -466,7 +493,7 @@ void setup() {
     setup_uart();
     throttle, tilt = 0;
     val1, val2 = 8;
-    rocket_tilt = 15;
+    rocket_tilt = 500;
 
 }
 
@@ -479,6 +506,9 @@ int16_t main(void) {
     init_uart();
     init_quad();
     init_oc();
+    init_servo_driver(&sd1, &i2c3, 16000., 0x0);
+    init_servo(&orientation_servo, &sd1, 14);
+    // servo_driver_wake(&sd1);     // this line seems to be killing UART comms...
     // init_stepper();
     init_dcm();
     setup();
@@ -492,7 +522,7 @@ int16_t main(void) {
     U1EIE = 0xFF;
     IFS5bits.USB1IF = 0; //flag
     IEC5bits.USB1IE = 1; //enable
-    state = flying;
+    state = testing;
     last_state = (STATE_HANDLER_T)NULL;
 
     while (1) {
