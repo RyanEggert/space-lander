@@ -28,10 +28,6 @@ uint8_t RC_TXBUF[1024], RC_RXBUF[1024];
 
 #define DEBUG_SERVO_SET_POS 60
 #define DEBUG_SERVO_SET_FREQ 61
-#define DEBUG_SERVO_SLEEP 62
-#define DEBUG_SERVO_WAKE 63
-#define DEBUG_SERVO_RESET 64
-
 
 uint16_t rocket_state;
 uint16_t rocket_speed, rocket_tilt;
@@ -116,29 +112,10 @@ void VendorRequests(void) {
 
     case DEBUG_SERVO_SET_FREQ:
         temp.w = USB_setup.wValue.w;
-        servo_driver_set_pwm_freq(&sd1, ((float)(temp.w))/10);
+        servo_driver_configure(&sd1, ((float)(temp.w)) / 10);
         BD[EP0IN].bytecount = 0;    // set EP0 IN byte count to 0
         BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
         break;
-
-    case DEBUG_SERVO_SLEEP:
-        servo_driver_sleep(&sd1);
-        BD[EP0IN].bytecount = 0;    // set EP0 IN byte count to 0
-        BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
-        break;
-
-    case DEBUG_SERVO_WAKE:
-        servo_driver_wake(&sd1);
-        BD[EP0IN].bytecount = 0;    // set EP0 IN byte count to 0
-        BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
-        break;
-
-    case DEBUG_SERVO_RESET:
-        servo_driver_reset(&sd1);
-        BD[EP0IN].bytecount = 0;    // set EP0 IN byte count to 0
-        BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
-        break;
-
 
     default:
         USB_error_flags |= 0x01;    // set Request Error Flag
@@ -204,7 +181,7 @@ void setup() {
     dcm_init(&dcm1, &D[10], &D[11], 1e3, 0, &oc7);
     quad_init(&quad1, &D[8], &D[9]); // quad1 uses pins D12 & D13
     quad_every(&quad1, &timer5, 0.0000875); // quad1 will use timer5 interrupts
-    
+
     // General use debugging output pin
     pin_digitalOut(&D[2]);
 
@@ -229,7 +206,6 @@ int16_t main(void) {
     setup();
     init_servo_driver(&sd1, &i2c3, 16000., 0x0);
     init_servo(&servo4, &sd1, 0);
-    servo_driver_wake(&sd1);
     // oc_pwm(&oc1, &D[4], &timer4, 3000, 32000);
     uint16_t counter = 0;
     uint64_t msg;

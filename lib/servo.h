@@ -19,7 +19,8 @@
 #define PCA9685_SUBADR2 0x3
 #define PCA9685_SUBADR3 0x4
 
-#define PCA9685_MODE1 0x0
+#define PCA9685_MODE1 0x00
+#define PCA9685_MODE2 0x01
 #define PCA9685_PRESCALE 0xFE
 
 #define DEV0_ON_L 0x6
@@ -39,6 +40,7 @@ typedef struct {
     uint8_t i2c_addr;
     float i2c_freq;
     uint8_t mode1;  // Normal, awake mode of operation [MODE1 register]
+    uint8_t mode2;  // Normal configuration of MODE2 register
 } _SERVODRIVER;
 
 // Servo Driver
@@ -56,13 +58,7 @@ void close_servo_driver_i2c(_SERVODRIVER *self);
 
 void init_servo(_SERVO *self, _SERVODRIVER *sd, uint8_t number);
 
-void servo_driver_sleep(_SERVODRIVER *self);
-
-void servo_driver_wake(_SERVODRIVER *self);
-
-void servo_driver_reset(_SERVODRIVER *self);
-
-void servo_driver_set_pwm_freq(_SERVODRIVER *self, float new_freq);
+void servo_driver_configure(_SERVODRIVER *self, float pwm_freq);
 
 void servo_set_pwm(_SERVO *self, uint16_t on, uint16_t off);
 

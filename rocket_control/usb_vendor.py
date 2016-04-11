@@ -12,9 +12,6 @@ class PIC_USB(object):
 
         self.DEBUG_SERVO_SET_POS = 60
         self.DEBUG_SERVO_SET_FREQ = 61
-        self.DEBUG_SERVO_SLEEP = 62
-        self.DEBUG_SERVO_WAKE = 63
-        self.DEBUG_SERVO_RESET = 64
 
         self.vendor_id = 0x6666
         self.product_id = product_id
