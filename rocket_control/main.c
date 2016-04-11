@@ -24,6 +24,7 @@ uint8_t RC_TXBUF[1024], RC_RXBUF[1024];
 #define CRASHED 1
 //flying is already defined as 2
 #define READY 3 //rocket has been zeroed
+#define TESTING 4
 
 #define SET_STATE    0   // Vendor request that receives 2 unsigned integer values
 #define GET_VALS    1   // Vendor request that returns 2 unsigned integer values 
@@ -61,21 +62,22 @@ volatile uint16_t sw_state4 = 0;
 volatile bool TOP_DSTOP, BOT_DSTOP, RT_DSTOP, LT_DSTOP;
 
 // kinematic model vals
-uint16_t thrust_val = 0x0010;
-uint16_t grav_val = 0x0010;
+uint16_t thrust_val = 0x0100;
+uint16_t grav_val = 0x0100;
 
 // stepper vars
 uint16_t stepper_count = 0;
 uint16_t stepper_lim = 1000;
 uint8_t stepper_state = 0;  // 0 = drive to X_END_L, 1 = drive to middle, 2 = stop
-uint16_t stepper_speed = 0;
+float stepper_speed = 0;
+uint16_t stepper_speed_int;
 
 // dc motor vars
 uint16_t motor_state;
 uint16_t motor_dir_track = 0;
 uint16_t motor_speed = 0;
 uint16_t motor_speed_limit = 0x7FFF;
-uint16_t motor_deadband = 0;  // will find once gantry is built
+uint16_t motor_deadband = 19000;  // will find once gantry is built
 
 // tilt vals (maxes out at 4096; may use smaller range)
 uint16_t tilt_max = 4095;
@@ -94,7 +96,7 @@ void rocket_model() {
                 motor_speed = motor_deadband;
             }
         }
-        else { // rocket rising
+        else if (motor_dir_track) { // rocket rising
             if (motor_speed < motor_speed_limit) {
                 motor_speed = motor_speed + thrust_val;
             }
@@ -108,25 +110,25 @@ void rocket_model() {
                 motor_speed = motor_speed + grav_val;
             }
         }
-        else {  // rocket rising
+        else if (motor_dir_track) {  // rocket rising
             if (motor_speed - motor_deadband > thrust_val) {
                 motor_speed = motor_speed - grav_val;
             }
             else {
-                motor_dir_track = motor_deadband;
-                motor_speed = grav_val;
+                motor_dir_track = 0;
+                motor_speed = motor_deadband;
             }
         }
         // led_off(&led2);
     }
     if (motor_dir_track) {
         // pin_set(MOTOR_DIR);
-        dcm_velocity(&dcm1, motor_speed, 1);
-    }
-    else {
+        // 
         dcm_velocity(&dcm1, motor_speed, 0);
     }
-    // handle stepper motor
+    else {
+        dcm_velocity(&dcm1, motor_speed, 1);
+    }
 
     rocket_speed = motor_speed + stepper_speed;
 }
@@ -172,7 +174,7 @@ void VendorRequests(void) {
         temp.w = rocket_speed;
         BD[EP0IN].address[2] = temp.b[0];
         BD[EP0IN].address[3] = temp.b[1];
-        temp.w = rocket_state;
+        temp.w = motor_dir_track;
         BD[EP0IN].address[4] = temp.b[0];
         BD[EP0IN].address[5] = temp.b[1];
         temp.w = motor_speed;
@@ -340,7 +342,7 @@ void reset(void) {
 void flying(void) {
     if (state != last_state) {  // if we are entering the state, do initialization stuff
         last_state = state;
-        motor_speed = 0;
+        motor_speed = motor_deadband;
         stepper_speed = 0;
     }
 
@@ -348,23 +350,29 @@ void flying(void) {
     // Handle tilt
     if (tilt == 1) {
         // drive servo to CCW
+        st_direction(&st_d, 0);
+        st_speed(&st_d, 150);
         led_on(&led3);
-        // Send command to tilt rocket to left
         if (rocket_tilt < tilt_max) {
             rocket_tilt += 1;    
         }
     }
     else if (tilt == 2) {
         // drive servo CW
+        st_direction(&st_d, 1);
+        st_speed(&st_d, 150);   
         led_on(&led3);
-        // Send command to tilt rocket to right; i2c to servo driver
         if (rocket_tilt > tilt_min) {
             rocket_tilt -= 1;    
         }
     }
     else {
+        st_speed(&st_d, 0);
         led_off(&led3);
     }
+
+    // Write tilt to servo
+    // servo_set(&orientation_servo, rocket_tilt, 0);
 
     // Handle throttle
     if (throttle) {
@@ -461,21 +469,21 @@ void setup() {
     // General use debugging output pin
     // pin_digitalOut(&D[2]);
 
-    // Init endstop switches
-    Y_END_TOP = &D[4];
-    Y_END_BOT = &D[5];
-    X_END_L = &D[6];
-    X_END_R = &D[7];
+    // // Init endstop switches
+    // Y_END_TOP = &D[4];
+    // Y_END_BOT = &D[12];
+    // X_END_L = &D[6];
+    // X_END_R = &D[7];
 
-    pin_digitalIn(Y_END_TOP);
-    pin_digitalIn(Y_END_BOT);
-    pin_digitalIn(X_END_L);
-    pin_digitalIn(X_END_R);
+    // pin_digitalIn(Y_END_TOP);
+    // pin_digitalIn(Y_END_BOT);
+    // pin_digitalIn(X_END_L);
+    // pin_digitalIn(X_END_R);
 
     setup_uart();
     throttle, tilt = 0;
     val1, val2 = 8;
-    rocket_tilt = 15;
+    rocket_tilt = 500;
 
 }
 
@@ -489,7 +497,7 @@ void read_limitsw(_TIMER *timer){ //debounce the things
         TOP_DSTOP = 0;
     }
 
-    sw_state2 = (sw_state2<<1) | pin_read(&D[8]) | 0xe000; //changed from d5
+    sw_state2 = (sw_state2<<1) | pin_read(&D[12]) | 0xe000; //changed from d5
     if(sw_state2==0xf000){
         BOT_DSTOP = 1;
     }
@@ -522,17 +530,22 @@ int16_t main(void) {
     // printf("Starting Rocket Controller...\r\n");
     init_clock();
     init_ui();
+    init_oc();
     init_pin();
     init_timer();
-    init_uart();
+    init_st();      // if this is first, then D[1] - D[3] don't work as outputs
+    init_uart();    // if this is first, then D[0] doesn't output OC wfm
     init_quad();
-    init_oc();
+    // init_servo_driver(&sd1, &i2c3, 16000., 0x0);
+    // init_servo(&orientation_servo, &sd1, 14);
+    // servo_driver_wake(&sd1);     // this line seems to be killing UART comms...
     // init_stepper();
     init_dcm();
     setup();
 
+    // pin_digitalOut(&D[0]); // OC pin out
     pin_digitalIn(&D[4]); //TOP
-    pin_digitalIn(&D[8]); //changed from d5 BOTTOM
+    pin_digitalIn(&D[12]); //changed from d5 BOTTOM
     pin_digitalIn(&D[6]); //LEFT
     pin_digitalIn(&D[7]); //RIGHT
 
@@ -554,6 +567,7 @@ int16_t main(void) {
 
     // dcm_velocity(&dcm1, 64000, 1);
 
+    st_state(&st_d, 1);
     while (1) {
         ServiceUSB();
         UARTrequests();
