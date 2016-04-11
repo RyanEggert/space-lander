@@ -40,7 +40,6 @@ typedef void (*STATE_HANDLER_T)(void);
 void idle(void);
 void reset(void);
 void flying(void);
-void testing(void);
 void win(void);
 void lose(void);
 
@@ -404,35 +403,6 @@ void flying(void) {
         // turn off tilt stick led before exiting state
         led_off(&led3);
     }
-}
-
-void testing(void ){
-    if (state != last_state) {  // if we are entering the state, do initialization stuff
-        last_state = state;
-        // timer_start(&timer1);
-        counter = 0;
-        motor_speed = 0;
-        stepper_speed = 0;
-    }
-
-    // Perform state tasks
-    if (throttle) {
-        // move up
-        dcm_velocity(&dcm1, 0x7FFF, 1);
-    }
-    else {
-        // dcm_velocity();
-    }
-
-    // Check for state transitions
-    if (counter == 10) {
-        state = reset;
-    }
-
-    if (state != last_state) {
-        timer_stop(&timer1);
-        // trials++;  // if we are leaving the state, do clean up stuff
-    }    
 }
 
 void lose(void) {
