@@ -127,9 +127,9 @@ class PIC_USB(object):
         except usb.core.USBError:
             print "Could not send COMMAND_DCMOTOR vendor request."
 
-    def debug_servo_set_pos(self, pos):
+    def debug_servo_set_pos(self, servo_index, pos):
         try:
-            self.dev.ctrl_transfer(0x40, self.DEBUG_SERVO_SET_POS, int(pos))
+            self.dev.ctrl_transfer(0x40, self.DEBUG_SERVO_SET_POS, int(pos), int(servo_index))
         except usb.core.USBError:
             print "Could not send DEBUG_SERVO_SET_POS vendor request."
 

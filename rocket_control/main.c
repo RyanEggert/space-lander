@@ -39,6 +39,7 @@ uint16_t val1, val2;
 void VendorRequests(void) {
     disable_interrupts();
     WORD temp;
+    WORD temp2;
     WORD32 temp32;
     switch (USB_setup.bRequest) {
     case SET_STATE:
@@ -104,14 +105,16 @@ void VendorRequests(void) {
         break;
 
     case DEBUG_SERVO_SET_POS:
-        temp.w = USB_setup.wValue.w;
-        servo_set(&servo4, temp.w, 0);
+        temp.w = USB_setup.wValue.w;   // Commanded position
+        temp2.w = USB_setup.wIndex.w;  // Servo driver index
+        servo_usb_set(&sd1, temp2.b[0], temp.w);
         BD[EP0IN].bytecount = 0;    // set EP0 IN byte count to 0
         BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
         break;
 
     case DEBUG_SERVO_SET_FREQ:
         temp.w = USB_setup.wValue.w;
+        
         servo_driver_configure(&sd1, ((float)(temp.w)) / 10);
         BD[EP0IN].bytecount = 0;    // set EP0 IN byte count to 0
         BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit

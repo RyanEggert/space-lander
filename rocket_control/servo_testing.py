@@ -2,8 +2,8 @@ from usb_vendor import PIC_USB
 
 def main():
     c = PIC_USB(0x0005)
-    c.debug_servo_set_pos(200)
-    c.debug_servo_set_freq(50)
+    c.debug_servo_set_pos(5, 2500)
+    # c.debug_servo_set_freq(50)
 
 if __name__ == '__main__':
     # import argparse

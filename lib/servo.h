@@ -33,24 +33,30 @@
 #define ALLDEV_OFF_L 0xFC
 #define ALLDEV_OFF_H 0xFD
 
+typedef struct _SERVO _SERVO;
+typedef struct _SERVODRIVER _SERVODRIVER;
+
+
 // Servo Driver
-typedef struct {
+typedef struct _SERVODRIVER {
     _I2C *bus;
     uint8_t hardware_addr;
     uint8_t i2c_addr;
     float i2c_freq;
     uint8_t mode1;  // Normal, awake mode of operation [MODE1 register]
     uint8_t mode2;  // Normal configuration of MODE2 register
-} _SERVODRIVER;
+    _SERVO *servos[15];
+};
 
 // Servo Driver
-typedef struct {
+typedef struct _SERVO{
     _SERVODRIVER *driver;
     uint8_t num;
-} _SERVO;
+};
 
 extern _SERVODRIVER sd1;
-extern _SERVO orientation_servo, speed_ind_servo, fuel_ind_servo, servo0, servo1, servo2, servo3, servo4;
+extern _SERVO servo0, servo1, servo2, servo3, servo4, servo5, servo6, servo7, servo8, servo9, servo10, servo11, servo12, servo13, servo14, servo15;
+
 
 void init_servo_driver(_SERVODRIVER *self, _I2C *bus, float i2c_freq, uint8_t hardware_addr);
 
@@ -63,6 +69,8 @@ void servo_driver_configure(_SERVODRIVER *self, float pwm_freq);
 void servo_set_pwm(_SERVO *self, uint16_t on, uint16_t off);
 
 void servo_set(_SERVO *self, uint16_t val, bool invert);
+
+void servo_usb_set(_SERVODRIVER *self, uint8_t index, uint16_t val);
 
 void servo_driver_begin_transmission(_SERVODRIVER *dest, uint8_t rw);
 

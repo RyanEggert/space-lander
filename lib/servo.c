@@ -17,7 +17,7 @@
 
 
 _SERVODRIVER sd1;
-_SERVO orientation_servo, speed_ind_servo, fuel_ind_servo, servo0, servo1, servo2, servo3, servo4;
+_SERVO servo0, servo1, servo2, servo3, servo4, servo5, servo6, servo7, servo8, servo9, servo10, servo11, servo12, servo13, servo14, servo15;
 
 void init_servo_driver(_SERVODRIVER *self, _I2C *bus, float i2c_freq, uint8_t hardware_addr) {
     /*
@@ -31,7 +31,23 @@ void init_servo_driver(_SERVODRIVER *self, _I2C *bus, float i2c_freq, uint8_t ha
     self -> mode2 = 0b00000100;  // Suggested mode2 configuration
     self -> i2c_freq = i2c_freq;
     i2c_open(self -> bus, i2c_freq); // Open I2C bus
-    servo_driver_configure(self, 50);
+    servo_driver_configure(self, 50);  // 50 Hz. default PWM frequency
+    init_servo(&servo0, self, 0);
+    init_servo(&servo1, self, 1);
+    init_servo(&servo2, self, 2);
+    init_servo(&servo3, self, 3);
+    init_servo(&servo4, self, 4);
+    init_servo(&servo5, self, 5);
+    init_servo(&servo5, self, 5);
+    init_servo(&servo7, self, 7);
+    init_servo(&servo8, self, 8);
+    init_servo(&servo9, self, 9);
+    init_servo(&servo10, self, 10);
+    init_servo(&servo11, self, 11);
+    init_servo(&servo12, self, 12);
+    init_servo(&servo13, self, 13);
+    init_servo(&servo14, self, 14);
+    init_servo(&servo15, self, 15);
 }
 
 void close_servo_driver_i2c(_SERVODRIVER *self) {
@@ -49,6 +65,7 @@ void init_servo(_SERVO *self, _SERVODRIVER *sd, uint8_t number) {
     */
     self -> driver = sd;
     self -> num = number;
+    sd -> servos[number] = self;
 }
 
 void servo_driver_configure(_SERVODRIVER *self, float pwm_freq) {
@@ -145,6 +162,13 @@ void servo_set(_SERVO *self, uint16_t val, bool invert) {
             servo_set_pwm(self, 0, val);
         }
     }
+}
+
+void servo_usb_set(_SERVODRIVER *self, uint8_t index, uint16_t val) {
+    /*
+    Sets a servo to val based on its index on the specified servo driver
+    */
+    servo_set(self->servos[index], val, 0);
 }
 
 
