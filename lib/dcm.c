@@ -21,7 +21,8 @@ uint16_t dcm_locked_antiphase_speed(uint16_t std_speed, uint8_t dir) {
     }
 }
 
-void dcm_init(_DCM *self, _PIN *pin_PWM, _PIN *pin_DIR, uint16_t freq, uint8_t mode, _OC *oc) {
+void dcm_init(_DCM *self, _PIN *pin_PWM, _PIN *pin_DIR, uint16_t freq, 
+                uint8_t mode, _OC *oc, bool TOP_DSTOP, bool BOT_DSTOP) {
     self->dir = 0;
     self->speed = 0;
     self->freq = freq;

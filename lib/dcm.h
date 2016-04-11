@@ -16,6 +16,8 @@ typedef struct {
     _PIN *pin_PWM;  // Pin connected to motor driver's "PWM" input
     _PIN *pin_DIR;  // Pin connected to motor driver's "DIR" input
     _OC *oc;
+    bool TOP_DSTOP;
+    bool BOT_DSTOP;
 } _DCM;
 
 extern _DCM dcm1, dcm2;
