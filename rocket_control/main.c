@@ -53,6 +53,14 @@ uint8_t rocketstuff[64], rec_msg[64];
 uint8_t cmd, value;
 uint16_t val1, val2;
 
+
+volatile uint16_t sw_state = 0;
+volatile uint16_t sw_state2 = 0;
+volatile uint16_t sw_state3 = 0;
+volatile uint16_t sw_state4 = 0;
+
+volatile bool TOP_DSTOP, BOT_DSTOP, RT_DSTOP, LT_DSTOP;
+
 // kinematic model vals
 uint16_t thrust_val = 0x0010;
 uint16_t grav_val = 0x0010;
@@ -123,6 +131,7 @@ void rocket_model() {
 
     rocket_speed = motor_speed + stepper_speed;
 }
+
 
 void VendorRequests(void) {
     disable_interrupts();
@@ -497,6 +506,45 @@ void setup() {
 
 }
 
+void read_limitsw(_TIMER *timer){ //debounce the things
+    sw_state = (sw_state<<1) | pin_read(&D[4]) | 0xe000;
+    if(sw_state==0xf000){
+        TOP_DSTOP = 1;
+    }
+
+    if(sw_state==0xefff){
+        TOP_DSTOP = 0;
+    }
+
+    sw_state2 = (sw_state2<<1) | pin_read(&D[8]) | 0xe000; //changed from d5
+    if(sw_state2==0xf000){
+        BOT_DSTOP = 1;
+    }
+
+    if(sw_state2==0xefff){
+        BOT_DSTOP = 0;
+    }
+
+    sw_state3 = (sw_state3<<1) | pin_read(&D[6]) | 0xe000;
+    if(sw_state3==0xf000){
+        LT_DSTOP = 1;
+    }
+
+    if(sw_state3==0xefff){
+        LT_DSTOP = 0;
+    }
+
+    sw_state4 = (sw_state4<<1) | pin_read(&D[7]) | 0xe000;
+    if(sw_state4==0xf000){
+        RT_DSTOP = 1;
+    }
+
+    if(sw_state4==0xefff){
+        RT_DSTOP = 0;
+    }
+}
+
+
 int16_t main(void) {
     // printf("Starting Rocket Controller...\r\n");
     init_clock();
@@ -512,6 +560,14 @@ int16_t main(void) {
     // init_stepper();
     init_dcm();
     setup();
+
+    pin_digitalIn(&D[4]); //TOP
+    pin_digitalIn(&D[8]); //changed from d5 BOTTOM
+    pin_digitalIn(&D[6]); //LEFT
+    pin_digitalIn(&D[7]); //RIGHT
+
+    timer_every(&timer4, .001, read_limitsw);
+
     // oc_pwm(&oc1, &D[4], &timer4, 3000, 32000);
     uint16_t counter = 0;
     uint64_t msg;
@@ -524,6 +580,9 @@ int16_t main(void) {
     IEC5bits.USB1IE = 1; //enable
     state = testing;
     last_state = (STATE_HANDLER_T)NULL;
+
+
+    // dcm_velocity(&dcm1, 64000, 1);
 
     while (1) {
         ServiceUSB();
@@ -551,4 +610,28 @@ int16_t main(void) {
     //         }
     //     }
     // }
+
+
+            // *** test code for limit switches***
+        // if (TOP_DSTOP==1){
+        //     led_on(&led3);
+        // }
+        // else{
+        //     led_off(&led3);
+        // }
+
+        // if (BOT_DSTOP==1){
+        //     led_on(&led2);
+        // }
+        // else{
+        //     led_off(&led2);
+        // }
+
+        // if (LT_DSTOP==1){
+        //     led_on(&led1);
+        // }
+        // else{
+        //     led_off(&led1);
+        // }
+
 }

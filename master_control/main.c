@@ -9,6 +9,7 @@
 #include "uart.h"
 #include "usb.h"
 #include "msgs.h"
+#include "int.h"
 
 #define SET_STATE    0   // Vendor request that receives 2 unsigned integer values
 #define GET_VALS    1   // Vendor request that returns 2 unsigned integer values 
@@ -296,10 +297,13 @@ int16_t main(void) {
     init_timer();
     init_uart();
     init_pin();
+    init_int(); //initialize ext interrupt lib
+
     setup();
-    uint16_t counter = 0;
-    uint8_t status_msg [64];
     pin_digitalIn(&D[2]);
+
+    pin_digitalIn(&D[3]);
+    int_attach(&int4, &D[3], 0, blue);
 
     InitUSB();
     U1IE = 0xFF; //setting up ISR for USB requests
