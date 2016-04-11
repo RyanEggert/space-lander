@@ -23,7 +23,7 @@ def main(start_spd, end_spd, steps, direction):
     speeds = range(start_spd, end_spd, steps)
     for spd in speeds:
         set_start = time.clock()
-        print("Setting motor speed to {}.".format(spd))
+        print("\tSetting motor speed to {}.".format(spd))
         comms.command_dcmotor(spd, motor_dir)
         motor_speed = spd
 
@@ -36,7 +36,7 @@ def main(start_spd, end_spd, steps, direction):
             this_read["motor_dir_cmd"] = motor_dir
             this_read["quad_counter"] = quad_info["counter"]
             this_read["quad_overflow"] = quad_info["overflow"]
-            this_read["quad_calc_speed"] = abs(quad_info["counter"] - prev_quad_counter) / (read_quad_time - prev_read_quad_time)
+            this_read["quad_calc_speed"] = abs(quad_info["counter"] - prev_quad_counter) / (read_start - prev_read_quad_time)
             data.append(this_read)
             prev_read_quad_time = read_start
             prev_quad_counter = quad_info["counter"]
@@ -47,7 +47,7 @@ def main(start_spd, end_spd, steps, direction):
         quad_info = comms.get_quad_info()
         settle_vel = abs(quad_info["counter"] - prev_quad_counter) / (settle_check_time - prev_read_quad_time)      
         if settle_vel > moving_threshold:
-            print("Deadband end identified at speed {}.".format(spd))
+            print("\tDeadband end identified at speed {}.".format(spd))
             break
 
     print("\tTest Concluded. Writing data...")

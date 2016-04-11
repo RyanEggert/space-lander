@@ -32,23 +32,23 @@ _I2C i2c1, i2c2, i2c3;
 _PIN SCL3, SDA3;
 
 void init_i2c(void) {
-    init_pin();
+    // init_pin();
 
     pin_init(&SDA3, (uint16_t *)&PORTE, (uint16_t *)&TRISE, 
              (uint16_t *)NULL, 7, -1, 0, -1, (uint16_t *)NULL);
     pin_init(&SCL3, (uint16_t *)&PORTE, (uint16_t *)&TRISE, 
              (uint16_t *)NULL, 6, -1, 0, -1, (uint16_t *)NULL);
 
-    i2c_init(&i2c1, (uint16_t *)&I2C1RCV, (uint16_t *)&I2C1TRN, 
-             (uint16_t *)&I2C1BRG, (uint16_t *)&I2C1CON, 
-             (uint16_t *)&I2C1STAT, (uint16_t *)&I2C1ADD, 
-             (uint16_t *)&I2C1MSK, (uint16_t *)&IFS1, 1, 
-             &D[8], &D[9]);
-    i2c_init(&i2c2, (uint16_t *)&I2C2RCV, (uint16_t *)&I2C2TRN, 
-             (uint16_t *)&I2C2BRG, (uint16_t *)&I2C2CON, 
-             (uint16_t *)&I2C2STAT, (uint16_t *)&I2C2ADD, 
-             (uint16_t *)&I2C2MSK, (uint16_t *)&IFS3, 2, 
-             &D[2], &D[3]);
+    // i2c_init(&i2c1, (uint16_t *)&I2C1RCV, (uint16_t *)&I2C1TRN, 
+    //          (uint16_t *)&I2C1BRG, (uint16_t *)&I2C1CON, 
+    //          (uint16_t *)&I2C1STAT, (uint16_t *)&I2C1ADD, 
+    //          (uint16_t *)&I2C1MSK, (uint16_t *)&IFS1, 1, 
+    //          &D[8], &D[9]);
+    // i2c_init(&i2c2, (uint16_t *)&I2C2RCV, (uint16_t *)&I2C2TRN, 
+    //          (uint16_t *)&I2C2BRG, (uint16_t *)&I2C2CON, 
+    //          (uint16_t *)&I2C2STAT, (uint16_t *)&I2C2ADD, 
+    //          (uint16_t *)&I2C2MSK, (uint16_t *)&IFS3, 2, 
+    //          &D[2], &D[3]);
     i2c_init(&i2c3, (uint16_t *)&I2C3RCV, (uint16_t *)&I2C3TRN, 
              (uint16_t *)&I2C3BRG, (uint16_t *)&I2C3CON, 
              (uint16_t *)&I2C3STAT, (uint16_t *)&I2C3ADD, 

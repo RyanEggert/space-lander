@@ -30,6 +30,7 @@ uint8_t RC_TXBUF[1024], RC_RXBUF[1024];
 #define DEBUG_SERVO_SET_FREQ 61
 #define DEBUG_SERVO_SLEEP 62
 #define DEBUG_SERVO_WAKE 63
+#define DEBUG_SERVO_RESET 64
 
 
 uint16_t rocket_state;
@@ -132,6 +133,13 @@ void VendorRequests(void) {
         BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
         break;
 
+    case DEBUG_SERVO_RESET:
+        servo_driver_reset(&sd1);
+        BD[EP0IN].bytecount = 0;    // set EP0 IN byte count to 0
+        BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
+        break;
+
+
     default:
         USB_error_flags |= 0x01;    // set Request Error Flag
     }
@@ -218,9 +226,10 @@ int16_t main(void) {
     init_oc();
     init_dcm();
     init_i2c();
-    init_servo_driver(&sd1, &i2c3, 16000., 0x0);
-    init_servo(&servo4, &sd1, 14);
     setup();
+    init_servo_driver(&sd1, &i2c3, 16000., 0x0);
+    init_servo(&servo4, &sd1, 0);
+    servo_driver_wake(&sd1);
     // oc_pwm(&oc1, &D[4], &timer4, 3000, 32000);
     uint16_t counter = 0;
     uint64_t msg;
@@ -236,6 +245,7 @@ int16_t main(void) {
     IEC5bits.USB1IE = 1; //enable
     // uint32_t pid_command;
     dcm_velocity(&dcm1, 1000, 1);
+    servo_set(&servo4, 1500, 0);
     while (1) {
         // pid_command = PID_U32_control();
 
@@ -247,6 +257,7 @@ int16_t main(void) {
             // Blink green light to show normal operation.
             timer_lower(&timer1);
             led_toggle(&led2);
+            // servo_set(&servo4, 1500, 0);
         }
 
         if (timer_flag(&timer2)) {

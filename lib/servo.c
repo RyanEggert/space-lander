@@ -87,6 +87,7 @@ void servo_driver_reset(_SERVODRIVER *self) {
     Follows the software reset procedure outlined in the datasheet.
     */
     i2c_start(self -> bus);
+    // servo_driver_write_register(self, PCA9685_MODE1, 0x0);
     i2c_putc(self -> bus, 0x00);
     i2c_putc(self -> bus, 0x06);
     i2c_close(self -> bus);
@@ -97,18 +98,44 @@ void servo_driver_set_pwm_freq(_SERVODRIVER *self, float freq) {
     Sets the PWM frequency (bounds 24Hz - 1526Hz). This involves sleeping and
     restarting the servo driver.
     */
-    freq *= 0.9;  // Correct for overshoot in the frequency setting
-    float prescaleval = 25000000;
-    prescaleval /= 4096;
-    prescaleval /= freq;
-    prescaleval -= 1;
-    uint8_t prescale = floor(prescaleval + 0.5);
-    // PWM frequency can only be updated when servo driver is asleep.
-    servo_driver_sleep(self);
-    servo_driver_begin_transmission(self, I2C_WRITE);
-    servo_driver_write_register(self, PCA9685_PRESCALE, prescale);
-    servo_driver_end_transmission(self);
-    servo_driver_wake(self);
+    // freq *= 0.9;  // Correct for overshoot in the frequency setting
+    // float prescaleval = 25000000;
+    // prescaleval /= 4096;
+    // prescaleval /= freq;
+    // prescaleval -= 1;
+    // uint8_t prescale = floor(prescaleval + 0.5);
+    // // PWM frequency can only be updated when servo driver is asleep.
+    // servo_driver_sleep(self);
+    // servo_driver_begin_transmission(self, I2C_WRITE);
+    // servo_driver_write_register(self, PCA9685_PRESCALE, prescale);
+    // servo_driver_end_transmission(self);
+    // servo_driver_wake(self);
+    uint8_t MODE1 = 0x00;
+    uint8_t MODE2 = 0x01;
+    uint8_t address = 0b10000000;
+    i2c_start(self->bus);                // Start 
+    i2c_putc(self->bus, address);         // Slave address 
+    i2c_putc(self->bus, MODE1);           // Mode 1 address 
+    i2c_putc(self->bus, 0b00110001);      // Setting mode to sleep so we can change teh default PWM frequency 
+    i2c_stop(self->bus);                 // Stop 
+    __delay_ms(1);                // Required 50 us delay 
+    i2c_start(self->bus);                // Start 
+    i2c_putc(self->bus, address);         // Slave address 
+    i2c_putc(self->bus, 0xfe);            // PWM frequency PRE_SCALE address 
+    i2c_putc(self->bus, 0x98);            // osc_clk/(4096*update_rate) // 25000000/(4096*40)= 4.069 ~4 
+    i2c_stop(self->bus);                 // Stop 
+    __delay_ms(1);                // delay at least 500 us 
+    i2c_start(self->bus);                // Start 
+    i2c_putc(self->bus, address);         // Slave address 
+    i2c_putc(self->bus, MODE1);           // Mode 1 register address 
+    i2c_putc(self->bus, 0xa1);            // Set to our prefered mode[ Reset, INT_CLK, Auto-Increment, Normal Mode] 
+    i2c_stop(self->bus);                 // Stop 
+    __delay_ms(1);                // delay at least 500 us 
+    i2c_start(self->bus);                // Start 
+    i2c_putc(self->bus, address);         // Slave Address 
+    i2c_putc(self->bus, MODE2);           // Mode2 register address 
+    i2c_putc(self->bus, 0b00000100);      // Set to our prefered mode[Output logic state not inverted, Outputs change on STOP, 
+    i2c_stop(self->bus);                 // totem pole structure, When OE = 1 (output drivers not enabled), LEDn = 0] 
 }
 
 void servo_set_pwm(_SERVO *self, uint16_t on, uint16_t off) {

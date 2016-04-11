@@ -10,6 +10,12 @@ class PIC_USB(object):
         self.GET_QUAD_INFO = 4
         self.COMMAND_DCMOTOR = 5
 
+        self.DEBUG_SERVO_SET_POS = 60
+        self.DEBUG_SERVO_SET_FREQ = 61
+        self.DEBUG_SERVO_SLEEP = 62
+        self.DEBUG_SERVO_WAKE = 63
+        self.DEBUG_SERVO_RESET = 64
+
         self.vendor_id = 0x6666
         self.product_id = product_id
         self.dev = usb.core.find(idVendor=self.vendor_id, idProduct=self.product_id)
@@ -148,3 +154,9 @@ class PIC_USB(object):
             self.dev.ctrl_transfer(0x40, self.DEBUG_SERVO_WAKE, 0)
         except usb.core.USBError:
             print "Could not send DEBUG_SERVO_WAKE vendor request."
+
+    def debug_servo_reset(self):
+        try:
+            self.dev.ctrl_transfer(0x40, self.DEBUG_SERVO_RESET, 0)
+        except usb.core.USBError:
+            print "Could not send DEBUG_SERVO_RESET vendor request."
