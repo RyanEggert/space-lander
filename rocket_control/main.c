@@ -31,10 +31,10 @@ uint8_t RC_TXBUF[1024], RC_RXBUF[1024];
 #define GET_ROCKET_INFO 2
 #define DEBUG_UART_BUFFERS 3
 #define GET_QUAD_INFO 4
-#define COMMAND_DCMOTOR 5
+#define COMMAND_DCMOTOR 5  // Ven. req. to set dir/speed of DC motor
 
-#define DEBUG_SERVO_SET_POS 60
-#define DEBUG_SERVO_SET_FREQ 61
+#define DEBUG_SERVO_SET_POS 60  // Ven. req. to set position of specified servo
+#define DEBUG_SERVO_SET_FREQ 61  // Ven. req. to set pwm freq. of driver board
 
 // endstop pins
 _PIN *Y_END_TOP, *Y_END_BOT, *X_END_L, *X_END_R;
@@ -51,14 +51,97 @@ STATE_HANDLER_T state, last_state;
 
 uint16_t rocket_state = FLYING;
 uint16_t rocket_speed, rocket_tilt;
+uint16_t counter;
 uint8_t throttle, tilt; //commands
 uint8_t rocketstuff[64], rec_msg[64];
 uint8_t cmd, value;
 uint16_t val1, val2;
 
+
+volatile uint16_t sw_state = 0;
+volatile uint16_t sw_state2 = 0;
+volatile uint16_t sw_state3 = 0;
+volatile uint16_t sw_state4 = 0;
+
+volatile bool TOP_DSTOP, BOT_DSTOP, RT_DSTOP, LT_DSTOP;
+
+// kinematic model vals
+uint16_t thrust_val = 0x0100;
+uint16_t grav_val = 0x0100;
+
+// stepper vars
+uint16_t stepper_count = 0;
+uint16_t stepper_lim = 1000;
+uint8_t stepper_state = 0;  // 0 = drive to X_END_L, 1 = drive to middle, 2 = stop
+float stepper_speed = 0;
+uint16_t stepper_speed_int;
+
+// dc motor vars
+uint16_t motor_state;
+uint16_t motor_dir_track = 0;
+uint16_t motor_speed = 0;
+uint16_t motor_speed_limit = 0x7FFF;
+uint16_t motor_deadband = 19000;  // will find once gantry is built
+
+// tilt vals (maxes out at 4096; may use smaller range)
+uint16_t tilt_max = 4095;
+uint16_t tilt_min = 0;
+
+void rocket_model() {
+    // determines speed setpoint of rocket in x + y axes
+    if (throttle) { // Thrust on
+        // set y thrust val
+        if (motor_dir_track == 0) {  // rocket falling
+            if (motor_speed - motor_deadband > thrust_val) {  // nonzero velocity
+                motor_speed = motor_speed - thrust_val;
+            }
+            else {  // zero velocity
+                motor_dir_track = 1;
+                motor_speed = motor_deadband;
+            }
+        }
+        else if (motor_dir_track) { // rocket rising
+            if (motor_speed < motor_speed_limit) {
+                motor_speed = motor_speed + thrust_val;
+            }
+        }
+        // led_on(&led2);
+    }
+    else { // no thrust
+        // set y thrust val
+        if (motor_dir_track == 0) { // rocket falling
+            if (motor_speed < motor_speed_limit) {
+                motor_speed = motor_speed + grav_val;
+            }
+        }
+        else if (motor_dir_track) {  // rocket rising
+            if (motor_speed - motor_deadband > thrust_val) {
+                motor_speed = motor_speed - grav_val;
+            }
+            else {
+                motor_dir_track = 0;
+                motor_speed = motor_deadband;
+            }
+        }
+        // led_off(&led2);
+    }
+    if (motor_dir_track) {
+        // pin_set(MOTOR_DIR);
+        // 
+        dcm_velocity(&dcm1, motor_speed, 0);
+    }
+    else {
+        dcm_velocity(&dcm1, motor_speed, 1);
+    }
+
+    rocket_speed = motor_speed + stepper_speed;
+}
+
+
 void VendorRequests(void) {
     disable_interrupts();
     WORD temp;
+    WORD temp2;
     WORD32 temp32;
     switch (USB_setup.bRequest) {
     case SET_STATE:
@@ -161,7 +244,6 @@ void VendorRequestsOut(void) {
         USB_error_flags |= 0x01;                    // set Request Error Flag
     }
 }
-
 
 void UARTrequests() {
     uart_gets(&uart1, rec_msg, 64);
