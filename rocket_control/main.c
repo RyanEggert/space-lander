@@ -563,15 +563,12 @@ int16_t main(void) {
     init_st();      // if this is first, then D[1] - D[3] don't work as outputs
     init_uart();    // if this is first, then D[0] doesn't output OC wfm
     init_quad();
-    // init_servo_driver(&sd1, &i2c3, 16000., 0x0);
-    // init_servo(&orientation_servo, &sd1, 14);
-    // servo_driver_wake(&sd1);     // this line seems to be killing UART comms...
     // init_stepper();
     init_dcm();
     init_i2c();
     setup();
     init_servo_driver(&sd1, &i2c3, 16000., 0x0);
-    init_servo(&servo4, &sd1, 0);
+    // init_servo(&servo0, &sd1, 0); Only necessary for custom-named servos
     // oc_pwm(&oc1, &D[4], &timer4, 3000, 32000);
     uint16_t counter = 0;
     uint64_t msg;
