@@ -35,6 +35,6 @@ def debug_uart_buffers():
         rx["count"],
     )
 
-
 if __name__ == '__main__':
     main()
+    # debug_uart_buffers()
