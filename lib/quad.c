@@ -16,7 +16,7 @@ _QUAD quad1, quad2;
 
 void quad_read(_QUAD *self) {
     disable_interrupts();
-    pin_set(&D[2]);
+    // pin_set(&D[2]);  // debug pin
     self -> a_curr = pin_read(self -> A);
     self -> b_curr = pin_read(self -> B);
     unsigned char latest_read = (self -> a_curr << 1) + self -> b_curr;
@@ -39,7 +39,7 @@ void quad_read(_QUAD *self) {
     
     self -> a_prev = self -> a_curr;
     self -> b_prev = self -> b_curr;
-    pin_clear(&D[2]);
+    // pin_clear(&D[2]);    // debug pin
     enable_interrupts();
 }
 
@@ -95,7 +95,7 @@ void quad_init(_QUAD *self, _PIN *in_A, _PIN *in_B) {
     self -> a_prev = 0;
     self -> b_prev = 0;
     self -> overflow = 0;
-    self -> counter = 0;
+    self -> counter = 4000;
 
     pin_digitalIn(in_A);
     pin_digitalIn(in_B);
@@ -133,4 +133,12 @@ void quad_reset_counter(_QUAD *self) {
     Resets the counter associated with the given quadrature encoder to zero.
     */
     self -> counter = 0;
+}
+
+float quad_meas_speed(_QUAD *self, float interval) {
+    static uint32_t prev_ticks = 0;
+    uint32_t current_ticks = self->counter;
+    float speed = (current_ticks - prev_ticks)/interval; // Ticks per second
+    prev_ticks = current_ticks;
+    return speed;
 }

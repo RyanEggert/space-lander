@@ -515,6 +515,8 @@ void uart_gets(_UART *self, uint8_t *str, uint16_t len) {
         return;
     }
 
+    // if self->count
+
     // uart_flushTxBuffer(self);
     start = str;
     left = len;
@@ -530,7 +532,6 @@ void uart_gets(_UART *self, uint8_t *str, uint16_t len) {
         }
         if ((*str>=32) && (*str<127)) {     // If character is printable,
             str++;                          //   and advance the pointer.
-
         }
     }
     *str = '\0';  

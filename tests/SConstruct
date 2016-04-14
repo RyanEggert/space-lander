@@ -25,7 +25,8 @@ env.Program('servo_test', ['servo_test.c',
                             '../lib/timer.c',
                             '../lib/i2c.c',
                             '../lib/servo.c',
-                            '../lib/uart.c'])
+                            '../lib/usb.c',
+                            'descriptors.c'])
 env.Hex('servo_test')
 env.List('servo_test')
 
