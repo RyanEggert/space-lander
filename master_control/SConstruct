@@ -23,7 +23,6 @@ env.Program('master_main', ['main.c',
                             '../lib/timer.c',
                             '../lib/usb.c',
                             'descriptors.c',
-                            '../lib/int.c',
                             '../lib/uart.c'])
 
 

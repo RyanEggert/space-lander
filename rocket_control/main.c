@@ -31,6 +31,10 @@ uint8_t RC_TXBUF[1024], RC_RXBUF[1024];
 #define GET_ROCKET_INFO 2
 #define DEBUG_UART_BUFFERS 3
 #define GET_QUAD_INFO 4
+#define COMMAND_DCMOTOR 5
+
+#define DEBUG_SERVO_SET_POS 60
+#define DEBUG_SERVO_SET_FREQ 61
 
 // endstop pins
 _PIN *Y_END_TOP, *Y_END_BOT, *X_END_L, *X_END_R;
@@ -137,6 +141,7 @@ void rocket_model() {
 void VendorRequests(void) {
     disable_interrupts();
     WORD temp;
+    WORD temp2;
     WORD32 temp32;
     switch (USB_setup.bRequest) {
     case SET_STATE:
@@ -198,6 +203,28 @@ void VendorRequests(void) {
         BD[EP0IN].bytecount = 6;    // set EP0 IN byte count to 4
         BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
         break;
+    case COMMAND_DCMOTOR:
+        dcm_velocity(&dcm1, USB_setup.wValue.w, USB_setup.wIndex.w);
+        BD[EP0IN].bytecount = 0;    // set EP0 IN byte count to 0
+        BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
+        break;
+
+    case DEBUG_SERVO_SET_POS:
+        temp.w = USB_setup.wValue.w;   // Commanded position
+        temp2.w = USB_setup.wIndex.w;  // Servo driver index
+        servo_usb_set(&sd1, temp2.b[0], temp.w);
+        BD[EP0IN].bytecount = 0;    // set EP0 IN byte count to 0
+        BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
+        break;
+
+    case DEBUG_SERVO_SET_FREQ:
+        temp.w = USB_setup.wValue.w;
+        
+        servo_driver_configure(&sd1, ((float)(temp.w)) / 10);
+        BD[EP0IN].bytecount = 0;    // set EP0 IN byte count to 0
+        BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
+        break;
+
     default:
         USB_error_flags |= 0x01;    // set Request Error Flag
     }
@@ -465,7 +492,7 @@ void setup() {
     dcm_init(&dcm1, &D[10], &D[11], 1e3, 0, &oc7);
     quad_init(&quad1, &D[8], &D[9]); // quad1 uses pins D8 & D9
     quad_every(&quad1, &timer5, 0.0000875); // quad1 will use timer5 interrupts
-    
+
     // General use debugging output pin
     // pin_digitalOut(&D[2]);
 
@@ -536,21 +563,12 @@ int16_t main(void) {
     init_st();      // if this is first, then D[1] - D[3] don't work as outputs
     init_uart();    // if this is first, then D[0] doesn't output OC wfm
     init_quad();
-    // init_servo_driver(&sd1, &i2c3, 16000., 0x0);
-    // init_servo(&orientation_servo, &sd1, 14);
-    // servo_driver_wake(&sd1);     // this line seems to be killing UART comms...
     // init_stepper();
     init_dcm();
+    init_i2c();
     setup();
-
-    // pin_digitalOut(&D[0]); // OC pin out
-    pin_digitalIn(&D[4]); //TOP
-    pin_digitalIn(&D[12]); //changed from d5 BOTTOM
-    pin_digitalIn(&D[6]); //LEFT
-    pin_digitalIn(&D[7]); //RIGHT
-
-    timer_every(&timer4, .001, read_limitsw);
-
+    init_servo_driver(&sd1, &i2c3, 16000., 0x0);
+    // init_servo(&servo0, &sd1, 0); Only necessary for custom-named servos
     // oc_pwm(&oc1, &D[4], &timer4, 3000, 32000);
     uint16_t counter = 0;
     uint64_t msg;

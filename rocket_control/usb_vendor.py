@@ -8,6 +8,10 @@ class PIC_USB(object):
         self.GET_ROCKET_INFO = 2
         self.DEBUG_UART_BUFFERS = 3
         self.GET_QUAD_INFO = 4
+        self.COMMAND_DCMOTOR = 5
+
+        self.DEBUG_SERVO_SET_POS = 60
+        self.DEBUG_SERVO_SET_FREQ = 61
 
         self.vendor_id = 0x6666
         self.product_id = product_id
@@ -108,7 +112,7 @@ class PIC_USB(object):
         is the counter (4 bytes) and an overflow/underflow counter.
         """
         try:
-            ret = self.dev.ctrl_transfer(0xC0, self.GET_QUAD_INFO, 0, 0, 6)
+            ret = self.dev.ctrl_transfer(0xC0, self.GET_QUAD_INFO, 0, 0, 8)
         except usb.core.USBError:
             print "Could not send GET_QUAD_INFO vendor request."
         else:
@@ -116,4 +120,42 @@ class PIC_USB(object):
             out = {}
             out["counter"] = self.parse32(ret, 0)
             out["overflow"] = self.parse16(ret, 4)
+            out["diff"] = self.parse16(ret, 6)
             return out
+
+    def command_dcmotor(self, speed, direction):
+        try:
+            self.dev.ctrl_transfer(0x40, self.COMMAND_DCMOTOR, int(speed), int(direction))
+        except usb.core.USBError:
+            print "Could not send COMMAND_DCMOTOR vendor request."
+
+    def debug_servo_set_pos(self, servo_index, pos):
+        try:
+            self.dev.ctrl_transfer(0x40, self.DEBUG_SERVO_SET_POS, int(pos), int(servo_index))
+        except usb.core.USBError:
+            print "Could not send DEBUG_SERVO_SET_POS vendor request."
+
+    def debug_servo_set_freq(self, freq):
+        shift_freq = freq * 10
+        try:
+            self.dev.ctrl_transfer(0x40, self.DEBUG_SERVO_SET_FREQ, int(shift_freq))
+        except usb.core.USBError:
+            print "Could not send DEBUG_SERVO_SET_FREQ vendor request."
+
+    def debug_servo_sleep(self):
+        try:
+            self.dev.ctrl_transfer(0x40, self.DEBUG_SERVO_SLEEP, 0)
+        except usb.core.USBError:
+            print "Could not send DEBUG_SERVO_SLEEP vendor request."
+
+    def debug_servo_wake(self):
+        try:
+            self.dev.ctrl_transfer(0x40, self.DEBUG_SERVO_WAKE, 0)
+        except usb.core.USBError:
+            print "Could not send DEBUG_SERVO_WAKE vendor request."
+
+    def debug_servo_reset(self):
+        try:
+            self.dev.ctrl_transfer(0x40, self.DEBUG_SERVO_RESET, 0)
+        except usb.core.USBError:
+            print "Could not send DEBUG_SERVO_RESET vendor request."
