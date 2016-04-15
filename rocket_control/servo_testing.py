@@ -9,10 +9,13 @@ def main():
     SERVO_MIN = 120
     SERVO_MAX = 450
     SERVO_CENTER = int(((SERVO_MAX - SERVO_MIN)/2.) + SERVO_MIN)
-    c = PIC_USB(0x0005)
-    c.debug_servo_set_freq(50)
+    c = PIC_USB(0x0003)
+    # c.debug_servo_set_freq(50)
     time.sleep(.5)
     c.debug_servo_set_pos(7, SERVO_CENTER)
+    c.debug_servo_set_pos(8, SERVO_CENTER)
+
+    # c.debug_servo_set_pos(7, 207)
     time.sleep(.1)
     for pos in return_reverse(range(SERVO_MIN, SERVO_CENTER, 2)):
             print pos
@@ -21,7 +24,7 @@ def main():
             time.sleep(.08)
     # c.debug_servo_set_pos(8, 450)
     time.sleep(1)
-    for i in xrange(3):
+    for i in xrange(5):
         for pos in range(SERVO_MIN, SERVO_MAX, 3):
             print pos
             c.debug_servo_set_pos(7, pos)
@@ -35,6 +38,19 @@ def main():
         time.sleep(1)
 
     c.debug_servo_set_pos(7, SERVO_CENTER)
+    c.debug_servo_set_pos(8, SERVO_CENTER)
+
+
+def range_test():
+    c = PIC_USB(0x0003)
+    # c.debug_servo_set_freq(50)
+    for x in xrange(10):
+        time.sleep(1)
+        c.debug_servo_set_pos(7, 120)
+        c.debug_servo_set_pos(8, 120)
+        time.sleep(1)
+        c.debug_servo_set_pos(7, 440)
+        c.debug_servo_set_pos(8, 440)
 
 if __name__ == '__main__':
     # import argparse
@@ -46,3 +62,4 @@ if __name__ == '__main__':
 
     # main(args.speed, args.direction)
     main()
+    # range_test()

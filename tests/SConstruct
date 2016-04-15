@@ -48,3 +48,19 @@ env.Program('dcmotor_test', ['dcmotor_test.c',
                             '../lib/oc.c'])
 env.Hex('dcmotor_test')
 env.List('dcmotor_test')
+
+env.Program('actuator_play', ['actuator_play.c',
+                            '../lib/pin.c',
+                            '../lib/ui.c',
+                            '../lib/timer.c',
+                            '../lib/uart.c',
+                            '../lib/usb.c',
+                            'descriptors.c',
+                            '../lib/stepper.c',
+                            '../lib/dcm.c',
+                            '../lib/quad.c',
+                            '../lib/i2c.c',
+                            '../lib/servo.c',
+                            '../lib/oc.c'])
+env.Hex('actuator_play')
+env.List('actuator_play')
