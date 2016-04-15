@@ -42,15 +42,16 @@ def main():
 
 
 def range_test():
+    SERVO_MIN = 110
+    SERVO_MAX = 450
     c = PIC_USB(0x0003)
     # c.debug_servo_set_freq(50)
-    for x in xrange(10):
-        time.sleep(1)
-        c.debug_servo_set_pos(7, 120)
-        c.debug_servo_set_pos(8, 120)
-        time.sleep(1)
-        c.debug_servo_set_pos(7, 440)
-        c.debug_servo_set_pos(8, 440)
+    for x in xrange(SERVO_MIN, SERVO_MAX, 1):
+        time.sleep(.001)
+        print(x)
+        c.debug_servo_set_pos(7, x)
+        c.debug_servo_set_pos(8, x)
+
 
 if __name__ == '__main__':
     # import argparse
@@ -61,5 +62,5 @@ if __name__ == '__main__':
     # # print(args)
 
     # main(args.speed, args.direction)
-    main()
-    # range_test()
+    # main()
+    range_test()
