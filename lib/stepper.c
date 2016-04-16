@@ -27,16 +27,19 @@
 #include "common.h"
 #include "stepper.h"
 #include "ui.h"
+#include "pin.h"
 
 _ST st_d;
 
 void init_st(void) {
     // init stepper object on oc5 w/ 50% duty cycle
     st_init(&st_d, &D[0], &D[1], &D[2], &D[3], &oc5, 0x7FFF);
-    init_ui();
+    // init_ui();
 }
 
 void st_init(_ST *self, _PIN *pin1, _PIN *pin2, _PIN *pin3, _PIN *pin4, _OC *oc, uint16_t duty_cyc) {
+    // init_pin();
+
     self->dir = 0;
     self->speed = 0;
     self->step_size = 0;
@@ -49,11 +52,11 @@ void st_init(_ST *self, _PIN *pin1, _PIN *pin2, _PIN *pin3, _PIN *pin4, _OC *oc,
     self->oc = oc;
 
     int i;
-    for (i=0; i<=8; i++) {
+    for (i=0; i<=3; i++) {
         pin_digitalOut(self->pins[i]);
     }
     oc_pwm(self->oc, self->pins[0], NULL, self->speed, 0);
-    OC5CON2 = 0x000F; //synchronize to timer5
+    // OC5CON2 = 0x000F; //synchronize to timer5
     // OC7CON2 = 0x000F;
     st_state(&st_d, self->state);      // turn on controller
     // st_step_size(&st_d, 0); // full step
@@ -81,7 +84,7 @@ void st_speed(_ST *self, float speed) {
     if (speed > 0) {
         if (self->speed != speed) {
             oc_free(self->oc);
-            oc_pwm(self->oc, self->pins[0], &timer5, speed, self->duty_cyc);
+            oc_pwm(self->oc, self->pins[0], NULL, speed, self->duty_cyc);
             // OC5CON2 = 0x000F; //synchronize to timer5
             // OC7CON2 = 0x000F;
         }
