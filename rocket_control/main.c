@@ -57,13 +57,6 @@ void lose(void);
 
 STATE_HANDLER_T state, last_state;
 
-uint16_t rocket_state = FLYING;
-uint16_t rocket_speed, rocket_tilt;
-uint16_t counter;
-uint8_t throttle, tilt; //commands
-uint8_t rocketstuff[64], rec_msg[64];
-uint8_t cmd, value;
-uint16_t val1, val2;
 
 volatile uint16_t sw_state = 0;
 volatile uint16_t sw_state2 = 0;
@@ -114,6 +107,15 @@ uint16_t tilt_dir = 0;
 uint16_t scale_ind;
 uint16_t scale_val_x;
 uint16_t scale_val_y;
+
+// state + high-level rocket vals
+uint16_t rocket_state = FLYING;
+uint16_t rocket_speed, rocket_tilt;
+uint16_t counter;
+uint8_t throttle, tilt; //commands
+uint8_t rocketstuff[64], rec_msg[64];
+uint8_t cmd, value;
+uint16_t val1, val2;
 
 uint16_t binary_search(uint16_t target_val, float target_array[10], uint16_t min, uint16_t max) {
     uint16_t curr_ind = (max + min )/2;
@@ -321,6 +323,7 @@ void rocket_model() {
         // st_speed(&st_d, 0);
         // led_off(&led3);
     }
+    servo_set(&servo3, rocket_tilt, 0);
 
     rocket_speed = motor_speed + stepper_speed;
 }
@@ -597,6 +600,7 @@ void flying(void) {
     if (state != last_state) {  // if we are entering the state, do initialization stuff
         last_state = state;
         motor_speed = motor_deadband;
+        rocket_tilt = tilt_zero;
         stepper_speed = 0;
     }
 
@@ -614,9 +618,9 @@ void flying(void) {
     }
 
     // *** rocket model handles thrust scaling for x+y axes, drives DCM and stepper ***
-    // rocket_model();
+    rocket_model();
     // *** use to determine stepper deadband over vendor requests ***
-    stepper_test();
+    // stepper_test();
 
     // Check for state transitions
 
@@ -771,7 +775,7 @@ int16_t main(void) {
     init_i2c();
     setup();
     init_servo_driver(&sd1, &i2c3, 16000., 0x0);
-    // init_servo(&servo0, &sd1, 0); Only necessary for custom-named servos
+    init_servo(&servo3, &sd1, 0); // Only necessary for custom-named servos
     // oc_pwm(&oc1, &D[4], &timer4, 3000, 32000);
     uint16_t counter = 0;
     uint64_t msg;
