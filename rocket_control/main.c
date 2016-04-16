@@ -13,6 +13,7 @@
 #include "stepper.h"
 #include "main.h"
 #include "usb.h"
+#include "stops.h"
 #include "oc.h"
 #include "dcm.h"
 #include "msgs.h"
@@ -469,6 +470,10 @@ void win(void) {
         counter++;
     }
 
+
+
+
+
     // Check for state transitions
     if (counter == 10) {
         state = reset;
@@ -489,7 +494,7 @@ void setup() {
     timer_start(&timer3);
 
     // DC MOTOR + QUAD ENCODER
-    dcm_init(&dcm1, &D[10], &D[11], 1e3, 0, &oc7);
+    dcm_init(&dcm1, &D[10], &D[11], 1e3, 0, &oc7, &es_y_bot, &es_y_top);
     quad_init(&quad1, &D[8], &D[9]); // quad1 uses pins D8 & D9
     quad_every(&quad1, &timer5, 0.0000875); // quad1 will use timer5 interrupts
 
@@ -515,41 +520,17 @@ void setup() {
 }
 
 void read_limitsw(_TIMER *timer){ //debounce the things
-    sw_state = (sw_state<<1) | pin_read(&D[4]) | 0xe000;
-    if(sw_state==0xf000){
-        TOP_DSTOP = 1;
-    }
+    // Gantry X-Axis (stepper) endstops
+    stop_read(&es_x_l);
+    stop_read(&es_x_r);
 
-    if(sw_state==0xefff){
-        TOP_DSTOP = 0;
-    }
+    // Gantry Y-Axis (dc motor) endstops
+    // stop_read(&es_y_top);
+    // stop_read(&es_y_bot);
+    dcm_check_stops(&dcm1);
 
-    sw_state2 = (sw_state2<<1) | pin_read(&D[12]) | 0xe000; //changed from d5
-    if(sw_state2==0xf000){
-        BOT_DSTOP = 1;
-    }
-
-    if(sw_state2==0xefff){
-        BOT_DSTOP = 0;
-    }
-
-    sw_state3 = (sw_state3<<1) | pin_read(&D[6]) | 0xe000;
-    if(sw_state3==0xf000){
-        LT_DSTOP = 1;
-    }
-
-    if(sw_state3==0xefff){
-        LT_DSTOP = 0;
-    }
-
-    sw_state4 = (sw_state4<<1) | pin_read(&D[7]) | 0xe000;
-    if(sw_state4==0xf000){
-        RT_DSTOP = 1;
-    }
-
-    if(sw_state4==0xefff){
-        RT_DSTOP = 0;
-    }
+    // Landing pad endstop
+    stop_read(&es_landing);
 }
 
 
@@ -560,6 +541,7 @@ int16_t main(void) {
     init_oc();
     init_pin();
     init_timer();
+    init_stops();
     init_st();      // if this is first, then D[1] - D[3] don't work as outputs
     init_uart();    // if this is first, then D[0] doesn't output OC wfm
     init_quad();
