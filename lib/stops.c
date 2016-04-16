@@ -37,7 +37,7 @@ bool stop_read(_ESTOP *self) {
     interval (e.g., with timer interrupts).
     */
     self->state = (self->state << 1) | pin_read(self->pin) | 0xe000;
-    bool ret;
+    uint8_t ret = 2;
     if (self->state == 0xf000) {
         self->hit = true;
         ret = true;

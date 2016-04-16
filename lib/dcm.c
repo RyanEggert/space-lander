@@ -5,7 +5,7 @@
 
 
 _DCM dcm1, dcm2;
-bool dmin, dmax;
+
 
 
 uint16_t dcm_locked_antiphase_speed(uint16_t std_speed, uint8_t dir) {
@@ -119,9 +119,9 @@ void dcm_stop(_DCM *self) {
 }
 
 void dcm_check_stops(_DCM *self) {
-    dmin = stop_read(self->stop_min);
-    dmax = stop_read(self->stop_max);
-    if (dmin || dmax) {  // If either dmin or dmax are true,
-        dcm_stop(self);  // then a stop has been hit. Stop motor.
+    uint8_t dmin = stop_read(self->stop_min);
+    uint8_t dmax = stop_read(self->stop_max);
+    if ((dmin == true) || (dmax == true)) {  // If either dmin or dmax are true,
+        dcm_stop(self);  // then a stop has just been hit. Stop the motor.
     }
 }
