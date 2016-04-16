@@ -30,5 +30,4 @@ void dcm_speed(_DCM *self, uint16_t speed);
 void dcm_direction(_DCM *self, uint8_t dir);
 void dcm_velocity(_DCM *self, uint16_t speed, uint8_t dir);
 
-
 #endif  // LIB_DCM_H_

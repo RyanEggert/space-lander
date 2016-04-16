@@ -7,6 +7,12 @@ class PIC_USB(object):
         self.GET_VALS = 1
         self.GET_ROCKET_INFO = 2
         self.DEBUG_UART_BUFFERS = 3
+
+        self.DEBUG_SERVO_SET_POS = 60
+        self.DEBUG_SERVO_SET_FREQ = 61
+        self.DEBUG_SERVO_SLEEP = 62
+        self.DEBUG_SERVO_WAKE = 63
+
         self.vendor_id = 0x6666
         self.product_id = product_id
         self.dev = usb.core.find(idVendor=self.vendor_id, idProduct=self.product_id)
@@ -43,7 +49,7 @@ class PIC_USB(object):
             print "Could not send GET_VALS vendor request."
         else:
             return [int(ret[0])+int(ret[1])*256, int(ret[2])+int(ret[3])*256,
-            int(ret[4])+int(ret[5])*256,int(ret[6])+int(ret[7])*256,
+            int(ret[4])+int(ret[5])*256, int(ret[6])+int(ret[7])*256,
             int(ret[8])+int(ret[9])*256, int(ret[10])+int(ret[11])*256]
 
     def debug_uart_buffers(self):
@@ -84,3 +90,28 @@ class PIC_USB(object):
             out["speed"] = self.parse16(ret, 2)
             out["state"] = self.parse16(ret, 4)
             return out
+
+    def debug_servo_set_pos(self, pos):
+        try:
+            self.dev.ctrl_transfer(0x40, self.DEBUG_SERVO_SET_POS, int(pos))
+        except usb.core.USBError:
+            print "Could not send DEBUG_SERVO_SET_POS vendor request."
+
+    def debug_servo_set_freq(self, freq):
+        shift_freq = freq * 10
+        try:
+            self.dev.ctrl_transfer(0x40, self.DEBUG_SERVO_SET_FREQ, int(shift_freq))
+        except usb.core.USBError:
+            print "Could not send DEBUG_SERVO_SET_FREQ vendor request."
+
+    def debug_servo_sleep(self):
+        try:
+            self.dev.ctrl_transfer(0x40, self.DEBUG_SERVO_SLEEP, 0)
+        except usb.core.USBError:
+            print "Could not send DEBUG_SERVO_SLEEP vendor request."
+
+    def debug_servo_wake(self):
+        try:
+            self.dev.ctrl_transfer(0x40, self.DEBUG_SERVO_WAKE, 0)
+        except usb.core.USBError:
+            print "Could not send DEBUG_SERVO_WAKE vendor request."
