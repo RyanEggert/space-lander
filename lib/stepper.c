@@ -51,7 +51,7 @@ void st_init(_ST *self, _PIN *pin1, _PIN *pin2, _PIN *pin3, _PIN *pin4, _OC *oc,
     self->oc = oc;
 
     int i;
-    for (i=0; i<=8; i++) {
+    for (i = 0; i <= 8; i++) {
         pin_digitalOut(self->pins[i]);
     }
     oc_pwm(self->oc, self->pins[0], NULL, self->speed, 0);
@@ -82,7 +82,7 @@ void st_speed(_ST *self, float speed) {
     speed = 1.6 deg/step / (360 deg/rev) * freq step/sec
     = 0.004*freq rev/sec
     */
-    
+
     if ((self->stop_min->hit == true) && (self->dir == 0)) {
         // If endstop is hit and we're moving towards it,
         // then set speed to zero. Movement in this direction is not
@@ -137,7 +137,7 @@ void st_direction(_ST *self, uint8_t dir) {
     }
     // if (self->dir != dir) {
     //     oc_free(self->oc);
-    //     oc_pwm(self->oc, self->pins[0], NULL, self->speed, self->duty_cyc);        
+    //     oc_pwm(self->oc, self->pins[0], NULL, self->speed, self->duty_cyc);
     //     // OC5CON2 = 0x000F; //synchronize to timer5
     //     // OC7CON2 = 0x000F;
     // }

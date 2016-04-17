@@ -7,7 +7,6 @@
 _DCM dcm1, dcm2;
 
 
-
 uint16_t dcm_locked_antiphase_speed(uint16_t std_speed, uint8_t dir) {
     /*
     Returns a speed 'centered' around 32768 for use in locked-antiphase control
@@ -107,7 +106,7 @@ void dcm_direction(_DCM *self, uint8_t dir) {
     }
 
     self->dir = dir;
-    
+
     if (self->mode == 1) {
         // Locked-antiphase PWM control mode
         // Recalculate and write speed.
