@@ -521,8 +521,9 @@ void setup() {
 
 void read_limitsw(_TIMER *timer){ //debounce the things
     // Gantry X-Axis (stepper) endstops
-    stop_read(&es_x_l);
-    stop_read(&es_x_r);
+    // stop_read(&es_x_l);
+    // stop_read(&es_x_r);
+    st_check_stops(&st_d);
 
     // Gantry Y-Axis (dc motor) endstops
     // stop_read(&es_y_top);

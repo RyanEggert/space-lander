@@ -94,7 +94,20 @@ void dcm_direction(_DCM *self, uint8_t dir) {
     if (self->dir == dir) {
         return;
     }
+    if ((self->stop_min->hit == true) && (dir == 0)) {
+        // If endstop is hit and we specify moving towards it,
+        // then do not change direction. Movement in the specified direction is
+        // not allowed.
+        return;
+    } else if ((self->stop_max->hit == true) && (dir == 1)) {
+        // If endstop is hit and we're moving towards it,
+        // then do not change direction. Movement in the specified direction is
+        // not allowed.
+        return;
+    }
+
     self->dir = dir;
+    
     if (self->mode == 1) {
         // Locked-antiphase PWM control mode
         // Recalculate and write speed.

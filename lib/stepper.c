@@ -24,9 +24,11 @@
 ** POSSIBILITY OF SUCH DAMAGE.
 */
 #include <p24FJ128GB206.h>
+#include <stdbool.h>
 #include "common.h"
 #include "stepper.h"
 #include "ui.h"
+#include "stops.h"
 
 _ST st_d;
 
@@ -76,26 +78,55 @@ void st_state(_ST *self, uint8_t state) {
 }
 
 void st_speed(_ST *self, float speed) {
-    // speed = 1.6 deg/step / (360 deg/rev) * freq step/sec
-    //       = 0.004*freq rev/sec
+    /*
+    speed = 1.6 deg/step / (360 deg/rev) * freq step/sec
+    = 0.004*freq rev/sec
+    */
+    
+    if ((self->stop_min->hit == true) && (self->dir == 0)) {
+        // If endstop is hit and we're moving towards it,
+        // then set speed to zero. Movement in this direction is not
+        // allowed.
+        speed = 0;
+    } else if ((self->stop_max->hit == true) && (self->dir == 1)) {
+        // If endstop is hit and we're moving towards it,
+        // then set speed to zero. Movement in this direction is not
+        // allowed.
+        speed = 0;
+    }  // Else no endstops are triggered. Proceed normally
+
     if (speed > 0) {
-        if (self->speed != speed) {
-            oc_free(self->oc);
+        // If new speed is greater than zero,
+        if (self->speed != speed) {  // and if new speed is different,
+            oc_free(self->oc);  // then stop the pwm signal
             oc_pwm(self->oc, self->pins[0], &timer5, speed, self->duty_cyc);
-            // OC5CON2 = 0x000F; //synchronize to timer5
-            // OC7CON2 = 0x000F;
+            // and start again at a new frequency, specified by speed.
         }
     }
     else {
+        // If speed is zero (or less), stop the motor.
         oc_free(self->oc);
     }
-    // else {
-        // oc_free(self->oc);
-    // }
     self->speed = speed;
 }
 
 void st_direction(_ST *self, uint8_t dir) {
+    if (dir == self->dir) {  // if specified direction is same as curr. dir.,
+        return;  // Exit. We do not need to update the direction
+    }
+
+    if ((self->stop_min->hit == true) && (dir == 0)) {
+        // If endstop is hit and we specify moving towards it,
+        // then do not change direction. Movement in the specified direction is
+        // not allowed.
+        return;
+    } else if ((self->stop_max->hit == true) && (dir == 1)) {
+        // If endstop is hit and we specify moving towards it,
+        // then do not change direction. Movement in the specified direction is
+        // not allowed.
+        return;
+    }
+
     if (dir) {
         // pin_set(self->pins[1]);
         pin_write(self->pins[1], 1);
@@ -141,3 +172,18 @@ void st_direction(_ST *self, uint8_t dir) {
 //         pin_write(self->pins[7], 1);
 //     }
 // }
+
+void st_stop(_ST *self) {
+    /*
+    Stops motor.
+    */
+    st_speed(self, 0);
+}
+
+void st_check_stops(_ST *self) {
+    uint8_t dmin = stop_read(self->stop_min);
+    uint8_t dmax = stop_read(self->stop_max);
+    if ((dmin == true) || (dmax == true)) {  // If either dmin or dmax are true,
+        st_stop(self);  // then a stop has been hit. Stop motor.
+    }
+}
