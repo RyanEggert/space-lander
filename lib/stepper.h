@@ -55,5 +55,7 @@ void st_state(_ST *self, uint8_t state);
 void st_mode(_ST *self, uint16_t mode);
 void st_direction(_ST *self, uint8_t dir);
 // void st_step_size(_ST *self, uint8_t size);
+void st_stop(_ST *self);
+void st_check_stops(_ST *self);
 
 #endif

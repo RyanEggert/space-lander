@@ -147,6 +147,17 @@ void st_direction(_ST *self, uint8_t dir) {
     // pin_clear(self->pins[!dir]);
 }
 
+void st_stop(_ST *self) {
+    st_speed(self, 0);
+}
+
+void st_check_stops(_ST *self) {
+    uint8_t dmin = stop_read(self->stop_min);
+    uint8_t dmax = stop_read(self->stop_max);
+    if ((dmin == true) || (dmax == true)) {  // If either dmin or dmax are true,
+        st_stop(self);  // then a stop has just been hit. Stop the motor.
+    }
+}
 // void st_step_size(_ST *self, uint8_t size) {
 //     self->step_size = size;
 //     if (size == 0) {    // full step
