@@ -8,7 +8,8 @@ def main():
     loop_time = .25  # How often to run the main loop, in seconds
     while True:
         start_time = time.clock()
-        rocket_info()
+        # rocket_info()
+        debug_uart_buffers()
 
         while (time.clock() - start_time) < loop_time:
             pass

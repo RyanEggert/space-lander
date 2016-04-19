@@ -354,7 +354,12 @@ void rocket_model() {
         // st_speed(&st_d, 0);
         // led_off(&led3);
     }
-    // servo_set(&servo3, (uint16_t)(rocket_tilt), 0);
+
+    if (timer_flag(&timer2)) {
+        timer_lower(&timer2);
+        // servo_set(&servo0, 350, 0);
+        servo_set(&servo0, (uint16_t)(rocket_tilt), 0);
+    }
 
     rocket_speed = motor_speed;
 }
@@ -715,7 +720,7 @@ void win(void) {
 
 void setup() {
     timer_setPeriod(&timer1, 1);  // Timer for LED operation/status blink
-    timer_setPeriod(&timer2, 0.5);  // Timer for UART servicing
+    timer_setPeriod(&timer2, 0.01);  // Timer for UART servicing
     timer_setPeriod(&timer3, 0.1);
     timer_start(&timer1);
     timer_start(&timer2);
@@ -794,12 +799,12 @@ int16_t main(void) {
     init_pin();
     init_timer();
     init_st();      // if this is first, then D[1] - D[3] don't work as outputs
-    init_uart();    // if this is first, then D[0] doesn't output OC wfm
     init_quad();
     init_dcm();
     init_i2c();
-    setup();
     init_servo_driver(&sd1, &i2c3, 16000., 0x0);
+    init_uart();    // if this is first, then D[0] doesn't output OC wfm
+    setup();
     // oc_pwm(&oc1, &D[4], &timer4, 3000, 32000);
     uint16_t counter = 0;
     uint64_t msg;
@@ -816,6 +821,7 @@ int16_t main(void) {
     // dcm_velocity(&dcm1, 64000, 1);
 
     st_state(&st_d, 1);
+    // servo_set(&servo0, 150, 0);
     while (1) {
         ServiceUSB();
         UARTrequests();
