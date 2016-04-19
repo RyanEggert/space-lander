@@ -83,6 +83,7 @@ void servo_driver_configure(_SERVODRIVER *self, float pwm_freq) {
     uint8_t prescale = floor(prescaleval + 0.5);
 
     uint8_t address = self->i2c_addr << 1;  // 0b10000000
+    disable_interrupts();
     i2c_start(self->bus);                   // Start 
     i2c_putc(self->bus, address);           // Slave address 
     i2c_putc(self->bus, PCA9685_MODE1);     // Mode 1 address 
@@ -106,6 +107,7 @@ void servo_driver_configure(_SERVODRIVER *self, float pwm_freq) {
     i2c_putc(self->bus, PCA9685_MODE2);     // Mode2 register address 
     i2c_putc(self->bus, 0b00000100);        // Set to our prefered mode2 
     i2c_stop(self->bus);
+    enable_interrupts();
 
 }
 
@@ -115,7 +117,7 @@ void servo_set_pwm(_SERVO *self, uint16_t on, uint16_t off) {
     "off" values into a series of four registers. This requires that auto-
     increment be enabled in the MODE1 register.
     */
-
+    disable_interrupts();
     servo_driver_begin_transmission(self -> driver, I2C_WRITE);
     i2c_putc(self -> driver -> bus, DEV0_ON_L + 4 * self -> num);
     i2c_putc(self -> driver -> bus, on);
@@ -123,6 +125,7 @@ void servo_set_pwm(_SERVO *self, uint16_t on, uint16_t off) {
     i2c_putc(self -> driver -> bus, off);
     i2c_putc(self -> driver -> bus, off >> 8);
     servo_driver_end_transmission(self -> driver);
+    enable_interrupts();
 }
 
 void servo_set(_SERVO *self, uint16_t val, bool invert) {
