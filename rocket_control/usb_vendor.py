@@ -94,16 +94,17 @@ class PIC_USB(object):
         Reads the rocket's current measured tilt, measured speed, and state.
         """
         try:
-            ret = self.dev.ctrl_transfer(0xC0, self.GET_ROCKET_INFO, 0, 0, 10)
+            ret = self.dev.ctrl_transfer(0xC0, self.GET_ROCKET_INFO, 0, 0, 14)
         except usb.core.USBError:
             print "Could not send GET_ROCKET_INFO vendor request."
         else:
             out = {}
             out["tilt"] = self.parse16(ret, 0)
             out["speed"] = self.parse16(ret, 2)
-            out["state"] = self.parse16(ret, 4)
+            out["throttle"] = self.parse16(ret, 4)
             out["motor_speed"] = self.parse16(ret, 6)
-            out["stepper_speed"] = self.parse16(ret, 8)
+            out["motor_thrust"] = self.parse16(ret, 8)
+            out["tilt_ang"] = self.parse16(ret, 10)
             return out
 
     def get_quad_info(self):

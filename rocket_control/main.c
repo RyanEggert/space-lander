@@ -66,8 +66,8 @@ volatile uint16_t sw_state4 = 0;
 volatile bool TOP_DSTOP, BOT_DSTOP, RT_DSTOP, LT_DSTOP;
 
 // kinematic model vals
-uint16_t thrust_val = 0x0500;
-uint16_t grav_val = 0x0100;
+float thrust_val = 50.0;
+float grav_val = 5.0;
 
 // thrust angle LUT's; contain cos(theta) and sin(theta) vals
 float angle_vals_LUT[10] = {0, 5, 10, 15, 20, 25, 30, 35, 40, 45};
@@ -98,31 +98,37 @@ uint16_t motor_thrust;
 #define tilt_max 450
 #define tilt_min 120
 
-uint16_t tilt_zero = (tilt_max + tilt_min)/2; //  
+float tilt_zero = (tilt_max + tilt_min)/2; //  
 uint16_t tilt_ang;  //
-uint16_t tilt_scale;  // scale factor to convert digital tilt val [deg/div]
+float tilt_scale = 120.0/(tilt_max-tilt_min);  // scale factor to convert digital tilt val [deg/div]
 uint16_t tilt_dir = 0;
 
 // scaling vars
 uint16_t scale_ind;
-uint16_t scale_val_x;
-uint16_t scale_val_y;
+float scale_val_x;
+float scale_val_y;
+
+uint16_t search_ind, array_length;
 
 // state + high-level rocket vals
 uint16_t rocket_state = FLYING;
-uint16_t rocket_speed, rocket_tilt;
+uint16_t rocket_speed;
+float rocket_tilt;
+float rocket_tilt_last;
 uint16_t counter;
 uint8_t throttle, tilt; //commands
 uint8_t rocketstuff[64], rec_msg[64];
 uint8_t cmd, value;
 uint16_t val1, val2;
 
-uint16_t binary_search(uint16_t target_val, float target_array[10], uint16_t min, uint16_t max) {
+uint16_t binary_search(uint16_t target_val, float target_array[], uint16_t min, uint16_t max) {
+    led_on(&led2);
     uint16_t curr_ind = (max + min )/2;
     uint16_t curr_val = target_array[curr_ind];
     uint16_t length = max-min;
     // base case
     if (length == 1 || length == 2) {
+        led_off(&led2);
         return curr_ind;
     }
     // recursive case
@@ -136,48 +142,69 @@ uint16_t binary_search(uint16_t target_val, float target_array[10], uint16_t min
             return binary_search(target_val, target_array, min, curr_ind);
         }
         else {
+            led_off(&led2);
             // current value == 
             return curr_ind;
         }
 
-     }
+    }
 };
 
-uint16_t get_thrust_scale_ind(uint16_t tilt_ang, uint16_t tilt_dir) {
-    // translate tilt val into angle, get direction of tilt
-    if (rocket_tilt > tilt_zero) {
-        // tilt in CW direction
-        tilt_ang = (rocket_tilt - tilt_zero)*tilt_scale;
-        tilt_dir = TILT_CW;
+uint16_t linear_search(uint16_t target_val, float target_array[], uint16_t target_array_size) {
+    // assume sorted list
+    search_ind = 0;
+    while (target_array[search_ind] < target_val && search_ind < target_array_size-1) {
+        search_ind++;
     }
-    else if (rocket_tilt < tilt_zero) {
-        // tilt in CCW direction
-        tilt_ang = (tilt_zero - rocket_tilt)*tilt_scale;
-        tilt_dir = TILT_CCW;
-    }
-    else {
-        tilt_ang = tilt_zero*tilt_scale;
-        tilt_dir = TILT_ZERO;
-    }
-    // search LUT for index of corresponding angle
-    scale_ind = binary_search(tilt_ang, angle_vals_LUT, 0, 9);
-    // scale_val_x = thrust_scale_x[scale_ind];
-    // scale_val_y = thrust_scale_y[scale_ind];
+    return search_ind;
+}
 
+uint16_t get_thrust_scale_ind() {
+    // translate tilt val into angle, get direction of tilt
+    if (rocket_tilt != rocket_tilt_last && timer_flag(&timer3)) {
+        timer_lower(&timer3);
+        if (rocket_tilt > tilt_zero) {
+            // tilt in CW direction
+            tilt_ang = (uint16_t)((rocket_tilt - tilt_zero)*tilt_scale);
+            tilt_dir = TILT_CW;
+        }
+        else if (rocket_tilt < tilt_zero) {
+            // tilt in CCW direction
+            tilt_ang = (uint16_t)((tilt_zero - rocket_tilt)*tilt_scale);
+            tilt_dir = TILT_CCW;
+        }
+        else {
+            // tilt_ang = tilt_zero*tilt_scale;
+            tilt_ang = 0;
+            tilt_dir = TILT_ZERO;
+        }
+        // search LUT for index of corresponding angle
+        array_length = sizeof(angle_vals_LUT) / sizeof(angle_vals_LUT[0]);
+        scale_ind = linear_search(tilt_ang, angle_vals_LUT, array_length);
+        // scale_ind = binary_search(tilt_ang, angle_vals_LUT, 0, 9);
+        // scale_val_x = thrust_scale_x[scale_ind];
+        // scale_val_y = thrust_scale_y[scale_ind];
+        rocket_tilt_last = rocket_tilt;
+    }
     return scale_ind;
 }
 
 void rocket_model() {
     // determines speed setpoint of rocket in x + y axes
     if (throttle) { // Thrust on
+        led_on(&led1);
         // find thrust scale vals
-        LUT_ind = get_thrust_scale_ind(tilt_ang, tilt_dir);
-        scale_val_x = thrust_scale_x[scale_ind];
-        scale_val_y = thrust_scale_y[scale_ind];
+        LUT_ind = get_thrust_scale_ind();
+        scale_val_x = thrust_scale_x[LUT_ind];
+        scale_val_y = thrust_scale_y[LUT_ind];
+        // placeholder thrust scale vals
+        // scale_val_x = thrust_scale_x[0];
+        // scale_val_y = thrust_scale_y[0];
         // scale thrust in x+y axes
-        stepper_thrust = thrust_val*scale_val_x;
-        motor_thrust = thrust_val*scale_val_y;
+        stepper_thrust = (uint16_t)(thrust_val*scale_val_x);
+        motor_thrust = (uint16_t)(thrust_val*scale_val_y);   // uint16_t = float * float;
         if (motor_dir_track == 0) {  // rocket falling
+            // led_on(&led2);
             if (motor_speed - motor_deadband > motor_thrust) {  // nonzero velocity
                 motor_speed = motor_speed - motor_thrust;
             }
@@ -187,8 +214,9 @@ void rocket_model() {
             }
         }
         else if (motor_dir_track) { // rocket rising
+            // led_off(&led2);
             if (motor_speed < motor_speed_limit) {
-                motor_speed = motor_speed + thrust_val;
+                motor_speed = motor_speed + motor_thrust;
             }
         }
         // ***set stepper thrust val***
@@ -254,13 +282,16 @@ void rocket_model() {
         // led_on(&led2);
     }
     else { // no thrust
+        led_off(&led1);
         // set y thrust val
         if (motor_dir_track == 0) { // rocket falling
-            if (motor_speed < motor_speed_limit) {
+            // led_on(&led2);
+            if (motor_speed < motor_speed_limit) {                
                 motor_speed = motor_speed + grav_val;
             }
         }
         else if (motor_dir_track) {  // rocket rising
+            // led_off(&led2);
             if (motor_speed - motor_deadband > thrust_val) {
                 motor_speed = motor_speed - grav_val;
             }
@@ -306,7 +337,7 @@ void rocket_model() {
         // st_speed(&st_d, 150);
         // led_on(&led3);
         if (rocket_tilt < tilt_max) {
-            rocket_tilt += 1;    
+            rocket_tilt += 0.1;    
         }
     }
     else if (tilt == TILT_CW) {
@@ -315,7 +346,7 @@ void rocket_model() {
         // st_speed(&st_d, 150);   
         // led_on(&led3);
         if (rocket_tilt > tilt_min) {
-            rocket_tilt -= 1;    
+            rocket_tilt -= 0.1;    
         }
     }
     else if (tilt == TILT_ZERO) {
@@ -323,9 +354,9 @@ void rocket_model() {
         // st_speed(&st_d, 0);
         // led_off(&led3);
     }
-    servo_set(&servo3, rocket_tilt, 0);
+    // servo_set(&servo3, (uint16_t)(rocket_tilt), 0);
 
-    rocket_speed = motor_speed + stepper_speed;
+    rocket_speed = motor_speed;
 }
 
 void stepper_test() {
@@ -409,16 +440,19 @@ void VendorRequests(void) {
         temp.w = rocket_speed;
         BD[EP0IN].address[2] = temp.b[0];
         BD[EP0IN].address[3] = temp.b[1];
-        temp.w = motor_dir_track;
+        temp.w = throttle;
         BD[EP0IN].address[4] = temp.b[0];
         BD[EP0IN].address[5] = temp.b[1];
         temp.w = motor_speed;
         BD[EP0IN].address[6] = temp.b[0];
         BD[EP0IN].address[7] = temp.b[1];
-        temp.w = stepper_speed;
+        temp.w = motor_thrust;
         BD[EP0IN].address[8] = temp.b[0];
         BD[EP0IN].address[9] = temp.b[1];
-        BD[EP0IN].bytecount = 10;    // set EP0 IN byte count to 4
+        temp.w = tilt_ang;
+        BD[EP0IN].address[10] = temp.b[0];
+        BD[EP0IN].address[11] = temp.b[1];
+        BD[EP0IN].bytecount = 12;    // set EP0 IN byte count to 12
         BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
         break;
     case GET_QUAD_INFO:
@@ -609,14 +643,6 @@ void flying(void) {
     // Write tilt to servo
     // servo_set(&orientation_servo, rocket_tilt, 0);
 
-    // Handle throttle
-    if (throttle) {
-        led_on(&led1);
-    }
-    else {
-        led_off(&led1);
-    }
-
     // *** rocket model handles thrust scaling for x+y axes, drives DCM and stepper ***
     rocket_model();
     // *** use to determine stepper deadband over vendor requests ***
@@ -690,7 +716,7 @@ void win(void) {
 void setup() {
     timer_setPeriod(&timer1, 1);  // Timer for LED operation/status blink
     timer_setPeriod(&timer2, 0.5);  // Timer for UART servicing
-    timer_setPeriod(&timer3, 0.01);
+    timer_setPeriod(&timer3, 0.1);
     timer_start(&timer1);
     timer_start(&timer2);
     timer_start(&timer3);
@@ -788,7 +814,6 @@ int16_t main(void) {
     IEC5bits.USB1IE = 1; //enable
     state = flying;
     last_state = (STATE_HANDLER_T)NULL;
-
 
     // dcm_velocity(&dcm1, 64000, 1);
 

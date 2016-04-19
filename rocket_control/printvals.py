@@ -15,12 +15,13 @@ def main():
 
 def rocket_info():
     info = comms.get_rocket_info()
-    print "Rocket Tilt {} | Rocket Speed {} | Rocket State {} | Motor Speed {} | Stepper Speed {}".format(
+    print "Rocket Tilt {} | Rocket Speed {} | Throttle {} | Motor Speed {} | Motor Thrust {} | Tilt Angle {}".format(
         info["tilt"],
         info["speed"],
-        info["state"],
+        info["throttle"],
         info["motor_speed"],
-        info["stepper_speed"]
+        info["motor_thrust"],
+        info["tilt_ang"]
     )
 
 
