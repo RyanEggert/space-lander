@@ -24,22 +24,22 @@
 ** POSSIBILITY OF SUCH DAMAGE.
 */
 #include <p24FJ128GB206.h>
+#include <stdbool.h>
 #include "common.h"
 #include "stepper.h"
 #include "ui.h"
+#include "stops.h"
 #include "pin.h"
 
 _ST st_d;
 
 void init_st(void) {
     // init stepper object on oc5 w/ 50% duty cycle
-    st_init(&st_d, &D[0], &D[1], &D[2], &D[3], &oc5, 0x7FFF);
-    // init_ui();
+    st_init(&st_d, &D[0], &D[1], &D[2], &D[3], &oc5, 0x7FFF, &es_x_l, &es_x_r);
+    init_ui();
 }
 
-void st_init(_ST *self, _PIN *pin1, _PIN *pin2, _PIN *pin3, _PIN *pin4, _OC *oc, uint16_t duty_cyc) {
-    // init_pin();
-
+void st_init(_ST *self, _PIN *pin1, _PIN *pin2, _PIN *pin3, _PIN *pin4, _OC *oc, uint16_t duty_cyc, _ESTOP *endstop_min, _ESTOP *endstop_max) {
     self->dir = 0;
     self->speed = 0;
     self->step_size = 0;
@@ -50,7 +50,8 @@ void st_init(_ST *self, _PIN *pin1, _PIN *pin2, _PIN *pin3, _PIN *pin4, _OC *oc,
     self->pins[2] = pin3;   // SLP+RST
     self->pins[3] = pin4;   // ENABLE+PFD
     self->oc = oc;
-
+    self->stop_min = endstop_min;
+    self->stop_max = endstop_max;
     int i;
     for (i=0; i<=3; i++) {
         pin_digitalOut(self->pins[i]);
@@ -79,26 +80,55 @@ void st_state(_ST *self, uint8_t state) {
 }
 
 void st_speed(_ST *self, float speed) {
-    // speed = 1.6 deg/step / (360 deg/rev) * freq step/sec
-    //       = 0.004*freq rev/sec
+    /*
+    speed = 1.6 deg/step / (360 deg/rev) * freq step/sec
+    = 0.004*freq rev/sec
+    */
+
+    if ((self->stop_min->hit == true) && (self->dir == 0)) {
+        // If endstop is hit and we're moving towards it,
+        // then set speed to zero. Movement in this direction is not
+        // allowed.
+        speed = 0;
+    } else if ((self->stop_max->hit == true) && (self->dir == 1)) {
+        // If endstop is hit and we're moving towards it,
+        // then set speed to zero. Movement in this direction is not
+        // allowed.
+        speed = 0;
+    }  // Else no endstops are triggered. Proceed normally
+
     if (speed > 0) {
-        if (self->speed != speed) {
-            oc_free(self->oc);
+        // If new speed is greater than zero,
+        if (self->speed != speed) {  // and if new speed is different,
+            oc_free(self->oc);  // then stop the pwm signal
             oc_pwm(self->oc, self->pins[0], NULL, speed, self->duty_cyc);
-            // OC5CON2 = 0x000F; //synchronize to timer5
-            // OC7CON2 = 0x000F;
+            // and start again at a new frequency, specified by speed.
         }
     }
     else {
+        // If speed is zero (or less), stop the motor.
         oc_free(self->oc);
     }
-    // else {
-        // oc_free(self->oc);
-    // }
     self->speed = speed;
 }
 
 void st_direction(_ST *self, uint8_t dir) {
+    if (dir == self->dir) {  // if specified direction is same as curr. dir.,
+        return;  // Exit. We do not need to update the direction
+    }
+
+    if ((self->stop_min->hit == true) && (dir == 0)) {
+        // If endstop is hit and we specify moving towards it,
+        // then do not change direction. Movement in the specified direction is
+        // not allowed.
+        return;
+    } else if ((self->stop_max->hit == true) && (dir == 1)) {
+        // If endstop is hit and we specify moving towards it,
+        // then do not change direction. Movement in the specified direction is
+        // not allowed.
+        return;
+    }
+
     if (dir) {
         // pin_set(self->pins[1]);
         pin_write(self->pins[1], 1);
@@ -109,7 +139,7 @@ void st_direction(_ST *self, uint8_t dir) {
     }
     // if (self->dir != dir) {
     //     oc_free(self->oc);
-    //     oc_pwm(self->oc, self->pins[0], NULL, self->speed, self->duty_cyc);        
+    //     oc_pwm(self->oc, self->pins[0], NULL, self->speed, self->duty_cyc);
     //     // OC5CON2 = 0x000F; //synchronize to timer5
     //     // OC7CON2 = 0x000F;
     // }

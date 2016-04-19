@@ -4,7 +4,6 @@
 ** (https://github.com/adafruit/Adafruit-PWM-Servo-Driver-Library)
 **
 */
-// #define FCY 800000
 
 #include <p24FJ128GB206.h>
 #include "common.h"
