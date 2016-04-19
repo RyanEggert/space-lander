@@ -152,7 +152,7 @@ int16_t write(int16_t handle, void *buffer, uint16_t len) {
 }
 
 void init_uart(void) {
-    init_pin();
+    // init_pin();
 
     pin_init(&AJTX, (uint16_t *)&PORTG, (uint16_t *)&TRISG, 
              (uint16_t *)NULL, 6, -1, 8, 21, (uint16_t *)&RPOR10);

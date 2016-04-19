@@ -26,6 +26,7 @@
 #include <p24FJ128GB206.h>
 #include "common.h"
 #include "pin.h"
+#include "ui.h"
 #include "i2c.h"
 
 _I2C i2c1, i2c2, i2c3;

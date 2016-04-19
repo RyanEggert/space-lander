@@ -29,6 +29,7 @@
 #include "stepper.h"
 #include "ui.h"
 #include "stops.h"
+#include "pin.h"
 
 _ST st_d;
 
@@ -52,11 +53,11 @@ void st_init(_ST *self, _PIN *pin1, _PIN *pin2, _PIN *pin3, _PIN *pin4, _OC *oc,
     self->stop_min = endstop_min;
     self->stop_max = endstop_max;
     int i;
-    for (i = 0; i <= 8; i++) {
+    for (i=0; i<=3; i++) {
         pin_digitalOut(self->pins[i]);
     }
     oc_pwm(self->oc, self->pins[0], NULL, self->speed, 0);
-    OC5CON2 = 0x000F; //synchronize to timer5
+    // OC5CON2 = 0x000F; //synchronize to timer5
     // OC7CON2 = 0x000F;
     st_state(&st_d, self->state);      // turn on controller
     // st_step_size(&st_d, 0); // full step
@@ -100,7 +101,7 @@ void st_speed(_ST *self, float speed) {
         // If new speed is greater than zero,
         if (self->speed != speed) {  // and if new speed is different,
             oc_free(self->oc);  // then stop the pwm signal
-            oc_pwm(self->oc, self->pins[0], &timer5, speed, self->duty_cyc);
+            oc_pwm(self->oc, self->pins[0], NULL, speed, self->duty_cyc);
             // and start again at a new frequency, specified by speed.
         }
     }
@@ -173,18 +174,3 @@ void st_direction(_ST *self, uint8_t dir) {
 //         pin_write(self->pins[7], 1);
 //     }
 // }
-
-void st_stop(_ST *self) {
-    /*
-    Stops motor.
-    */
-    st_speed(self, 0);
-}
-
-void st_check_stops(_ST *self) {
-    uint8_t dmin = stop_read(self->stop_min);
-    uint8_t dmax = stop_read(self->stop_max);
-    if ((dmin == true) || (dmax == true)) {  // If either dmin or dmax are true,
-        st_stop(self);  // then a stop has been hit. Stop motor.
-    }
-}

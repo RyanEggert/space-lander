@@ -26,6 +26,7 @@
 #include <p24FJ128GB206.h>
 #include "common.h"
 #include "oc.h"
+#include "ui.h"
 
 _OC oc1, oc2, oc3, oc4, oc5, oc6, oc7, oc8, oc9;
 

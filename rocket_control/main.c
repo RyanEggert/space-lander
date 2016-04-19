@@ -746,7 +746,7 @@ void setup() {
     quad_init(&quad1, &D[8], &D[9]); // quad1 uses pins D8 & D9
     quad_every(&quad1, &timer5, 0.0000875); // quad1 will use timer5 interrupts
 
-    timer_every(&timer4, .001, read_limitsw); // Start timed endstop reading
+    timer_every(&timer4, .001, read_limitsw);  // Start timed endstop reading
     // General use debugging output pin
     // pin_digitalOut(&D[2]);
 

@@ -8,17 +8,20 @@ def main():
     loop_time = .25  # How often to run the main loop, in seconds
     while True:
         start_time = time.clock()
-        rocket_info()
+        # rocket_info()
+        debug_uart_buffers()
 
         while (time.clock() - start_time) < loop_time:
             pass
 
 def rocket_info():
     info = comms.get_rocket_info()
-    print "Rocket Tilt {} | Rocket Speed {} | Rocket State {}".format(
+    print "Rocket Tilt {} | Rocket Speed {} | Rocket State {} | Motor Speed {} | Stepper Speed {}".format(
         info["tilt"],
         info["speed"],
-        info["state"]
+        info["state"],
+        info["motor_speed"],
+        info["stepper_speed"]
     )
 
 
