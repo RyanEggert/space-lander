@@ -9,8 +9,8 @@ def main():
     while True:
         start_time = time.clock()
         # quad_info()
-        rocket_info()
-        # debug_uart_buffers()
+        # rocket_info()
+        debug_uart_buffers()
         while (time.clock() - start_time) < loop_time:
             pass
 

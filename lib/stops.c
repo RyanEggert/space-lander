@@ -10,7 +10,7 @@ _ESTOP es_x_l, es_x_r, es_y_top, es_y_bot, es_landing;
 void stop_init(_ESTOP *self, _PIN *pin) {
     self->hit = false;
     self->state = 0x0;
-
+    self->pin = pin;
 }
 
 void init_stops(void) {

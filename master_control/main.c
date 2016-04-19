@@ -278,11 +278,15 @@ void setup() {
     timer_setPeriod(&timer3, 0.001);
     timer_start(&timer1);
     timer_start(&timer2);
+    timer_start(&timer3);
 
     setup_uart();
     rocket_tilt, rocket_speed = 0;
+    pin_digitalOut(&D[8]);  // State pin 1
+    pin_digitalOut(&D[9]);  // State pin 2
 
-
+    pin_set(&D[8]);
+    pin_clear(&D[9]);
     // Declare tilt digital I/O
     LEFT = &D[0];
     RIGHT = &D[1];

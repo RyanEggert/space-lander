@@ -775,6 +775,7 @@ int16_t main(void) {
     init_oc();
     init_pin();
     init_timer();
+    init_stops();
     init_st();      // if this is first, then D[1] - D[3] don't work as outputs
     init_quad();
     init_dcm();
@@ -796,11 +797,13 @@ int16_t main(void) {
     last_state = (STATE_HANDLER_T)NULL;
 
     // dcm_velocity(&dcm1, 64000, 1);
+    pin_digitalOut(&D[5]);
 
     st_state(&st_d, 1);
     // servo_set(&servo0, 150, 0);
     while (1) {
-        ServiceUSB();
+        // ServiceUSB();
+        pin_toggle(&D[5]);
         UARTrequests();
         state();
     }
