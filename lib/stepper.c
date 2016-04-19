@@ -38,7 +38,7 @@ void init_st(void) {
     init_ui();
 }
 
-void st_init(_ST *self, _PIN *pin1, _PIN *pin2, _PIN *pin3, _PIN *pin4, _OC *oc, uint16_t duty_cyc) {
+void st_init(_ST *self, _PIN *pin1, _PIN *pin2, _PIN *pin3, _PIN *pin4, _OC *oc, uint16_t duty_cyc, _ESTOP *endstop_min, _ESTOP *endstop_max) {
     self->dir = 0;
     self->speed = 0;
     self->step_size = 0;
@@ -49,7 +49,8 @@ void st_init(_ST *self, _PIN *pin1, _PIN *pin2, _PIN *pin3, _PIN *pin4, _OC *oc,
     self->pins[2] = pin3;   // SLP+RST
     self->pins[3] = pin4;   // ENABLE+PFD
     self->oc = oc;
-
+    self->stop_min = endstop_min;
+    self->stop_max = endstop_max;
     int i;
     for (i = 0; i <= 8; i++) {
         pin_digitalOut(self->pins[i]);
