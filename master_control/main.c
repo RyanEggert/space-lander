@@ -280,7 +280,6 @@ void setup() {
     timer_start(&timer2);
 
     setup_uart();
-    
     rocket_tilt, rocket_speed = 0;
 
 
@@ -319,3 +318,4 @@ int16_t main(void) {
         state();
     }
 }
+

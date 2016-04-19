@@ -34,7 +34,7 @@ _ST st_d;
 
 void init_st(void) {
     // init stepper object on oc5 w/ 50% duty cycle
-    st_init(&st_d, &D[0], &D[1], &D[2], &D[3], &oc5, 0x7FFF);
+    st_init(&st_d, &D[0], &D[1], &D[2], &D[3], &oc5, 0x7FFF, &es_x_l, &es_x_r);
     init_ui();
 }
 
