@@ -805,11 +805,6 @@ int16_t main(void) {
         // ServiceUSB();
         UARTrequests();
         state();
-        if (dcm1.stop_min->hit == 1) {
-            led_on(&led2);
-        } else {
-            led_off(&led2);
-        }
     }
 
     // ***Test code for quad encoder***
