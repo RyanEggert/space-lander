@@ -515,7 +515,8 @@ void uart_gets(_UART *self, uint8_t *str, uint16_t len) {
         return;
     }
 
-    // if self->count
+    //if (self->RXbuffer.count == 0);
+    //    return;
 
     // uart_flushTxBuffer(self);
     start = str;

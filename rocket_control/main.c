@@ -122,13 +122,13 @@ uint8_t cmd, value;
 uint16_t val1, val2;
 
 uint16_t binary_search(uint16_t target_val, float target_array[], uint16_t min, uint16_t max) {
-    led_on(&led2);
+    // led_on(&led2);
     uint16_t curr_ind = (max + min )/2;
     uint16_t curr_val = target_array[curr_ind];
     uint16_t length = max-min;
     // base case
     if (length == 1 || length == 2) {
-        led_off(&led2);
+        // led_off(&led2);
         return curr_ind;
     }
     // recursive case
@@ -142,7 +142,7 @@ uint16_t binary_search(uint16_t target_val, float target_array[], uint16_t min, 
             return binary_search(target_val, target_array, min, curr_ind);
         }
         else {
-            led_off(&led2);
+            // led_off(&led2);
             // current value == 
             return curr_ind;
         }
@@ -631,7 +631,7 @@ void reset(void) {
     }
 
     if (state != last_state) {
-        led_off(&led2);  // if we are leaving the state, do clean up stuff
+        // led_off(&led2);  // if we are leaving the state, do clean up stuff
     }
 }
 
@@ -803,9 +803,13 @@ int16_t main(void) {
     // servo_set(&servo0, 150, 0);
     while (1) {
         // ServiceUSB();
-        pin_toggle(&D[5]);
         UARTrequests();
         state();
+        if (dcm1.stop_min->hit == 1) {
+            led_on(&led2);
+        } else {
+            led_off(&led2);
+        }
     }
 
     // ***Test code for quad encoder***

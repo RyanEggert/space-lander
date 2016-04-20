@@ -61,13 +61,13 @@ void dcm_run(_DCM *self) {
 
 void dcm_speed(_DCM *self, uint16_t speed) {
 
-    if ((self->stop_min->hit == true) && (self->dir == 0)) {
+    if ((self->stop_min->hit == true) && (self->dir == 1)) {
         // If endstop is hit and we're moving towards it,
         // then set speed to zero. Movement in this direction is not
         // allowed.
         speed = 0;
         self->speed = 0;  // Show that speed has been set to zero
-    } else if ((self->stop_max->hit == true) && (self->dir == 1)) {
+    } else if ((self->stop_max->hit == true) && (self->dir == 0)) {
         // If endstop is hit and we're moving towards it,
         // then set speed to zero. Movement in this direction is not
         // allowed.
@@ -93,12 +93,12 @@ void dcm_direction(_DCM *self, uint8_t dir) {
     if (self->dir == dir) {
         return;
     }
-    if ((self->stop_min->hit == true) && (dir == 0)) {
+    if ((self->stop_min->hit == true) && (dir == 1)) {
         // If endstop is hit and we specify moving towards it,
         // then do not change direction. Movement in the specified direction is
         // not allowed.
         return;
-    } else if ((self->stop_max->hit == true) && (dir == 1)) {
+    } else if ((self->stop_max->hit == true) && (dir == 0)) {
         // If endstop is hit and we're moving towards it,
         // then do not change direction. Movement in the specified direction is
         // not allowed.
