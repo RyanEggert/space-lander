@@ -167,7 +167,6 @@ int16_t main(void) {
     LEFT = &D[12];
     RIGHT = &D[13];
 
-
     timer_setPeriod(&timer2, .001);
     timer_start(&timer2);
     timer_setPeriod(&timer3, 1.0);

@@ -5,24 +5,19 @@ comms = PIC_USB(0x0005)
 
 def main():
     print("START")
-    loop_time = .1  # How often to run the main loop, in seconds
+    loop_time = .05  # How often to run the main loop, in seconds
     while True:
         start_time = time.clock()
-        # quad_info()
-        # rocket_info()
-        debug_uart_buffers()
+        quad_info()
         while (time.clock() - start_time) < loop_time:
             pass
 
 def rocket_info():
     info = comms.get_rocket_info()
-    print "Rocket Tilt {} | Rocket Speed {} | Throttle {} | Motor Speed {} | Motor Thrust {} | Tilt Angle {}".format(
+    print "Rocket Tilt {} | Rocket Speed {} | Rocket State {}".format(
         info["tilt"],
         info["speed"],
-        info["throttle"],
-        info["motor_speed"],
-        info["motor_thrust"],
-        info["tilt_ang"]
+        info["state"]
     )
 
 
@@ -41,9 +36,11 @@ def debug_uart_buffers():
 
 def quad_info():
     info = comms.get_quad_info()
-    print "Quad Counter {} | Overflow {}".format(
+    print "Quad Counter {} | Overflow {} | Diff {} | PySpeed {}".format(
         info["counter"],
         info["overflow"],
+        info["diff"],
+        info["diff"]/.01
     )
 
 

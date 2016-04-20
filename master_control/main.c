@@ -9,7 +9,6 @@
 #include "uart.h"
 #include "usb.h"
 #include "msgs.h"
-#include "int.h"
 
 #define SET_STATE    0   // Vendor request that receives 2 unsigned integer values
 #define GET_VALS    1   // Vendor request that returns 2 unsigned integer values 
@@ -279,11 +278,15 @@ void setup() {
     timer_setPeriod(&timer3, 0.001);
     timer_start(&timer1);
     timer_start(&timer2);
+    timer_start(&timer3);
 
     setup_uart();
     rocket_tilt, rocket_speed = 0;
+    pin_digitalOut(&D[8]);  // State pin 1
+    pin_digitalOut(&D[9]);  // State pin 2
 
-
+    pin_set(&D[8]);
+    pin_clear(&D[9]);
     // Declare tilt digital I/O
     LEFT = &D[0];
     RIGHT = &D[1];
@@ -297,13 +300,10 @@ int16_t main(void) {
     init_timer();
     init_uart();
     init_pin();
-    init_int(); //initialize ext interrupt lib
+
 
     setup();
     pin_digitalIn(&D[2]);
-
-    pin_digitalIn(&D[3]);
-    int_attach(&int4, &D[3], 0, blue);
 
     InitUSB();
     U1IE = 0xFF; //setting up ISR for USB requests

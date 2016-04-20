@@ -1,0 +1,34 @@
+
+env = Environment(PIC='24FJ128GB206',
+                  CC='xc16-gcc',
+                  PROGSUFFIX='.elf',
+                  CFLAGS='-g -omf=elf -x c -mcpu=$PIC',
+                  LINKFLAGS='-omf=elf -mcpu=$PIC -Wl,--script="app_p24FJ128GB206.gld"',
+                  CPPPATH=['../../lib', '../../include'])
+env.PrependENVPath('PATH', '/opt/microchip/xc16/v1.25/bin')
+env.PrependENVPath('PATH', '/opt/microchip/xc16/v1.25/bin')
+bin2hex = Builder(action='xc16-bin2hex $SOURCE -omf=elf',
+                  suffix='hex',
+                  src_suffix='elf')
+env.Append(BUILDERS={'Hex': bin2hex})
+build_list = Builder(action='xc16-objdump -S -D $SOURCE > $TARGET',
+               suffix='lst',
+               src_suffix='elf')
+env.Append(BUILDERS={'List': build_list})
+
+env.Program('step_response', ['main.c',
+                            '../../lib/common.c',
+                            '../../lib/pin.c',
+                            '../../lib/ui.c',
+                            '../../lib/timer.c',
+                            '../../lib/quad.c',
+                            '../../lib/oc.c',
+			                      '../../lib/pid.c',
+                            '../../lib/i2c.c',
+                            '../../lib/servo.c',
+                            '../../lib/uart.c',
+                            '../../lib/usb.c',
+                            '../../lib/dcm.c',
+                            'descriptors.c'])
+env.Hex('step_response')
+env.List('step_response')

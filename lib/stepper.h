@@ -30,6 +30,7 @@
 #include "pin.h"
 #include "oc.h"
 #include "timer.h"
+#include "stops.h"
 
 void init_st(void);
 
@@ -41,16 +42,20 @@ typedef struct {
     uint16_t duty_cyc;
     _PIN *pins[4];
     _OC *oc;
+    _ESTOP *stop_min;  // minimum limit switch (endstop)
+    _ESTOP *stop_max;  // maximum limit switch (endstop)
 } _ST;
 
 extern _ST st_d;
 
-void st_init(_ST *self, _PIN *pin1, _PIN *pin2, _PIN *pin3, _PIN *pin4, _OC *oc, uint16_t duty_cyc);
+void st_init(_ST *self, _PIN *pin1, _PIN *pin2, _PIN *pin3, _PIN *pin4, _OC *oc, uint16_t duty_cyc, _ESTOP *endstop_min, _ESTOP *endstop_max);
 
 void st_speed(_ST *self, float speed);
 void st_state(_ST *self, uint8_t state);
 void st_mode(_ST *self, uint16_t mode);
 void st_direction(_ST *self, uint8_t dir);
 // void st_step_size(_ST *self, uint8_t size);
+void st_stop(_ST *self);
+void st_check_stops(_ST *self);
 
 #endif

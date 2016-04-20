@@ -23,8 +23,8 @@ env.Program('rocket_main', ['main.c',
                             '../lib/ui.c',
                             '../lib/timer.c',
                             '../lib/quad.c',
+                            '../lib/stops.c',
                             '../lib/oc.c',
-			                      '../lib/pid.c',
                             '../lib/i2c.c',
                             '../lib/servo.c',
                             '../lib/uart.c',
@@ -33,6 +33,7 @@ env.Program('rocket_main', ['main.c',
                             '../lib/stepper.c',
                             'descriptors.c'])
 
+<<<<<<< HEAD
 # print('Creating builder to load hex file via bootloader...')
 # def load_function(target, source, env):
 #     bl = b.bootloadercmd()
