@@ -1,85 +1,130 @@
 #include <p24FJ128GB206.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include "config.h"
 #include "common.h"
 #include "pin.h"
 #include "ui.h"
 #include "timer.h"
-#include "uart.h"
+#include "usb.h"
 #include "i2c.h"
 #include "servo.h"
 #include "servo_test.h"
-#include <stdio.h>
-#include <stdlib.h>
 
-#define SERVOMIN 500
-#define SERVOMAX 1800
+
+uint8_t RC_TXBUF[1024], RC_RXBUF[1024];
+
+#define SET_STATE    0   // Vendor request that receives 2 unsigned integer values
+#define GET_VALS    1   // Vendor request that returns 2 unsigned integer values 
+#define GET_ROCKET_INFO 2
+#define DEBUG_UART_BUFFERS 3
+#define GET_QUAD_INFO 4
+#define COMMAND_DCMOTOR 5
+
+#define DEBUG_SERVO_SET_POS 60
+#define DEBUG_SERVO_SET_FREQ 61
+
+uint16_t rocket_state;
+uint16_t rocket_speed, rocket_tilt;
+uint8_t throttle, tilt; //commands
+uint8_t rocketstuff[64], rec_msg[64];
+uint8_t cmd, value;
+uint16_t val1, val2;
+
+void VendorRequests(void) {
+    disable_interrupts();
+    WORD temp;
+    WORD temp2;
+    WORD32 temp32;
+    switch (USB_setup.bRequest) {
+    case SET_STATE:
+        // state = USB_setup.wValue.w;
+        BD[EP0IN].bytecount = 0;    // set EP0 IN byte count to 0
+        BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
+        break;
+
+    case GET_ROCKET_INFO:
+        temp.w = rocket_tilt;
+        BD[EP0IN].address[0] = temp.b[0];
+        BD[EP0IN].address[1] = temp.b[1];
+        temp.w = rocket_speed;
+        BD[EP0IN].address[2] = temp.b[0];
+        BD[EP0IN].address[3] = temp.b[1];
+        temp.w = rocket_state;
+        BD[EP0IN].address[4] = temp.b[0];
+        BD[EP0IN].address[5] = temp.b[1];
+        BD[EP0IN].bytecount = 6;    // set EP0 IN byte count to 4
+        BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
+        break;
+
+    case DEBUG_SERVO_SET_POS:
+        temp.w = USB_setup.wValue.w;   // Commanded position
+        temp2.w = USB_setup.wIndex.w;  // Servo driver index
+        servo_usb_set(&sd1, temp2.b[0], temp.w);
+        BD[EP0IN].bytecount = 0;    // set EP0 IN byte count to 0
+        BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
+        break;
+
+    case DEBUG_SERVO_SET_FREQ:
+        temp.w = USB_setup.wValue.w;
+        
+        servo_driver_configure(&sd1, ((float)(temp.w)) / 10);
+        BD[EP0IN].bytecount = 0;    // set EP0 IN byte count to 0
+        BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
+        break;
+
+    default:
+        USB_error_flags |= 0x01;    // set Request Error Flag
+    }
+    enable_interrupts();
+}
+
+void VendorRequestsIn(void) {
+    switch (USB_request.setup.bRequest) {
+    default:
+        USB_error_flags |= 0x01;                    // set Request Error Flag
+    }
+}
+
+void VendorRequestsOut(void) {
+    switch (USB_request.setup.bRequest) {
+    default:
+        USB_error_flags |= 0x01;                    // set Request Error Flag
+    }
+}
+
 void setup() {
-    printf("START\n\r");
-    timer_setPeriod(&timer1, .55);  // Timer for LED operation/status blink
-    timer_setPeriod(&timer2, 0.5);
-    timer_setPeriod(&timer3, 0.01);
-    timer_setPeriod(&timer4, 0.001);
+    timer_setPeriod(&timer1, 1);  // Timer for LED operation/status blink
+    // timer_setPeriod(&timer2, 0.01);  // Timer for UART servicing
+    // timer_setPeriod(&timer3, 0.01);
     timer_start(&timer1);
-    timer_start(&timer2);
-    timer_start(&timer3);
-    timer_start(&timer4);
-
-    // General use debugging output pin
-    pin_digitalOut(&D[2]);
+    // timer_start(&timer2);
+    // timer_start(&timer3);
 }
 
 int16_t main(void) {
     // printf("Starting Rocket Controller...\r\n");
     init_clock();
     init_ui();
+    init_pin();
     init_timer();
-    init_uart();
     init_i2c();
-    uint16_t servo_test [] = {SERVOMIN, SERVOMAX};
-    uint16_t servo_test2 [] = {1000, 1500};
-    init_servo_driver(&sd1, &i2c3, 16000., 0x0);
-    init_servo(&orientation_servo, &sd1, 0);
-    init_servo(&speed_ind_servo, &sd1, 1);
-    init_servo(&servo0, &sd1, 2);
-    init_servo(&servo1, &sd1, 3);
     setup();
-    servo_driver_wake(&sd1);    // servo_driver_set_pwm_freq(&sd1, 60);
-    // servo_set(&orientation_servo, 1000, 0);
-    // servo_set(&speed_ind_servo, 3000, 0);
-    uint16_t counter = 0;
-    uint16_t counter2 = 0;
-    uint16_t servo_cmd = 500;
+    init_servo_driver(&sd1, &i2c3, 16000., 0x0);
+    init_servo(&servo4, &sd1, 0);
+    InitUSB();
+    U1IE = 0xFF; //setting up ISR for USB requests
+    U1EIE = 0xFF;
+    IFS5bits.USB1IF = 0; //flag
+    IEC5bits.USB1IE = 1; //enable
+    // uint32_t pid_command;
+    servo_set(&servo4, 1500, 0);
     while (1) {
         if (timer_flag(&timer1)) {
             // Blink green light to show normal operation.
             timer_lower(&timer1);
             led_toggle(&led2);
-            // counter = (counter + 10) % 800;
-            // counter = (counter + 1) % 3;
-            // servo_set(&orientation_servo, servo_test[counter], 0);
-            // servo_set(&orientation_servo, 2000 - counter, 0);
-            // servo_set(&servo0, 1000 + counter, 0);
-            // servo_set(&servo0, 1000 + counter, 0);
-        }
-        if (timer_flag(&timer2)) {
-            timer_lower(&timer2);
-            counter = (counter +1) % 2;
-            servo_set(&speed_ind_servo, servo_test[counter], 0);
-        }
-        if (timer_flag(&timer3)) {
-            timer_lower(&timer3);
-            servo_cmd += 5;
-            if (servo_cmd > SERVOMAX) {
-                servo_cmd = SERVOMIN ;
-            }
-
-            servo_set(&orientation_servo, servo_cmd, 0);
-            // printf("servo: %d\n\r", servo_cmd);
-        }
-        if (timer_flag(&timer4)) {
-            timer_lower(&timer4);
-            counter2 = (counter2 +1) % 2;
-            servo_set(&servo0, servo_test2[counter], 0);
+            // servo_set(&servo4, 1500, 0);
         }
     }
 }

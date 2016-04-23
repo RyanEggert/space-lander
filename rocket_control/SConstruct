@@ -1,4 +1,6 @@
+
 # import bootloadercmd as b
+
 
 env = Environment(PIC='24FJ128GB206',
                   CC='xc16-gcc',
@@ -23,8 +25,8 @@ env.Program('rocket_main', ['main.c',
                             '../lib/ui.c',
                             '../lib/timer.c',
                             '../lib/quad.c',
+                            '../lib/stops.c',
                             '../lib/oc.c',
-			                      '../lib/pid.c',
                             '../lib/i2c.c',
                             '../lib/servo.c',
                             '../lib/uart.c',
@@ -32,6 +34,7 @@ env.Program('rocket_main', ['main.c',
                             '../lib/dcm.c',
                             '../lib/stepper.c',
                             'descriptors.c'])
+
 
 # print('Creating builder to load hex file via bootloader...')
 # def load_function(target, source, env):

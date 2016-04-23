@@ -152,7 +152,7 @@ int16_t write(int16_t handle, void *buffer, uint16_t len) {
 }
 
 void init_uart(void) {
-    init_pin();
+    // init_pin();
 
     pin_init(&AJTX, (uint16_t *)&PORTG, (uint16_t *)&TRISG, 
              (uint16_t *)NULL, 6, -1, 8, 21, (uint16_t *)&RPOR10);
@@ -515,6 +515,9 @@ void uart_gets(_UART *self, uint8_t *str, uint16_t len) {
         return;
     }
 
+    //if (self->RXbuffer.count == 0);
+    //    return;
+
     // uart_flushTxBuffer(self);
     start = str;
     left = len;
@@ -530,7 +533,6 @@ void uart_gets(_UART *self, uint8_t *str, uint16_t len) {
         }
         if ((*str>=32) && (*str<127)) {     // If character is printable,
             str++;                          //   and advance the pointer.
-
         }
     }
     *str = '\0';  
