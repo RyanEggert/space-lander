@@ -66,8 +66,8 @@ volatile uint16_t sw_state4 = 0;
 volatile bool TOP_DSTOP, BOT_DSTOP, RT_DSTOP, LT_DSTOP;
 
 // kinematic model vals
-float thrust_val = 50.0;
-float grav_val = 5.0;
+float thrust_val = 5.0;
+float grav_val = 1.0;
 
 // thrust angle LUT's; contain cos(theta) and sin(theta) vals
 float angle_vals_LUT[10] = {0, 5, 10, 15, 20, 25, 30, 35, 40, 45};
@@ -91,7 +91,7 @@ uint16_t motor_state;
 uint16_t motor_dir_track = 0;
 uint16_t motor_speed = 0;
 uint16_t motor_speed_limit = 0x7FFF;
-uint16_t motor_deadband = 19000;  // will find once gantry is built
+uint16_t motor_deadband = 7000;  // will find once gantry is built
 uint16_t motor_thrust;
 
 // tilt vals (maxes out at 4096; may use smaller range)
@@ -355,11 +355,11 @@ void rocket_model() {
         // led_off(&led3);
     }
 
-    if (timer_flag(&timer2)) {
-        timer_lower(&timer2);
-        // servo_set(&servo0, 350, 0);
-        servo_set(&servo0, (uint16_t)(rocket_tilt), 0);
-    }
+    // if (timer_flag(&timer2)) {
+    //     timer_lower(&timer2);
+    //     // servo_set(&servo0, 350, 0);
+    //     servo_set(&servo0, (uint16_t)(rocket_tilt), 0);
+    // }
 
     rocket_speed = motor_speed;
 }
@@ -645,10 +645,7 @@ void flying(void) {
 
     // Perform state tasks
 
-    // Write tilt to servo
-    // servo_set(&orientation_servo, rocket_tilt, 0);
-
-    // *** rocket model handles thrust scaling for x+y axes, drives DCM and stepper ***
+    // *** rocket model handles thrust scaling for x+y axes, drives DCM, stepper, servo ***
     rocket_model();
     // *** use to determine stepper deadband over vendor requests ***
     // stepper_test();
@@ -737,9 +734,11 @@ void setup() {
     timer_setPeriod(&timer1, 1);  // Timer for LED operation/status blink
     timer_setPeriod(&timer2, 0.01);  // Timer for UART servicing
     timer_setPeriod(&timer3, 0.1);
+    timer_setPeriod(&timer4, 0.001);
     timer_start(&timer1);
     timer_start(&timer2);
     timer_start(&timer3);
+    timer_start(&timer4);
 
     // DC MOTOR + QUAD ENCODER
     dcm_init(&dcm1, &D[10], &D[11], 1e3, 0, &oc7, &es_y_bot, &es_y_top);
@@ -783,7 +782,6 @@ int16_t main(void) {
     init_servo_driver(&sd1, &i2c3, 16000., 0x0);
     init_uart();    // if this is first, then D[0] doesn't output OC wfm
     setup();
-    // oc_pwm(&oc1, &D[4], &timer4, 3000, 32000);
     uint16_t counter = 0;
     uint64_t msg;
     char is_recip = 0;
@@ -802,8 +800,12 @@ int16_t main(void) {
     st_state(&st_d, 1);
     // servo_set(&servo0, 150, 0);
     while (1) {
-        // ServiceUSB();
-        UARTrequests();
+        ServiceUSB();
+        // clock UART to prevent seizing
+        // if (timer_flag(&timer4)) {
+            // timer_lower(&timer4);
+            UARTrequests();
+        // }
         state();
     }
 

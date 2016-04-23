@@ -10,11 +10,12 @@
 #include <libpic30.h>
 #include <math.h>
 #include <stdbool.h>
-#include "ui.h"
+// #include "ui.h"
 #include "pin.h"
 #include "i2c.h"
 #include "servo.h"
 
+#define delay_ms_time 1  // delay between i2c transactions in servo_drive_configure function
 
 _SERVODRIVER sd1;
 _SERVO servo0, servo1, servo2, servo3, servo4, servo5, servo6, servo7, servo8, servo9, servo10, servo11, servo12, servo13, servo14, servo15;
@@ -89,19 +90,19 @@ void servo_driver_configure(_SERVODRIVER *self, float pwm_freq) {
     i2c_putc(self->bus, PCA9685_MODE1);     // Mode 1 address 
     i2c_putc(self->bus, 0b00110001);        // Setting mode to sleep so we can change the default PWM frequency 
     i2c_stop(self->bus);                    // Stop 
-    __delay_ms(1);                          // Required 50 us delay 
+    __delay_ms(delay_ms_time);                          // Required 50 us delay 
     i2c_start(self->bus);                   // Start 
     i2c_putc(self->bus, address);           // Slave address 
     i2c_putc(self->bus, PCA9685_PRESCALE);  // PWM frequency PRE_SCALE address 
     i2c_putc(self->bus, prescale);          // osc_clk/(4096*update_rate) // 25000000/(4096*40)= 4.069 ~4 
     i2c_stop(self->bus);                    // Stop 
-    __delay_ms(1);                          // delay at least 500 us 
+    __delay_ms(delay_ms_time);                          // delay at least 500 us 
     i2c_start(self->bus);                   // Start 
     i2c_putc(self->bus, address);           // Slave address 
     i2c_putc(self->bus, PCA9685_MODE1);     // Mode 1 register address 
     i2c_putc(self->bus, self->mode1);       // Set to our prefered mode1 
     i2c_stop(self->bus);                    // Stop 
-    __delay_ms(1);                          // delay at least 500 us 
+    __delay_ms(delay_ms_time);                          // delay at least 500 us 
     i2c_start(self->bus);                   // Start 
     i2c_putc(self->bus, address);           // Slave Address 
     i2c_putc(self->bus, PCA9685_MODE2);     // Mode2 register address 
@@ -136,7 +137,7 @@ void servo_set(_SERVO *self, uint16_t val, bool invert) {
     Val should be a value from 0 to 4095 inclusive.
     */
     // Clamp value between 0 and 4095 inclusive.
-    led_on(&led2);
+    // led_on(&led2);
     if ( val > 4095) {
         val = 4095;
     }
@@ -165,9 +166,8 @@ void servo_set(_SERVO *self, uint16_t val, bool invert) {
         else {
             servo_set_pwm(self, 0, val);
         }
+        // led_off(&led2);
     }
-    led_off(&led2);
-
 }
 
 void servo_usb_set(_SERVODRIVER *self, uint8_t index, uint16_t val) {
