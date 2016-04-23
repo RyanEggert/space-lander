@@ -12,6 +12,7 @@
 
 #define ST_PIN1 2
 #define ST_PIN2 3
+#define THROTTLE 10
 
 typedef void (*STATE_HANDLER_T)(void);
 STATE_HANDLER_T state, last_state;
@@ -59,9 +60,19 @@ void flying(){
       barge_strip.setPixelColor(i, barge_strip.Color(255,255,255)); // white
       barge_strip.show(); // This sends the updated pixel color to the hardware.
     }
-    fire_strip.setPixelColor(0, fire_strip.Color(255,72,0));
+    fire_strip.setPixelColor(0,0); //initialize to off
     fire_strip.show();
-  }   
+  } 
+  
+  
+  if (digitalRead(THROTTLE)==1){
+    fire_strip.setPixelColor(0, fire_strip.Color(255,128,0));
+    fire_strip.show();
+  }
+  else{
+    fire_strip.setPixelColor(0,0);
+    fire_strip.show();
+  }  
 };
 
 void idle(){
@@ -85,6 +96,7 @@ void setup(){
   Timer1.attachInterrupt(callback); //attaches as timer overflow interrupt
   pinMode(ST_PIN1, INPUT); //state_var pin 1
   pinMode(ST_PIN2, INPUT); //sate pin 2  
+  pinMode(THROTTLE, INPUT); //button input  
   
   barge_strip.begin();
   barge_strip.show();
