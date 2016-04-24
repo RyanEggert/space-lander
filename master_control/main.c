@@ -137,6 +137,8 @@ void idle(void) {
         last_state = state;
         trials = 0;
         led_on(&led1);
+        pin_clear(&D[8]);
+        pin_clear(&D[9]);
     }
 
     coin = pin_read(&D[2]); //digital read of the coin acceptor.
@@ -159,6 +161,8 @@ void reset(void) {
     if (state != last_state) {  // if we are entering the state, do initialization stuff
         last_state = state;
         led_on(&led2);
+        pin_clear(&D[8]);
+        pin_clear(&D[9]);
     }
 
     // Perform state tasks
@@ -182,6 +186,8 @@ void flying(void) {
     if (state != last_state) {  // if we are entering the state, do initialization stuff
         last_state = state;
         rocket_state = FLYING;
+        pin_clear(&D[8]);
+        pin_set(&D[9]);
     }
 
     // Perform state tasks
@@ -231,6 +237,8 @@ void lose(void) {
         last_state = state;
         timer_start(&timer1);
         counter = 0;
+        pin_set(&D[8]);
+        pin_clear(&D[9]);
     }
 
     if (timer_flag(&timer1)) {
@@ -254,6 +262,8 @@ void win(void) {
         last_state = state;
         timer_start(&timer1);
         counter = 0;
+        pin_set(&D[8]);
+        pin_set(&D[9]);
     }
 
     if (timer_flag(&timer1)) {
@@ -285,8 +295,6 @@ void setup() {
     pin_digitalOut(&D[8]);  // State pin 1
     pin_digitalOut(&D[9]);  // State pin 2
 
-    pin_set(&D[8]);
-    pin_clear(&D[9]);
     // Declare tilt digital I/O
     LEFT = &D[12];
     RIGHT = &D[13];
