@@ -58,14 +58,6 @@ void lose(void);
 
 STATE_HANDLER_T state, last_state;
 
-
-volatile uint16_t sw_state = 0;
-volatile uint16_t sw_state2 = 0;
-volatile uint16_t sw_state3 = 0;
-volatile uint16_t sw_state4 = 0;
-
-volatile bool TOP_DSTOP, BOT_DSTOP, RT_DSTOP, LT_DSTOP;
-
 // kinematic model vals
 float thrust_val = 5.0;
 float grav_val = 1.0;
@@ -523,7 +515,7 @@ void UARTrequests() {
     switch (cmd) {
         case GET_ROCKET_VALS:
             //speed, orientation
-            sprintf(rocketstuff, "%02x%02x%02x\r", rocket_speed, rocket_tilt, rocket_state);
+            sprintf(rocketstuff, "%01x", rocket_state);
             uart_puts(&uart1, rocketstuff);
             break;
         case SET_ROCKET_STATE:
@@ -653,13 +645,21 @@ void flying(void) {
 
     // Check for state transitions
 
-    // crash condition:
-    if (rocket_state == CRASHED) {
+    //check to see if barge switch is pressed
+    if (es_x_l.hit | es_x_r.hit | es_y_top.hit | es_y_bot.hit){
+        rocket_state == CRASHED;
         state = lose;
     }
-    // landing condition
-    if (rocket_state == LANDED){
+
+    if (es_landing.hit == 1){
+        if (abs(rocket_speed) <= 10 && abs(rocket_tilt) <= 30){
+        rocket_state == LANDED;
         state = win;
+        }
+        else{
+            rocket_state == CRASHED;
+            state = lose;
+        }
     }
 
     if (state != last_state) {  // if we are leaving the state, do clean up stuff
@@ -805,7 +805,7 @@ int16_t main(void) {
         // clock UART to prevent seizing
         // if (timer_flag(&timer4)) {
             // timer_lower(&timer4);
-            UARTrequests();
+        UARTrequests();
         // }
         state();
     }
