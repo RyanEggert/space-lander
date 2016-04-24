@@ -67,7 +67,8 @@ volatile bool TOP_DSTOP, BOT_DSTOP, RT_DSTOP, LT_DSTOP;
 
 // kinematic model vals
 float thrust_val = 5.0;
-float grav_val = 1.0;
+float grav_val = 4.0;
+float stepper_thrust_val = 0x0200;
 
 // thrust angle LUT's; contain cos(theta) and sin(theta) vals
 float angle_vals_LUT[10] = {0, 5, 10, 15, 20, 25, 30, 35, 40, 45};
@@ -201,7 +202,7 @@ void rocket_model() {
         // scale_val_x = thrust_scale_x[0];
         // scale_val_y = thrust_scale_y[0];
         // scale thrust in x+y axes
-        stepper_thrust = (uint16_t)(thrust_val*scale_val_x);
+        stepper_thrust = (uint16_t)(stepper_thrust_val*scale_val_x);
         motor_thrust = (uint16_t)(thrust_val*scale_val_y);   // uint16_t = float * float;
         if (motor_dir_track == 0) {  // rocket falling
             // led_on(&led2);
@@ -264,7 +265,7 @@ void rocket_model() {
                     stepper_speed = stepper_speed - stepper_thrust;
                 }
                 else {
-                    stepper_dir_track = 0;
+                    stepper_dir_track = 1;
                     stepper_speed = stepper_deadband + stepper_thrust;
                 }
             }
@@ -355,11 +356,11 @@ void rocket_model() {
         // led_off(&led3);
     }
 
-    // if (timer_flag(&timer2)) {
-    //     timer_lower(&timer2);
-    //     // servo_set(&servo0, 350, 0);
-    //     servo_set(&servo0, (uint16_t)(rocket_tilt), 0);
-    // }
+    if (timer_flag(&timer2)) {
+        timer_lower(&timer2);
+        // servo_set(&servo0, 350, 0);
+        servo_set(&servo0, (uint16_t)(rocket_tilt), 0);
+    }
 
     rocket_speed = motor_speed;
 }
@@ -457,7 +458,10 @@ void VendorRequests(void) {
         temp.w = tilt_ang;
         BD[EP0IN].address[10] = temp.b[0];
         BD[EP0IN].address[11] = temp.b[1];
-        BD[EP0IN].bytecount = 12;    // set EP0 IN byte count to 12
+        temp.w = tilt_dir;
+        BD[EP0IN].address[12] = temp.b[0];
+        BD[EP0IN].address[13] = temp.b[1];
+        BD[EP0IN].bytecount = 14;    // set EP0 IN byte count to 14
         BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
         break;
     case GET_QUAD_INFO:
@@ -515,7 +519,8 @@ void VendorRequestsOut(void) {
 }
 
 void UARTrequests() {
-    uart_gets(&uart1, rec_msg, 64);
+    // received uart message length = 8 
+    uart_gets(&uart1, rec_msg, 8);
     uint32_t decoded_msg = (uint32_t)strtol(rec_msg, NULL, 16);
     cmd = decoded_msg & 0x0f;
     value = (decoded_msg & 0xf0) >> 4;
@@ -646,7 +651,11 @@ void flying(void) {
     // Perform state tasks
 
     // *** rocket model handles thrust scaling for x+y axes, drives DCM, stepper, servo ***
-    rocket_model();
+    
+    // if (timer_flag(&timer3)) {
+        // timer_lower(&timer3);
+        rocket_model();
+    // }
     // *** use to determine stepper deadband over vendor requests ***
     // stepper_test();
 
@@ -733,7 +742,7 @@ void read_limitsw(_TIMER *timer){ //debounce the things
 void setup() {
     timer_setPeriod(&timer1, 1);  // Timer for LED operation/status blink
     timer_setPeriod(&timer2, 0.01);  // Timer for UART servicing
-    timer_setPeriod(&timer3, 0.1);
+    timer_setPeriod(&timer3, 0.001);
     timer_setPeriod(&timer4, 0.001);
     timer_start(&timer1);
     timer_start(&timer2);
@@ -763,7 +772,7 @@ void setup() {
     setup_uart();
     throttle, tilt = 0;
     val1, val2 = 8;
-    rocket_tilt = 500;
+    // rocket_tilt = 500;
 
 }
 

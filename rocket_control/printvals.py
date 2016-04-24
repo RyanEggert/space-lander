@@ -9,20 +9,21 @@ def main():
     while True:
         start_time = time.clock()
         # quad_info()
-        rocket_info()
-        # debug_uart_buffers()
+        # rocket_info()
+        debug_uart_buffers()
         while (time.clock() - start_time) < loop_time:
             pass
 
 def rocket_info():
     info = comms.get_rocket_info()
-    print "Rocket Tilt {} | Rocket Speed {} | Throttle {} | Motor Speed {} | Motor Thrust {} | Tilt Angle {}".format(
+    print "Rocket Tilt {} | Rocket Speed {} | Throttle {} | Motor Speed {} | Motor Thrust {} | Tilt Angle {} | Tilt Direction {}".format(
         info["tilt"],
         info["speed"],
         info["throttle"],
         info["motor_speed"],
         info["motor_thrust"],
-        info["tilt_ang"]
+        info["tilt_ang"],
+        info["tilt_dir"]
     )
 
 
