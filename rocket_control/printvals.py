@@ -5,12 +5,24 @@ comms = PIC_USB(0x0005)
 
 def main():
     print("START")
-    loop_time = .1  # How often to run the main loop, in seconds
+    loop_time = .05  # How often to run the main loop, in seconds
     while True:
         start_time = time.clock()
+        # print(chr(27) + "[2J")
         # quad_info()
+<<<<<<< HEAD
         # rocket_info()
         debug_uart_buffers()
+=======
+        try:
+            debug_uart_buffers()
+            debug_uart_status()
+            rocket_info()
+        except Exception, e:
+            print "Error occurred."
+            print e
+            print "Retrying..."
+>>>>>>> 829e9a890ded95b5f48aeefdba69ec5561bc3a4a
         while (time.clock() - start_time) < loop_time:
             pass
 
@@ -38,6 +50,17 @@ def debug_uart_buffers():
         rx["head"],
         rx["tail"],
         rx["count"],
+    )
+
+def debug_uart_status():
+    info = comms.debug_uart_status()
+    print "URXDA: {} | OERR {} | FERR {} || PERR {} | RIDLE {} | ADDEN {}".format(
+        info["URXDA"],
+        info["OERR"],
+        info["FERR"],
+        info["PERR"],
+        info["RIDLE"],
+        info["ADDEN"]
     )
 
 def quad_info():

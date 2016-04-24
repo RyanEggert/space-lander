@@ -313,7 +313,7 @@ void uart_open(_UART *self, _PIN *TX, _PIN *RX, _PIN *RTS, _PIN *CTS,
     if (baudrate<(FCY/(16.*65536.)))
         baudrate = FCY/(16.*65536.);
     // Select BRGH value and compute BRG value
-    if (baudrate<=(FCY/(4.*65536.))) {
+    if (baudrate<=(FCY/(4.*65536.))) {  // If FCY = 16e6, if baudrate<=61.04
         *(self->UxBRG) = (uint16_t)(0.5+(FCY/16.)/baudrate)-1;
     } else {
         bitset(self->UxMODE, 3);    // Set BRGH = 1
