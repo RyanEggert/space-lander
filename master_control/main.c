@@ -12,7 +12,8 @@
 
 #define SET_STATE    0   // Vendor request that receives 2 unsigned integer values
 #define GET_VALS    1   // Vendor request that returns 2 unsigned integer values 
-#define GET_ROCKET_INFO 2  // Vendor request that returns rocket state, speed, and tilt
+#define GET_ROCKET_INFO 2 // Vendor request that returns rocket state, speed, and tilt
+#define DEBUG_UART_BUFFERS 3  
 
 #define IDLE 0 //game states
 #define RESET 1
@@ -44,7 +45,7 @@ uint16_t rocket_state = READY;
 uint16_t counter, coin;
 uint16_t rocket_speed, rocket_tilt;
 uint16_t throttle, tilt;
-uint8_t rec_msg[64], tx_msg[64];
+uint8_t rec_msg[64], tx_msg[8];
 
 void VendorRequests(void) {
     WORD temp;
@@ -56,6 +57,30 @@ void VendorRequests(void) {
         break;
     case GET_VALS:
         temp.w = rocket_tilt;
+        BD[EP0IN].address[0] = temp.b[0];
+        BD[EP0IN].address[1] = temp.b[1];
+        temp.w = uart1.TXbuffer.tail;
+        BD[EP0IN].address[2] = temp.b[0];
+        BD[EP0IN].address[3] = temp.b[1];
+        temp.w = uart1.TXbuffer.count;
+        BD[EP0IN].address[4] = temp.b[0];
+        BD[EP0IN].address[5] = temp.b[1];
+
+        temp.w = uart1.RXbuffer.head;
+        BD[EP0IN].address[6] = temp.b[0];
+        BD[EP0IN].address[7] = temp.b[1];
+        temp.w = uart1.RXbuffer.tail;
+        BD[EP0IN].address[8] = temp.b[0];
+        BD[EP0IN].address[9] = temp.b[1];
+        temp.w = uart1.RXbuffer.count;
+        BD[EP0IN].address[10] = temp.b[0];
+        BD[EP0IN].address[11] = temp.b[1];
+        BD[EP0IN].bytecount = 12;    // set EP0 IN byte count to 4
+        BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
+        break;
+
+    case DEBUG_UART_BUFFERS:
+        temp.w = uart1.TXbuffer.head;
         BD[EP0IN].address[0] = temp.b[0];
         BD[EP0IN].address[1] = temp.b[1];
         temp.w = uart1.TXbuffer.tail;
@@ -285,7 +310,7 @@ void win(void) {
 void setup() {
     timer_setPeriod(&timer1, 1);  // Timer for LED operation/status blink
     timer_setPeriod(&timer2, 0.5);
-    timer_setPeriod(&timer3, 0.001);
+    timer_setPeriod(&timer3, 0.0005);
     timer_start(&timer1);
     timer_start(&timer2);
     timer_start(&timer3);
@@ -327,10 +352,10 @@ int16_t main(void) {
         // concatenate throttle+tilt into value
         uint16_t val = (tilt << 1) + throttle;
         //clock UART to prevent overflow (1 call/ 1 ms)
-        if (timer_flag(&timer3)){
-            timer_lower(&timer3);
+        // if (timer_flag(&timer3)){
+        //     timer_lower(&timer3);
             UART_ctl(SEND_ROCKET_COMMANDS, val);
-        }
+        // }
         state();
     }
 }

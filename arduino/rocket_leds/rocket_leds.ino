@@ -69,10 +69,10 @@ void flying(){
     fire_strip.show();
   }
  
-  brightness++;
-  barge_strip.setBrightness(brightness%255);
-  delay(100);
-  
+//  brightness++;
+//  barge_strip.setBrightness(brightness%255);
+//  delay(100);
+//  
   
 //  if (digitalRead(THROTTLE)==1){
 //    fire_strip.setPixelColor(0, fire_strip.Color(255,128,0));
