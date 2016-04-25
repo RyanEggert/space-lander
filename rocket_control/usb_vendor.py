@@ -103,7 +103,7 @@ class PIC_USB(object):
         try:
             ret = self.dev.ctrl_transfer(0xC0, self.DEBUG_UART_STATUS, 0, 0, 6)
         except usb.core.USBError:
-            print "Could not send DEBUG_UART_BUFFERS vendor request."
+            print "Could not send DEBUG_UART_STATUS vendor request."
         else:
             out = {}
             out["URXDA"] = self.parse8(ret, 0)

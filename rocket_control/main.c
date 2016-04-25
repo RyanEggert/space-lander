@@ -41,6 +41,8 @@ uint8_t RC_TXBUF[1024], RC_RXBUF[1024];
 #define DEBUG_SERVO_SET_POS 60
 #define DEBUG_SERVO_SET_FREQ 61
 
+#define DEBUG_UART_STATUS 70
+
 #define X_AXIS_THRUST 0
 #define Y_AXIS_THRUST 1
 
@@ -437,6 +439,55 @@ void VendorRequests(void) {
         BD[EP0IN].address[10] = temp.b[0];
         BD[EP0IN].address[11] = temp.b[1];
         BD[EP0IN].bytecount = 12;    // set EP0 IN byte count to 4
+        BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
+        break;
+    case DEBUG_UART_STATUS:
+        temp.b[0] = bitread(uart1.UxSTA, 0);  // Receive buffer data available
+        temp.b[1] = bitread(uart1.UxSTA, 1);  // Read overrun error bit
+        BD[EP0IN].address[0] = temp.b[0];  // URXDA
+        BD[EP0IN].address[1] = temp.b[1];     case DEBUG_UART_STATUS:
+        temp.b[0] = bitread(uart1.UxSTA, 0);  // Receive buffer data available
+        temp.b[1] = bitread(uart1.UxSTA, 1);  // Read overrun error bit
+        BD[EP0IN].address[0] = temp.b[0];  // URXDA
+        BD[EP0IN].address[1] = temp.b[1];  // OERR
+        temp.b[0] = bitread(uart1.UxSTA, 2);  // Read framing error bit
+        temp.b[1] = bitread(uart1.UxSTA, 3);  // Read parity error bit
+        BD[EP0IN].address[2] = temp.b[0];  // FERR
+        BD[EP0IN].address[3] = temp.b[1];  // PERR
+        temp.b[0] = bitread(uart1.UxSTA, 4);  // Read receiver idle bit
+        temp.b[1] = bitread(uart1.UxSTA, 5);  // Read address char. detect bit
+        BD[EP0IN].address[4] = temp.b[0];  // RIDLE
+        BD[EP0IN].address[5] = temp.b[1];  // ADDEN
+
+        BD[EP0IN].bytecount = 6;    // set EP0 IN byte count to 4
+        BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
+        break;    case DEBUG_UART_STATUS:
+        temp.b[0] = bitread(uart1.UxSTA, 0);  // Receive buffer data available
+        temp.b[1] = bitread(uart1.UxSTA, 1);  // Read overrun error bit
+        BD[EP0IN].address[0] = temp.b[0];  // URXDA
+        BD[EP0IN].address[1] = temp.b[1];  // OERR
+        temp.b[0] = bitread(uart1.UxSTA, 2);  // Read framing error bit
+        temp.b[1] = bitread(uart1.UxSTA, 3);  // Read parity error bit
+        BD[EP0IN].address[2] = temp.b[0];  // FERR
+        BD[EP0IN].address[3] = temp.b[1];  // PERR
+        temp.b[0] = bitread(uart1.UxSTA, 4);  // Read receiver idle bit
+        temp.b[1] = bitread(uart1.UxSTA, 5);  // Read address char. detect bit
+        BD[EP0IN].address[4] = temp.b[0];  // RIDLE
+        BD[EP0IN].address[5] = temp.b[1];  // ADDEN
+
+        BD[EP0IN].bytecount = 6;    // set EP0 IN byte count to 4
+        BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
+        break; // OERR
+        temp.b[0] = bitread(uart1.UxSTA, 2);  // Read framing error bit
+        temp.b[1] = bitread(uart1.UxSTA, 3);  // Read parity error bit
+        BD[EP0IN].address[2] = temp.b[0];  // FERR
+        BD[EP0IN].address[3] = temp.b[1];  // PERR
+        temp.b[0] = bitread(uart1.UxSTA, 4);  // Read receiver idle bit
+        temp.b[1] = bitread(uart1.UxSTA, 5);  // Read address char. detect bit
+        BD[EP0IN].address[4] = temp.b[0];  // RIDLE
+        BD[EP0IN].address[5] = temp.b[1];  // ADDEN
+
+        BD[EP0IN].bytecount = 6;    // set EP0 IN byte count to 4
         BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
         break;
     case GET_ROCKET_INFO:

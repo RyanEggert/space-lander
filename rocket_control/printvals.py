@@ -10,10 +10,6 @@ def main():
         start_time = time.clock()
         # print(chr(27) + "[2J")
         # quad_info()
-<<<<<<< HEAD
-        # rocket_info()
-        debug_uart_buffers()
-=======
         try:
             debug_uart_buffers()
             debug_uart_status()
@@ -22,7 +18,6 @@ def main():
             print "Error occurred."
             print e
             print "Retrying..."
->>>>>>> 829e9a890ded95b5f48aeefdba69ec5561bc3a4a
         while (time.clock() - start_time) < loop_time:
             pass
 
