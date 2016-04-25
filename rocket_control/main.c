@@ -101,9 +101,9 @@ uint16_t motor_thrust;
 #define tilt_max 450
 #define tilt_min 120
 
-float tilt_zero = (tilt_max + tilt_min)/2; //  
+float tilt_zero = (tilt_max + tilt_min) / 2; //
 uint16_t tilt_ang;  //
-float tilt_scale = 120.0/(tilt_max-tilt_min);  // scale factor to convert digital tilt val [deg/div]
+float tilt_scale = 120.0 / (tilt_max - tilt_min); // scale factor to convert digital tilt val [deg/div]
 uint16_t tilt_dir = 0;
 
 // scaling vars
@@ -126,9 +126,9 @@ uint16_t val1, val2;
 
 uint16_t binary_search(uint16_t target_val, float target_array[], uint16_t min, uint16_t max) {
     // led_on(&led2);
-    uint16_t curr_ind = (max + min )/2;
+    uint16_t curr_ind = (max + min ) / 2;
     uint16_t curr_val = target_array[curr_ind];
-    uint16_t length = max-min;
+    uint16_t length = max - min;
     // base case
     if (length == 1 || length == 2) {
         // led_off(&led2);
@@ -146,7 +146,7 @@ uint16_t binary_search(uint16_t target_val, float target_array[], uint16_t min, 
         }
         else {
             // led_off(&led2);
-            // current value == 
+            // current value ==
             return curr_ind;
         }
 
@@ -156,7 +156,7 @@ uint16_t binary_search(uint16_t target_val, float target_array[], uint16_t min, 
 uint16_t linear_search(uint16_t target_val, float target_array[], uint16_t target_array_size) {
     // assume sorted list
     search_ind = 0;
-    while (target_array[search_ind] < target_val && search_ind < target_array_size-1) {
+    while (target_array[search_ind] < target_val && search_ind < target_array_size - 1) {
         search_ind++;
     }
     return search_ind;
@@ -168,12 +168,12 @@ uint16_t get_thrust_scale_ind() {
         timer_lower(&timer3);
         if (rocket_tilt > tilt_zero) {
             // tilt in CW direction
-            tilt_ang = (uint16_t)((rocket_tilt - tilt_zero)*tilt_scale);
+            tilt_ang = (uint16_t)((rocket_tilt - tilt_zero) * tilt_scale);
             tilt_dir = TILT_CW;
         }
         else if (rocket_tilt < tilt_zero) {
             // tilt in CCW direction
-            tilt_ang = (uint16_t)((tilt_zero - rocket_tilt)*tilt_scale);
+            tilt_ang = (uint16_t)((tilt_zero - rocket_tilt) * tilt_scale);
             tilt_dir = TILT_CCW;
         }
         else {
@@ -204,8 +204,8 @@ void rocket_model() {
         // scale_val_x = thrust_scale_x[0];
         // scale_val_y = thrust_scale_y[0];
         // scale thrust in x+y axes
-        stepper_thrust = (uint16_t)(stepper_thrust_val*scale_val_x);
-        motor_thrust = (uint16_t)(thrust_val*scale_val_y);   // uint16_t = float * float;
+        stepper_thrust = (uint16_t)(stepper_thrust_val * scale_val_x);
+        motor_thrust = (uint16_t)(thrust_val * scale_val_y); // uint16_t = float * float;
         if (motor_dir_track == 0) {  // rocket falling
             // led_on(&led2);
             if (motor_speed - motor_deadband > motor_thrust) {  // nonzero velocity
@@ -289,7 +289,7 @@ void rocket_model() {
         // set y thrust val
         if (motor_dir_track == 0) { // rocket falling
             // led_on(&led2);
-            if (motor_speed < motor_speed_limit) {                
+            if (motor_speed < motor_speed_limit) {
                 motor_speed = motor_speed + grav_val;
             }
         }
@@ -340,16 +340,16 @@ void rocket_model() {
         // st_speed(&st_d, 150);
         // led_on(&led3);
         if (rocket_tilt < tilt_max) {
-            rocket_tilt += 0.1;    
+            rocket_tilt += 0.1;
         }
     }
     else if (tilt == TILT_CW) {
         // drive servo CW
         // st_direction(&st_d, 1);
-        // st_speed(&st_d, 150);   
+        // st_speed(&st_d, 150);
         // led_on(&led3);
         if (rocket_tilt > tilt_min) {
-            rocket_tilt -= 0.1;    
+            rocket_tilt -= 0.1;
         }
     }
     else if (tilt == TILT_ZERO) {
@@ -385,7 +385,7 @@ void stepper_test() {
         stepper_dir_track = 0;
         led_on(&led3);
     }
-    else if (tilt== TILT_CCW) {
+    else if (tilt == TILT_CCW) {
         if (stepper_speed < stepper_speed_limit) {
             if (timer_flag(&timer3)) {
                 timer_lower(&timer3);
@@ -394,7 +394,8 @@ void stepper_test() {
                 }
                 else {
                     stepper_speed = stepper_speed + stepper_thrust;
-                }            }
+                }
+            }
         }
         stepper_dir_track = 1;
         led_on(&led3);
@@ -418,6 +419,7 @@ void VendorRequests(void) {
         BD[EP0IN].bytecount = 0;    // set EP0 IN byte count to 0
         BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
         break;
+
     case DEBUG_UART_BUFFERS:
         temp.w = uart1.TXbuffer.head;
         BD[EP0IN].address[0] = temp.b[0];
@@ -441,43 +443,12 @@ void VendorRequests(void) {
         BD[EP0IN].bytecount = 12;    // set EP0 IN byte count to 4
         BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
         break;
+
     case DEBUG_UART_STATUS:
         temp.b[0] = bitread(uart1.UxSTA, 0);  // Receive buffer data available
         temp.b[1] = bitread(uart1.UxSTA, 1);  // Read overrun error bit
         BD[EP0IN].address[0] = temp.b[0];  // URXDA
-        BD[EP0IN].address[1] = temp.b[1];     case DEBUG_UART_STATUS:
-        temp.b[0] = bitread(uart1.UxSTA, 0);  // Receive buffer data available
-        temp.b[1] = bitread(uart1.UxSTA, 1);  // Read overrun error bit
-        BD[EP0IN].address[0] = temp.b[0];  // URXDA
         BD[EP0IN].address[1] = temp.b[1];  // OERR
-        temp.b[0] = bitread(uart1.UxSTA, 2);  // Read framing error bit
-        temp.b[1] = bitread(uart1.UxSTA, 3);  // Read parity error bit
-        BD[EP0IN].address[2] = temp.b[0];  // FERR
-        BD[EP0IN].address[3] = temp.b[1];  // PERR
-        temp.b[0] = bitread(uart1.UxSTA, 4);  // Read receiver idle bit
-        temp.b[1] = bitread(uart1.UxSTA, 5);  // Read address char. detect bit
-        BD[EP0IN].address[4] = temp.b[0];  // RIDLE
-        BD[EP0IN].address[5] = temp.b[1];  // ADDEN
-
-        BD[EP0IN].bytecount = 6;    // set EP0 IN byte count to 4
-        BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
-        break;    case DEBUG_UART_STATUS:
-        temp.b[0] = bitread(uart1.UxSTA, 0);  // Receive buffer data available
-        temp.b[1] = bitread(uart1.UxSTA, 1);  // Read overrun error bit
-        BD[EP0IN].address[0] = temp.b[0];  // URXDA
-        BD[EP0IN].address[1] = temp.b[1];  // OERR
-        temp.b[0] = bitread(uart1.UxSTA, 2);  // Read framing error bit
-        temp.b[1] = bitread(uart1.UxSTA, 3);  // Read parity error bit
-        BD[EP0IN].address[2] = temp.b[0];  // FERR
-        BD[EP0IN].address[3] = temp.b[1];  // PERR
-        temp.b[0] = bitread(uart1.UxSTA, 4);  // Read receiver idle bit
-        temp.b[1] = bitread(uart1.UxSTA, 5);  // Read address char. detect bit
-        BD[EP0IN].address[4] = temp.b[0];  // RIDLE
-        BD[EP0IN].address[5] = temp.b[1];  // ADDEN
-
-        BD[EP0IN].bytecount = 6;    // set EP0 IN byte count to 4
-        BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
-        break; // OERR
         temp.b[0] = bitread(uart1.UxSTA, 2);  // Read framing error bit
         temp.b[1] = bitread(uart1.UxSTA, 3);  // Read parity error bit
         BD[EP0IN].address[2] = temp.b[0];  // FERR
@@ -490,6 +461,7 @@ void VendorRequests(void) {
         BD[EP0IN].bytecount = 6;    // set EP0 IN byte count to 4
         BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
         break;
+
     case GET_ROCKET_INFO:
         temp.w = rocket_tilt;
         BD[EP0IN].address[0] = temp.b[0];
@@ -515,6 +487,7 @@ void VendorRequests(void) {
         BD[EP0IN].bytecount = 14;    // set EP0 IN byte count to 14
         BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
         break;
+
     case GET_QUAD_INFO:
         temp32.ul = quad1.counter;
         BD[EP0IN].address[0] = temp32.b[0];
@@ -527,6 +500,7 @@ void VendorRequests(void) {
         BD[EP0IN].bytecount = 6;    // set EP0 IN byte count to 4
         BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
         break;
+
     case COMMAND_DCMOTOR:
         dcm_velocity(&dcm1, USB_setup.wValue.w, USB_setup.wIndex.w);
         BD[EP0IN].bytecount = 0;    // set EP0 IN byte count to 0
@@ -543,7 +517,6 @@ void VendorRequests(void) {
 
     case DEBUG_SERVO_SET_FREQ:
         temp.w = USB_setup.wValue.w;
-        
         servo_driver_configure(&sd1, ((float)(temp.w)) / 10);
         BD[EP0IN].bytecount = 0;    // set EP0 IN byte count to 0
         BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
@@ -570,24 +543,24 @@ void VendorRequestsOut(void) {
 }
 
 void UARTrequests() {
-    // received uart message length = 8 
+    // received uart message length = 8
     uart_gets(&uart1, rec_msg, 8);
     uint32_t decoded_msg = (uint32_t)strtol(rec_msg, NULL, 16);
     cmd = decoded_msg & 0x0f;
     value = (decoded_msg & 0xf0) >> 4;
     switch (cmd) {
-        case GET_ROCKET_VALS:
-            //speed, orientation
-            sprintf(rocketstuff, "%02x%02x%02x\r", rocket_speed, rocket_tilt, rocket_state);
-            uart_puts(&uart1, rocketstuff);
-            break;
-        case SET_ROCKET_STATE:
-            rocket_state = value;
-            break;
-        case SEND_ROCKET_COMMANDS:
-            throttle = value & 0b01;
-            tilt = (value & 0b110) >> 1;
-            break;
+    case GET_ROCKET_VALS:
+        //speed, orientation
+        sprintf(rocketstuff, "%02x%02x%02x\r", rocket_speed, rocket_tilt, rocket_state);
+        uart_puts(&uart1, rocketstuff);
+        break;
+    case SET_ROCKET_STATE:
+        rocket_state = value;
+        break;
+    case SEND_ROCKET_COMMANDS:
+        throttle = value & 0b01;
+        tilt = (value & 0b110) >> 1;
+        break;
     }
 }
 
@@ -628,51 +601,51 @@ void reset(void) {
     if (timer_flag(&timer3)) {
         timer_lower(&timer3);
         switch (stepper_state) {
-            case 0:
-                if (!pin_read(X_END_L)) {
-                    st_direction(&st_d, 1);
-                    st_speed(&st_d, 1000);
-                }
-                else {
-                    stepper_state = 1;
-                }
-                break;
-            case 1:
-                if (stepper_count < stepper_reset_lim) {
-                   st_direction(&st_d, 0);
-                    // will need to figure out exact timing/step count for this...
-                    // will have to happen after gantry is set up
-                   st_speed(&st_d, 1000);
-                }
-                else {
-                    stepper_state = 2;
-                }
-                break;
-            case 2:
-                st_speed(&st_d, 0);
-                break;
+        case 0:
+            if (!pin_read(X_END_L)) {
+                st_direction(&st_d, 1);
+                st_speed(&st_d, 1000);
+            }
+            else {
+                stepper_state = 1;
+            }
+            break;
+        case 1:
+            if (stepper_count < stepper_reset_lim) {
+                st_direction(&st_d, 0);
+                // will need to figure out exact timing/step count for this...
+                // will have to happen after gantry is set up
+                st_speed(&st_d, 1000);
+            }
+            else {
+                stepper_state = 2;
+            }
+            break;
+        case 2:
+            st_speed(&st_d, 0);
+            break;
         }
         // Drive DC Motor up until top y-axis endstop hit
         switch (motor_state) {
-            case 0:
-                if (!pin_read(Y_END_TOP)) {
-                    dcm_velocity(&dcm1, 64000, 1);
-                }
-                else {
-                    motor_state = 1;
-                }
-                break;
-            case 1:
-                if (pin_read(Y_END_TOP)) {
-                    dcm_velocity(&dcm1, 64000, 0);
-                }
-                else {
-                    motor_state = 2;
-                }
-                break;
-            case 2:
-                dcm_speed(&dcm1, 0);
-                break;
+        case 0:
+            if (!pin_read(Y_END_TOP)) {
+                dcm_velocity(&dcm1, 64000, 1);
+            }
+            else {
+                motor_state = 1;
+            }
+            break;
+        case 1:
+            if (pin_read(Y_END_TOP)) {
+                dcm_velocity(&dcm1, 64000, 0);
+            }
+            else {
+                motor_state = 2;
+            }
+            break;
+        case 2:
+            dcm_speed(&dcm1, 0);
+            break;
         }
         if (stepper_state == 2 && motor_state == 2) {
             // rocket zero'd, ready to fly
@@ -702,10 +675,10 @@ void flying(void) {
     // Perform state tasks
 
     // *** rocket model handles thrust scaling for x+y axes, drives DCM, stepper, servo ***
-    
+
     // if (timer_flag(&timer3)) {
-        // timer_lower(&timer3);
-        rocket_model();
+    // timer_lower(&timer3);
+    rocket_model();
     // }
     // *** use to determine stepper deadband over vendor requests ***
     // stepper_test();
@@ -717,7 +690,7 @@ void flying(void) {
         state = lose;
     }
     // landing condition
-    if (rocket_state == LANDED){
+    if (rocket_state == LANDED) {
         state = win;
     }
 
@@ -775,7 +748,7 @@ void win(void) {
     }
 }
 
-void read_limitsw(_TIMER *timer){ //debounce the things
+void read_limitsw(_TIMER *timer) { //debounce the things
     // Gantry X-Axis (stepper) endstops
     // stop_read(&es_x_l);
     // stop_read(&es_x_r);
@@ -863,8 +836,8 @@ int16_t main(void) {
         ServiceUSB();
         // clock UART to prevent seizing
         // if (timer_flag(&timer4)) {
-            // timer_lower(&timer4);
-            UARTrequests();
+        // timer_lower(&timer4);
+        UARTrequests();
         // }
         state();
     }
@@ -891,26 +864,26 @@ int16_t main(void) {
     // }
 
 
-            // *** test code for limit switches***
-        // if (TOP_DSTOP==1){
-        //     led_on(&led3);
-        // }
-        // else{
-        //     led_off(&led3);
-        // }
+    // *** test code for limit switches***
+    // if (TOP_DSTOP==1){
+    //     led_on(&led3);
+    // }
+    // else{
+    //     led_off(&led3);
+    // }
 
-        // if (BOT_DSTOP==1){
-        //     led_on(&led2);
-        // }
-        // else{
-        //     led_off(&led2);
-        // }
+    // if (BOT_DSTOP==1){
+    //     led_on(&led2);
+    // }
+    // else{
+    //     led_off(&led2);
+    // }
 
-        // if (LT_DSTOP==1){
-        //     led_on(&led1);
-        // }
-        // else{
-        //     led_off(&led1);
-        // }
+    // if (LT_DSTOP==1){
+    //     led_on(&led1);
+    // }
+    // else{
+    //     led_off(&led1);
+    // }
 
 }
