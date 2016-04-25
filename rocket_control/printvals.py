@@ -15,9 +15,9 @@ def main():
             debug_uart_status()
             rocket_info()
         except Exception, e:
-            print "Error occurred."
-            print e
+            print "Error occurred. {}".format(e)
             print "Retrying..."
+            comms = PIC_USB(0x0005)
         while (time.clock() - start_time) < loop_time:
             pass
 
