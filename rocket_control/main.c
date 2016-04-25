@@ -572,6 +572,9 @@ void setup_uart() {
     */
     uart_open(&uart1, &TX2, &RX2, NULL, NULL, 115200., 'N', 1,
               0, RC_TXBUF, 1024, RC_RXBUF, 1024);
+    // Enable UART ERR interrupt
+    IFS4bits.U1ERIF = 0;
+    IEC4bits.U1ERIE = 1;
 }
 
 void idle(void) {
@@ -824,6 +827,7 @@ int16_t main(void) {
     U1EIE = 0xFF;
     IFS5bits.USB1IF = 0; //flag
     IEC5bits.USB1IE = 1; //enable
+
     state = flying;
     last_state = (STATE_HANDLER_T)NULL;
 
