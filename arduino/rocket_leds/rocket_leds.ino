@@ -23,6 +23,7 @@ void flying(void);
 void idle(void);
 
 volatile int state_var = 0b00;
+volatile int brightness = 0;
 int lives = 3;
 
 Adafruit_NeoPixel barge_strip = Adafruit_NeoPixel(4, BARGE_PIN, NEO_GRB + NEO_KHZ800);
@@ -37,6 +38,7 @@ void win(){
       barge_strip.setPixelColor(i, barge_strip.Color(0,255,0)); // bright green color.
       barge_strip.show(); // This sends the updated pixel color to the hardware.
       }
+      lives = 3;
    }
 };
 
@@ -48,6 +50,9 @@ void lose(){
       barge_strip.show(); // This sends the updated pixel color to the hardware.
       }
      lives --;
+     if (lives == 0){
+       lives = 3;
+     }
      lives_strip.setPixelColor(lives, 0); // Turn it off
      lives_strip.show(); // This sends the updated pixel color to the hardware.
       }  
@@ -62,17 +67,21 @@ void flying(){
     }
     fire_strip.setPixelColor(0,0); //initialize to off
     fire_strip.show();
-  } 
-  
-  
-  if (digitalRead(THROTTLE)==1){
-    fire_strip.setPixelColor(0, fire_strip.Color(255,128,0));
-    fire_strip.show();
   }
-  else{
-    fire_strip.setPixelColor(0,0);
-    fire_strip.show();
-  }  
+ 
+  brightness++;
+  barge_strip.setBrightness(brightness%255);
+  delay(100);
+  
+  
+//  if (digitalRead(THROTTLE)==1){
+//    fire_strip.setPixelColor(0, fire_strip.Color(255,128,0));
+//    fire_strip.show();
+//  }
+//  else{
+//    fire_strip.setPixelColor(0,0);
+//    fire_strip.show();
+//  }  
 };
 
 void idle(){
@@ -82,12 +91,11 @@ void idle(){
       barge_strip.setPixelColor(i, barge_strip.Color(255,255,255)); // white
       barge_strip.show(); // This sends the updated pixel color to the hardware.
     }
-    lives = 3;
-    for(int i=0;i<3;i++){
+    for(int i=0;i<lives;i++){
     // pixels.Color takes RGB values, from 0,0,0 up to 255,255,255
     lives_strip.setPixelColor(i, barge_strip.Color(0,255,0)); // bright green color.
     lives_strip.show(); // This sends the updated pixel color to the hardware.
-  }  
+    }  
   }  
 };
 
@@ -116,6 +124,8 @@ void setup(){
   fire_strip.show();
 }
 
+
+
 void callback()
 {
   state_var = 0b00;
@@ -135,6 +145,16 @@ void callback()
     case LOSE:
       state = lose;
       break;
+  }
+  if (state == flying){
+    if (digitalRead(THROTTLE)==1){
+      fire_strip.setPixelColor(0, fire_strip.Color(255,128,0));
+      fire_strip.show();
+    }
+    else{
+      fire_strip.setPixelColor(0,0);
+      fire_strip.show();
+    } 
   }
 }
 

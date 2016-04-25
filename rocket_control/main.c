@@ -105,7 +105,7 @@ uint16_t search_ind, array_length;
 
 // state + high-level rocket vals
 uint16_t rocket_state = FLYING;
-uint16_t rocket_speed;
+uint16_t rocket_speed = 10;
 float rocket_tilt;
 float rocket_tilt_last;
 uint16_t counter;
@@ -113,6 +113,7 @@ uint8_t throttle, tilt; //commands
 uint8_t rocketstuff[64], rec_msg[64];
 uint8_t cmd, value;
 uint16_t val1, val2;
+uint16_t tilt_test = 25; //just for testing state machine
 
 uint16_t binary_search(uint16_t target_val, float target_array[], uint16_t min, uint16_t max) {
     // led_on(&led2);
@@ -354,7 +355,7 @@ void rocket_model() {
     //     servo_set(&servo0, (uint16_t)(rocket_tilt), 0);
     // }
 
-    rocket_speed = motor_speed;
+    // rocket_speed = motor_speed;
 }
 
 void stepper_test() {
@@ -652,7 +653,7 @@ void flying(void) {
     }
 
     if (es_landing.hit == 1){
-        if (abs(rocket_speed) <= 10 && abs(rocket_tilt) <= 30){
+        if (abs(rocket_speed) <= 10 && abs(tilt_test) <= 30){
         rocket_state == LANDED;
         state = win;
         }
