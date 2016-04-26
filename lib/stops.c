@@ -19,15 +19,15 @@ void init_stops(void) {
     */
 
     // Gantry X-Axis (stepper) endstops
-    stop_init(&es_x_l, &D[6]);
-    stop_init(&es_x_r, &D[7]);
+    stop_init(&es_x_l, &D[12]);
+    stop_init(&es_x_r, &D[13]);
 
     // Gantry Y-Axis (dc motor) endstops
-    stop_init(&es_y_top, &D[4]);
-    stop_init(&es_y_bot, &D[12]);
+    stop_init(&es_y_bot, &D[6]);
+    stop_init(&es_y_top, &D[7]);
 
     // Landing pad endstop
-    stop_init(&es_landing, &D[13]);
+    stop_init(&es_landing, &D[4]);
 
 }
 
