@@ -64,7 +64,7 @@ volatile uint16_t sw_state2 = 0;
 volatile uint16_t sw_state3 = 0;
 volatile uint16_t sw_state4 = 0;
 
-volatile bool TOP_DSTOP, BOT_DSTOP, RT_DSTOP, LT_DSTOP;
+volatile bool TOP_DSTOP, BOT_DSTOP, RT_DSTOP, LT_DSTOP;  // Not needed. Can remove if endstop test code from below also removed.
 
 // kinematic model vals
 float thrust_val = 5.0;
