@@ -5,22 +5,32 @@ comms = PIC_USB(0x0005)
 
 def main():
     print("START")
-    loop_time = .1  # How often to run the main loop, in seconds
+    loop_time = .05  # How often to run the main loop, in seconds
     while True:
         start_time = time.clock()
+        # print(chr(27) + "[2J")
         # quad_info()
-        rocket_info()
+        try:
+            debug_uart_buffers()
+            debug_uart_status()
+            rocket_info()
+        except Exception, e:
+            print "Error occurred. {}".format(e)
+            print "Retrying..."
+            comms = PIC_USB(0x0005)
         while (time.clock() - start_time) < loop_time:
             pass
 
 def rocket_info():
     info = comms.get_rocket_info()
-    print "Rocket Tilt {} | Rocket Speed {} | Rocket State {}".format(
+    print "Rocket Tilt {} | Rocket Speed {} | Throttle {} | Motor Speed {} | Motor Thrust {} | Tilt Angle {} | Tilt Direction {}".format(
         info["tilt"],
         info["speed"],
-        info["state"]
-        # info["motor_speed"],
-        # info["stepper_speed"],
+        info["throttle"],
+        info["motor_speed"],
+        info["motor_thrust"],
+        info["tilt_ang"],
+        info["tilt_dir"]
     )
 
 
@@ -35,6 +45,17 @@ def debug_uart_buffers():
         rx["head"],
         rx["tail"],
         rx["count"],
+    )
+
+def debug_uart_status():
+    info = comms.debug_uart_status()
+    print "URXDA: {} | OERR {} | FERR {} || PERR {} | RIDLE {} | ADDEN {}".format(
+        info["URXDA"],
+        info["OERR"],
+        info["FERR"],
+        info["PERR"],
+        info["RIDLE"],
+        info["ADDEN"]
     )
 
 def quad_info():

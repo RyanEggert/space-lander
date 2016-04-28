@@ -13,6 +13,8 @@ class PIC_USB(object):
         self.DEBUG_SERVO_SET_POS = 60
         self.DEBUG_SERVO_SET_FREQ = 61
 
+        self.DEBUG_UART_STATUS = 70
+
         self.vendor_id = 0x6666
         self.product_id = product_id
         self.dev = usb.core.find(idVendor=self.vendor_id, idProduct=self.product_id)
@@ -28,6 +30,10 @@ class PIC_USB(object):
 
     def close(self):
         self.dev = None
+
+    @staticmethod
+    def parse8(ret, start_index):
+        return int(ret[start_index])
 
     @staticmethod
     def parse16(ret, start_index):
@@ -89,21 +95,42 @@ class PIC_USB(object):
             out["rx"] = rxbuf
             return out
 
+    def debug_uart_status(self):
+        """
+        Reads information about the head, tail, and count of the transmit ("tx")
+        and receive ("rx") software UART buffers.
+        """
+        try:
+            ret = self.dev.ctrl_transfer(0xC0, self.DEBUG_UART_STATUS, 0, 0, 6)
+        except usb.core.USBError:
+            print "Could not send DEBUG_UART_STATUS vendor request."
+        else:
+            out = {}
+            out["URXDA"] = self.parse8(ret, 0)
+            out["OERR"] = self.parse8(ret, 1)
+            out["FERR"] = self.parse8(ret, 2)
+            out["PERR"] = self.parse8(ret, 3)
+            out["RIDLE"] = self.parse8(ret, 4)
+            out["ADDEN"] = self.parse8(ret, 5)
+            return out
+
     def get_rocket_info(self):
         """
         Reads the rocket's current measured tilt, measured speed, and state.
         """
         try:
-            ret = self.dev.ctrl_transfer(0xC0, self.GET_ROCKET_INFO, 0, 0, 6)
+            ret = self.dev.ctrl_transfer(0xC0, self.GET_ROCKET_INFO, 0, 0, 14)
         except usb.core.USBError:
             print "Could not send GET_ROCKET_INFO vendor request."
         else:
             out = {}
             out["tilt"] = self.parse16(ret, 0)
             out["speed"] = self.parse16(ret, 2)
-            out["state"] = self.parse16(ret, 4)
-            # out["motor_speed"] = self.parse16(ret, 6)
-            # out["stepper_speed"] = self.parse16(ret, 8)
+            out["throttle"] = self.parse16(ret, 4)
+            out["motor_speed"] = self.parse16(ret, 6)
+            out["motor_thrust"] = self.parse16(ret, 8)
+            out["tilt_ang"] = self.parse16(ret, 10)
+            out["tilt_dir"] = self.parse16(ret, 12)
             return out
 
     def get_quad_info(self):

@@ -152,7 +152,7 @@ int16_t write(int16_t handle, void *buffer, uint16_t len) {
 }
 
 void init_uart(void) {
-    init_pin();
+    // init_pin();
 
     pin_init(&AJTX, (uint16_t *)&PORTG, (uint16_t *)&TRISG, 
              (uint16_t *)NULL, 6, -1, 8, 21, (uint16_t *)&RPOR10);
@@ -313,7 +313,7 @@ void uart_open(_UART *self, _PIN *TX, _PIN *RX, _PIN *RTS, _PIN *CTS,
     if (baudrate<(FCY/(16.*65536.)))
         baudrate = FCY/(16.*65536.);
     // Select BRGH value and compute BRG value
-    if (baudrate<=(FCY/(4.*65536.))) {
+    if (baudrate<=(FCY/(4.*65536.))) {  // If FCY = 16e6, if baudrate<=61.04
         *(self->UxBRG) = (uint16_t)(0.5+(FCY/16.)/baudrate)-1;
     } else {
         bitset(self->UxMODE, 3);    // Set BRGH = 1
@@ -515,7 +515,8 @@ void uart_gets(_UART *self, uint8_t *str, uint16_t len) {
         return;
     }
 
-    // if self->count
+    //if (self->RXbuffer.count == 0);
+    //    return;
 
     // uart_flushTxBuffer(self);
     start = str;
@@ -536,3 +537,16 @@ void uart_gets(_UART *self, uint8_t *str, uint16_t len) {
     }
     *str = '\0';  
 }         
+
+void __attribute__((interrupt, auto_psv)) _U1ErrInterrupt(void) {
+    IFS4bits.U1ERIF = 0;  // Lower flag
+    // If OERR, clear OERR
+    if (bitread(uart1.UxSTA, 1) == 1) {  // IF OERR
+        bitclear(uart1.UxSTA, 1); // Clear OERR flag
+        uart1.RXbuffer.tail = uart1.RXbuffer.head;
+        uart1.RXbuffer.count = 0;
+        led_toggle(&led2);
+    }
+    // Raise a global flag, accessible by UART reading 
+
+}

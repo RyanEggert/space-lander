@@ -10,10 +10,12 @@
 #include <libpic30.h>
 #include <math.h>
 #include <stdbool.h>
+// #include "ui.h"
 #include "pin.h"
 #include "i2c.h"
 #include "servo.h"
 
+#define delay_ms_time 1  // delay between i2c transactions in servo_drive_configure function
 
 _SERVODRIVER sd1;
 _SERVO servo0, servo1, servo2, servo3, servo4, servo5, servo6, servo7, servo8, servo9, servo10, servo11, servo12, servo13, servo14, servo15;
@@ -82,29 +84,31 @@ void servo_driver_configure(_SERVODRIVER *self, float pwm_freq) {
     uint8_t prescale = floor(prescaleval + 0.5);
 
     uint8_t address = self->i2c_addr << 1;  // 0b10000000
+    // disable_interrupts();
     i2c_start(self->bus);                   // Start 
     i2c_putc(self->bus, address);           // Slave address 
     i2c_putc(self->bus, PCA9685_MODE1);     // Mode 1 address 
     i2c_putc(self->bus, 0b00110001);        // Setting mode to sleep so we can change the default PWM frequency 
     i2c_stop(self->bus);                    // Stop 
-    __delay_ms(1);                          // Required 50 us delay 
+    __delay_ms(delay_ms_time);                          // Required 50 us delay 
     i2c_start(self->bus);                   // Start 
     i2c_putc(self->bus, address);           // Slave address 
     i2c_putc(self->bus, PCA9685_PRESCALE);  // PWM frequency PRE_SCALE address 
     i2c_putc(self->bus, prescale);          // osc_clk/(4096*update_rate) // 25000000/(4096*40)= 4.069 ~4 
     i2c_stop(self->bus);                    // Stop 
-    __delay_ms(1);                          // delay at least 500 us 
+    __delay_ms(delay_ms_time);                          // delay at least 500 us 
     i2c_start(self->bus);                   // Start 
     i2c_putc(self->bus, address);           // Slave address 
     i2c_putc(self->bus, PCA9685_MODE1);     // Mode 1 register address 
     i2c_putc(self->bus, self->mode1);       // Set to our prefered mode1 
     i2c_stop(self->bus);                    // Stop 
-    __delay_ms(1);                          // delay at least 500 us 
+    __delay_ms(delay_ms_time);                          // delay at least 500 us 
     i2c_start(self->bus);                   // Start 
     i2c_putc(self->bus, address);           // Slave Address 
     i2c_putc(self->bus, PCA9685_MODE2);     // Mode2 register address 
     i2c_putc(self->bus, 0b00000100);        // Set to our prefered mode2 
     i2c_stop(self->bus);
+    // enable_interrupts();
 
 }
 
@@ -114,7 +118,7 @@ void servo_set_pwm(_SERVO *self, uint16_t on, uint16_t off) {
     "off" values into a series of four registers. This requires that auto-
     increment be enabled in the MODE1 register.
     */
-
+    // disable_interrupts();
     servo_driver_begin_transmission(self -> driver, I2C_WRITE);
     i2c_putc(self -> driver -> bus, DEV0_ON_L + 4 * self -> num);
     i2c_putc(self -> driver -> bus, on);
@@ -122,6 +126,7 @@ void servo_set_pwm(_SERVO *self, uint16_t on, uint16_t off) {
     i2c_putc(self -> driver -> bus, off);
     i2c_putc(self -> driver -> bus, off >> 8);
     servo_driver_end_transmission(self -> driver);
+    // enable_interrupts();
 }
 
 void servo_set(_SERVO *self, uint16_t val, bool invert) {
@@ -132,6 +137,7 @@ void servo_set(_SERVO *self, uint16_t val, bool invert) {
     Val should be a value from 0 to 4095 inclusive.
     */
     // Clamp value between 0 and 4095 inclusive.
+    // led_on(&led2);
     if ( val > 4095) {
         val = 4095;
     }
@@ -160,6 +166,7 @@ void servo_set(_SERVO *self, uint16_t val, bool invert) {
         else {
             servo_set_pwm(self, 0, val);
         }
+        // led_off(&led2);
     }
 }
 

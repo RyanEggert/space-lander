@@ -112,7 +112,6 @@ int16_t main(void) {
     setup();
     init_servo_driver(&sd1, &i2c3, 16000., 0x0);
     init_servo(&servo4, &sd1, 0);
-    // oc_pwm(&oc1, &D[4], &timer4, 3000, 32000);
     InitUSB();
     U1IE = 0xFF; //setting up ISR for USB requests
     U1EIE = 0xFF;
