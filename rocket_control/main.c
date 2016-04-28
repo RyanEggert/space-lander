@@ -619,7 +619,7 @@ void reset(void) {
         timer_lower(&timer3);
         switch (stepper_state) {
         case 0:
-            if (!(st_d->stop_min.hit)) { // If X-axis min (left) endstop is not hit
+            if (!(st_d.stop_min->hit)) { // If X-axis min (left) endstop is not hit
                 st_direction(&st_d, 1);
                 st_speed(&st_d, 1000);
             }
@@ -645,7 +645,7 @@ void reset(void) {
         // Drive DC Motor up until top y-axis endstop hit
         switch (motor_state) {
         case 0:
-            if (!(dcm1->stop_max.hit)) {  // If DC motor max (top) endstop is not hit
+            if (!(dcm1.stop_max->hit)) {  // If DC motor max (top) endstop is not hit
                 dcm_velocity(&dcm1, 64000, 1);
             }
             else {
@@ -653,7 +653,7 @@ void reset(void) {
             }
             break;
         case 1:
-            if (dcm1->stop_max.hit) {
+            if (dcm1.stop_max->hit) {
                 dcm_velocity(&dcm1, 20000, 0); // Move downwards slightly
             }
             else {
