@@ -104,7 +104,7 @@ float tilt_zero = (tilt_max + tilt_min) / 2; //
 uint16_t tilt_ang;  //
 float tilt_scale = 120.0 / (tilt_max - tilt_min); // scale factor to convert digital tilt val [deg/div]
 uint16_t tilt_dir = 0;
-float tilt_incr = 0.01
+float tilt_incr = 0.01;
 
 // scaling vars
 uint16_t scale_ind;
