@@ -214,12 +214,12 @@ void flying(void) {
     if (pin_read(LEFT)) {
         led_on(&led3);
         // Send command to tilt rocket to left
-        tilt = 2;
+        tilt = 1;
     }
     else if (pin_read(RIGHT)) {
         led_on(&led3);
         // Send command to tilt rocket to right   
-        tilt = 1;
+        tilt = 2;
     }
     else {
         led_off(&led3);

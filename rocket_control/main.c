@@ -48,9 +48,6 @@ uint8_t RC_TXBUF[1024], RC_RXBUF[1024];
 #define X_AXIS_THRUST 0
 #define Y_AXIS_THRUST 1
 
-// endstop pins
-_PIN *Y_END_TOP, *Y_END_BOT, *X_END_L, *X_END_R;
-
 typedef void (*STATE_HANDLER_T)(void);
 
 void idle(void);
@@ -67,7 +64,7 @@ volatile uint16_t sw_state2 = 0;
 volatile uint16_t sw_state3 = 0;
 volatile uint16_t sw_state4 = 0;
 
-volatile bool TOP_DSTOP, BOT_DSTOP, RT_DSTOP, LT_DSTOP;
+volatile bool TOP_DSTOP, BOT_DSTOP, RT_DSTOP, LT_DSTOP;  // Not needed. Can remove if endstop test code from below also removed.
 
 // kinematic model vals
 float thrust_val = 5.0;
@@ -83,7 +80,7 @@ uint8_t LUT_ind;
 // stepper vars
 uint16_t stepper_count = 0;
 uint16_t stepper_dir_track = 0;
-uint8_t stepper_state = 0;  // 0 = drive to X_END_L, 1 = drive to middle, 2 = stop *** might not need this?
+uint8_t stepper_state = 0;  // 0 = drive to left x endstop, 1 = drive to middle, 2 = stop *** might not need this?
 float stepper_speed = 0;
 uint16_t stepper_speed_limit = 750;
 uint16_t stepper_reset_lim = 1000;  // # of steps to move stepper during reset state
@@ -622,7 +619,7 @@ void reset(void) {
         timer_lower(&timer3);
         switch (stepper_state) {
         case 0:
-            if (!pin_read(X_END_L)) {
+            if (!(st_d->stop_min.hit)) { // If X-axis min (left) endstop is not hit
                 st_direction(&st_d, 1);
                 st_speed(&st_d, 1000);
             }
@@ -638,7 +635,7 @@ void reset(void) {
                 st_speed(&st_d, 1000);
             }
             else {
-                stepper_state = 2;
+                stepper_state = 2;  // READY
             }
             break;
         case 2:
@@ -648,7 +645,7 @@ void reset(void) {
         // Drive DC Motor up until top y-axis endstop hit
         switch (motor_state) {
         case 0:
-            if (!pin_read(Y_END_TOP)) {
+            if (!(dcm1->stop_max.hit)) {  // If DC motor max (top) endstop is not hit
                 dcm_velocity(&dcm1, 64000, 1);
             }
             else {
@@ -656,11 +653,11 @@ void reset(void) {
             }
             break;
         case 1:
-            if (pin_read(Y_END_TOP)) {
-                dcm_velocity(&dcm1, 64000, 0);
+            if (dcm1->stop_max.hit) {
+                dcm_velocity(&dcm1, 20000, 0); // Move downwards slightly
             }
             else {
-                motor_state = 2;
+                motor_state = 2;  // READY
             }
             break;
         case 2:
@@ -801,17 +798,6 @@ void setup() {
     timer_every(&timer4, .001, read_limitsw);  // Start timed endstop reading
     // General use debugging output pin
     // pin_digitalOut(&D[2]);
-
-    // // Init endstop switches
-    // Y_END_TOP = &D[4];
-    // Y_END_BOT = &D[12];
-    // X_END_L = &D[6];
-    // X_END_R = &D[7];
-
-    // pin_digitalIn(Y_END_TOP);
-    // pin_digitalIn(Y_END_BOT);
-    // pin_digitalIn(X_END_L);
-    // pin_digitalIn(X_END_R);
 
     setup_uart();
     throttle, tilt = 0;
