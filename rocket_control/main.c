@@ -104,6 +104,7 @@ float tilt_zero = (tilt_max + tilt_min) / 2; //
 uint16_t tilt_ang;  //
 float tilt_scale = 120.0 / (tilt_max - tilt_min); // scale factor to convert digital tilt val [deg/div]
 uint16_t tilt_dir = 0;
+float tilt_incr = 0.01
 
 // scaling vars
 uint16_t scale_ind;
@@ -339,7 +340,7 @@ void rocket_model() {
         // st_speed(&st_d, 150);
         // led_on(&led3);
         if (rocket_tilt < tilt_max) {
-            rocket_tilt += 0.1;
+            rocket_tilt += tilt_incr;
         }
     }
     else if (tilt == TILT_CW) {
@@ -348,7 +349,7 @@ void rocket_model() {
         // st_speed(&st_d, 150);
         // led_on(&led3);
         if (rocket_tilt > tilt_min) {
-            rocket_tilt -= 0.1;
+            rocket_tilt -= tilt_incr;
         }
     }
     else if (tilt == TILT_ZERO) {
