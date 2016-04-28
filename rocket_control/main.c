@@ -70,7 +70,7 @@ volatile bool TOP_DSTOP, BOT_DSTOP, RT_DSTOP, LT_DSTOP;
 // kinematic model vals
 float thrust_val = 5.0;
 float grav_val = 4.0;
-float stepper_thrust_val = 1.0;
+float stepper_thrust_val = 0x0200;
 
 // thrust angle LUT's; contain cos(theta) and sin(theta) vals
 float angle_vals_LUT[10] = {0, 5, 10, 15, 20, 25, 30, 35, 40, 45};
@@ -369,36 +369,34 @@ void rocket_model() {
 
 void stepper_test() {
     if (tilt == TILT_CW) {
-        // stepper_thrust = 1;
+        stepper_thrust = 1;
         // increase velocity to right
-        // if (stepper_speed < stepper_speed_limit) {
-        //     if (timer_flag(&timer3)) {
-        //         timer_lower(&timer3);
-        //         if (stepper_speed == 0) {
-        //             stepper_speed = stepper_deadband;
-        //         }
-        //         else {
-        //             stepper_speed = stepper_speed + stepper_thrust;
-        //         }
-        //     }
-        // }
-        stepper_speed = 250;
+        if (stepper_speed < stepper_speed_limit) {
+            if (timer_flag(&timer3)) {
+                timer_lower(&timer3);
+                if (stepper_speed == 0) {
+                    stepper_speed = stepper_deadband;
+                }
+                else {
+                    stepper_speed = stepper_speed + stepper_thrust;
+                }
+            }
+        }
         stepper_dir_track = 0;
         led_on(&led3);
     }
     else if (tilt == TILT_CCW) {
         if (stepper_speed < stepper_speed_limit) {
-            // if (timer_flag(&timer3)) {
-            //     timer_lower(&timer3);
-            //     if (stepper_speed == 0) {
-            //         stepper_speed = stepper_deadband;
-            //     }
-            //     else {
-            //         stepper_speed = stepper_speed + stepper_thrust;
-            //     }
-            // }
+            if (timer_flag(&timer3)) {
+                timer_lower(&timer3);
+                if (stepper_speed == 0) {
+                    stepper_speed = stepper_deadband;
+                }
+                else {
+                    stepper_speed = stepper_speed + stepper_thrust;
+                }
+            }
         }
-        stepper_speed = 250;
         stepper_dir_track = 1;
         led_on(&led3);
     }
@@ -486,10 +484,7 @@ void VendorRequests(void) {
         temp.w = tilt_dir;
         BD[EP0IN].address[12] = temp.b[0];
         BD[EP0IN].address[13] = temp.b[1];
-        temp.w = stepper_speed;
-        BD[EP0IN].address[14] = temp.b[0];
-        BD[EP0IN].address[15] = temp.b[1];
-        BD[EP0IN].bytecount = 16;    // set EP0 IN byte count to 14
+        BD[EP0IN].bytecount = 14;    // set EP0 IN byte count to 14
         BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
         break;
 
@@ -686,10 +681,10 @@ void flying(void) {
 
     // if (timer_flag(&timer3)) {
     // timer_lower(&timer3);
-    // rocket_model();
+    rocket_model();
     // }
     // *** use to determine stepper deadband over vendor requests ***
-    stepper_test();
+    // stepper_test();
 
     // Check for state transitions
 
