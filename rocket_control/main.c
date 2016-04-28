@@ -43,6 +43,8 @@ uint8_t RC_TXBUF[1024], RC_RXBUF[1024];
 
 #define DEBUG_UART_STATUS 70
 
+#define GET_LIMIT_SW_INFO 75
+
 #define X_AXIS_THRUST 0
 #define Y_AXIS_THRUST 1
 
@@ -498,6 +500,21 @@ void VendorRequests(void) {
         BD[EP0IN].address[4] = temp.b[0];
         BD[EP0IN].address[5] = temp.b[1];
         BD[EP0IN].bytecount = 6;    // set EP0 IN byte count to 4
+        BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
+        break;
+
+    case GET_LIMIT_SW_INFO:  // Python unimplemented
+        temp.b[0] = es_y_bot.hit;
+        temp.b[1] = es_y_top.hit;
+        BD[EP0IN].address[0] = temp.b[0];
+        BD[EP0IN].address[1] = temp.b[1];
+        temp.b[0] = es_x_l.hit;
+        temp.b[1] = es_x_r.hit;
+        BD[EP0IN].address[2] = temp.b[0];
+        BD[EP0IN].address[3] = temp.b[1];
+        temp.b[0] = es_landing.hit;
+        BD[EP0IN].address[4] = temp.b[0];
+        BD[EP0IN].bytecount = 5;    // set EP0 IN byte count to 4
         BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
         break;
 
