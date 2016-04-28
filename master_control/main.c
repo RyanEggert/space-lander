@@ -343,11 +343,11 @@ int16_t main(void) {
     while (1) {
         // concatenate throttle+tilt into value
         uint16_t val = (tilt << 1) + throttle;
-        //clock UART to prevent overflow (1 call/ 1 ms)
-        // if (timer_flag(&timer3)){
-        //     timer_lower(&timer3);
+        // clock UART to prevent overflow (1 call/ 1 ms)
+        if (timer_flag(&timer3)){
+            timer_lower(&timer3);
             UART_ctl(SEND_ROCKET_COMMANDS, val);
-        // }
+        }
         state();
     }
 }
