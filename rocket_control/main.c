@@ -82,11 +82,11 @@ uint16_t stepper_count = 0;
 uint16_t stepper_dir_track = 0;
 uint8_t stepper_state = 0;  // 0 = drive to left x endstop, 1 = drive to middle, 2 = stop *** might not need this?
 float stepper_speed = 0;
-uint16_t stepper_speed_limit = 750;
+float stepper_speed_limit = 750;
 uint16_t stepper_reset_lim = 1000;  // # of steps to move stepper during reset state
-uint16_t stepper_deadband = 1;
+float stepper_deadband = 1;
 uint16_t stepper_thrust;
-uint16_t stepper_resist = 0x000F;
+float stepper_resist = 0x000F;
 
 // dc motor vars
 uint16_t motor_state;
@@ -204,7 +204,7 @@ void rocket_model() {
         // scale_val_x = thrust_scale_x[0];
         // scale_val_y = thrust_scale_y[0];
         // scale thrust in x+y axes
-        stepper_thrust = (uint16_t)(stepper_thrust_val * scale_val_x);
+        stepper_thrust = (float)(stepper_thrust_val * scale_val_x);
         motor_thrust = (uint16_t)(thrust_val * scale_val_y); // uint16_t = float * float;
         if (motor_dir_track == 0) {  // rocket falling
             // led_on(&led2);
@@ -304,7 +304,7 @@ void rocket_model() {
             }
         }
         // set x thrust
-        if (stepper_speed > stepper_deadband + stepper_resist) {
+        if ((uint16_t)(stepper_speed) > stepper_deadband + stepper_resist) {
             stepper_speed = stepper_speed - stepper_resist;
         }
         else {
