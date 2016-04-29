@@ -848,6 +848,7 @@ int16_t main(void) {
         UARTrequests();
         // }
         state();
+        pin_toggle(&D[5]);
     }
 
     // ***Test code for quad encoder***
