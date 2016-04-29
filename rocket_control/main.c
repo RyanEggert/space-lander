@@ -76,11 +76,11 @@ uint16_t stepper_count = 0;
 uint16_t stepper_dir_track = 0;
 uint8_t stepper_state = 0;  // 0 = drive to left x endstop, 1 = drive to middle, 2 = stop *** might not need this?
 float stepper_speed = 0;
-float stepper_speed_limit = 750;
+float stepper_speed_limit = 1500;
 uint16_t stepper_reset_lim = 1000;  // # of steps to move stepper during reset state
-float stepper_deadband = 1;
-uint16_t stepper_thrust;
-float stepper_resist = 0x000F;
+float stepper_deadband = 250;
+float stepper_thrust;
+float stepper_resist = 0.1;
 
 // dc motor vars
 uint16_t motor_state;
@@ -219,64 +219,67 @@ void rocket_model() {
         }
         // ***set stepper thrust val***
         // direction of thrust is dependent on tilt direction
-        if (stepper_dir_track) {
-            /// stepper_dir_track == 1 denotes motion to left
-            if (tilt_dir == TILT_CW) {
-                // tilting to right
-                if (stepper_speed - stepper_deadband > stepper_thrust) {
-                    stepper_speed = stepper_speed - stepper_thrust;
+        // if (timer_flag(&timer3)) {
+            if (stepper_dir_track) {
+                /// stepper_dir_track == 1 denotes motion to left
+                if (tilt_dir == TILT_CW) {
+                    // tilting to right
+                    if (stepper_speed - stepper_deadband > stepper_thrust) {
+                        stepper_speed = stepper_speed - stepper_thrust;
+                    }
+                    else {
+                        stepper_dir_track = 0;
+                        stepper_speed = stepper_deadband + stepper_thrust;
+                    }
+                }
+                else if (tilt_dir == TILT_CCW) {
+                    // tilting to left
+                    if (stepper_speed < stepper_speed_limit) {
+                        stepper_speed = stepper_speed + stepper_thrust;
+                    }
+                }
+                else if (tilt_dir == TILT_ZERO) {
+                    // no tilt
+                    if (stepper_speed > stepper_deadband + stepper_resist) {
+                        stepper_speed = stepper_speed - stepper_resist;
+                    }
+                    else {
+                        // wind resistance stops x-axis motion of rocket
+                        stepper_speed = 0;
+                    }
+                }
+            }
+            else if (!stepper_dir_track) {
+                /// stepper_dir_track == 0 denotes motion to right
+                if (tilt_dir == TILT_CW) {
+                    // tilting to left
+                    if (stepper_speed < stepper_speed_limit) {
+                        stepper_speed = stepper_speed + stepper_thrust;
+                    }
+                }
+                else if (tilt_dir == TILT_CCW) {
+                    // tilting to right
+                    if (stepper_speed - stepper_deadband > stepper_thrust) {
+                        stepper_speed = stepper_speed - stepper_thrust;
+                    }
+                    else {
+                        stepper_dir_track = 1;
+                        stepper_speed = stepper_deadband + stepper_thrust;
+                    }
                 }
                 else {
-                    stepper_dir_track = 0;
-                    stepper_speed = stepper_deadband + stepper_thrust;
+                    // no tilt
+                    if (stepper_speed > stepper_deadband + stepper_resist) {
+                        stepper_speed = stepper_speed - stepper_resist;
+                    }
+                    else {
+                        // wind resistance stops x-axis motion of rocket
+                        stepper_speed = 0;
+                    }
                 }
             }
-            else if (tilt_dir == TILT_CCW) {
-                // tilting to left
-                if (stepper_speed < stepper_speed_limit) {
-                    stepper_speed = stepper_speed + stepper_thrust;
-                }
-            }
-            else if (tilt_dir == TILT_ZERO) {
-                // no tilt
-                if (stepper_speed > stepper_deadband + stepper_resist) {
-                    stepper_speed = stepper_speed - stepper_resist;
-                }
-                else {
-                    // wind resistance stops x-axis motion of rocket
-                    stepper_speed = 0;
-                }
-            }
-        }
-        else if (!stepper_dir_track) {
-            /// stepper_dir_track == 0 denotes motion to right
-            if (tilt_dir == TILT_CW) {
-                // tilting to left
-                if (stepper_speed < stepper_speed_limit) {
-                    stepper_speed = stepper_speed + stepper_thrust;
-                }
-            }
-            else if (tilt_dir == TILT_CCW) {
-                // tilting to right
-                if (stepper_speed - stepper_deadband > stepper_thrust) {
-                    stepper_speed = stepper_speed - stepper_thrust;
-                }
-                else {
-                    stepper_dir_track = 1;
-                    stepper_speed = stepper_deadband + stepper_thrust;
-                }
-            }
-            else {
-                // no tilt
-                if (stepper_speed > stepper_deadband + stepper_resist) {
-                    stepper_speed = stepper_speed - stepper_resist;
-                }
-                else {
-                    // wind resistance stops x-axis motion of rocket
-                    stepper_speed = 0;
-                }
-            }
-        }
+        //     timer_lower(&timer3);
+        // }
         // led_on(&led2);
     }
     else { // no thrust
@@ -299,12 +302,15 @@ void rocket_model() {
             }
         }
         // set x thrust
-        if ((uint16_t)(stepper_speed) > stepper_deadband + stepper_resist) {
-            stepper_speed = stepper_speed - stepper_resist;
-        }
-        else {
-            stepper_speed = 0;
-        }
+        // if (timer_flag(&timer3)) {
+            if (stepper_speed > stepper_deadband + stepper_resist) {
+                stepper_speed = stepper_speed - stepper_resist;
+            }
+            else {
+                stepper_speed = 0;
+            }
+        //     timer_lower(&timer3);
+        // }
     }
     // drive DC motor
     if (motor_dir_track) {
@@ -693,8 +699,8 @@ void flying(void) {
     // *** rocket model handles thrust scaling for x+y axes, drives DCM, stepper, servo ***
 
     // if (timer_flag(&timer3)) {
-    // timer_lower(&timer3);
-    rocket_model();
+    //     timer_lower(&timer3);
+        rocket_model();
     // }
     // *** use to determine stepper deadband over vendor requests ***
     // stepper_test();
@@ -790,12 +796,14 @@ void read_limitsw(_TIMER *timer) { //debounce the things
 void setup() {
     timer_setPeriod(&timer1, 1);  // Timer for LED operation/status blink
     timer_setPeriod(&timer2, 0.01);  // Timer for UART servicing
-    timer_setPeriod(&timer3, 0.001);
+    timer_setPeriod(&timer3, 0.01);
     timer_setPeriod(&timer4, 0.001);
+    // timer_setPeriod(&timer5, 0.01);  // Timer for clocking stepper motor
     timer_start(&timer1);
     timer_start(&timer2);
     timer_start(&timer3);
     timer_start(&timer4);
+    // timer_start(&timer5);
 
     // DC MOTOR + QUAD ENCODER
     dcm_init(&dcm1, &D[10], &D[11], 1e3, 0, &oc7, &es_y_bot, &es_y_top);
