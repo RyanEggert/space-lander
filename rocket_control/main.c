@@ -69,7 +69,7 @@ volatile bool TOP_DSTOP, BOT_DSTOP, RT_DSTOP, LT_DSTOP;  // Not needed. Can remo
 // kinematic model vals
 float thrust_val = 5.0;
 float grav_val = 4.0;
-float stepper_thrust_val = 0x0200;
+float stepper_thrust_val = 5;
 
 // thrust angle LUT's; contain cos(theta) and sin(theta) vals
 float angle_vals_LUT[10] = {0, 5, 10, 15, 20, 25, 30, 35, 40, 45};
