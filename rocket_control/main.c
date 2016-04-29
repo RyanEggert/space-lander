@@ -86,7 +86,7 @@ uint16_t stepper_speed_limit = 750;
 uint16_t stepper_reset_lim = 1000;  // # of steps to move stepper during reset state
 uint16_t stepper_deadband = 1;
 uint16_t stepper_thrust;
-uint16_t stepper_resist = 0x00F0;
+uint16_t stepper_resist = 0x000F;
 
 // dc motor vars
 uint16_t motor_state;
