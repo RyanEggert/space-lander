@@ -5,14 +5,14 @@ comms = PIC_USB(0x0005)
 
 def main():
     print("START")
-    loop_time = .05  # How often to run the main loop, in seconds
+    loop_time = .2  # How often to run the main loop, in seconds
     while True:
         start_time = time.clock()
         # print(chr(27) + "[2J")
         # quad_info()
         try:
-            debug_uart_buffers()
-            debug_uart_status()
+            # debug_uart_buffers()
+            # debug_uart_status()
             rocket_info()
         except Exception, e:
             print "Error occurred. {}".format(e)
@@ -23,14 +23,15 @@ def main():
 
 def rocket_info():
     info = comms.get_rocket_info()
-    print "Rocket Tilt {} | Rocket Speed {} | Throttle {} | Motor Speed {} | Motor Thrust {} | Tilt Angle {} | Tilt Direction {}".format(
+    print "Rocket Tilt {} | Rocket Speed {} | Throttle {} | Motor Speed {} | Motor Thrust {} | Stepper Speed {} | Tilt Angle {} | Tilt Direction {}".format(
         info["tilt"],
         info["speed"],
         info["throttle"],
         info["motor_speed"],
         info["motor_thrust"],
+        info["stepper_speed"],
         info["tilt_ang"],
-        info["tilt_dir"]
+        info["tilt_dir"],
     )
 
 

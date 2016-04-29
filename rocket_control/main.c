@@ -484,7 +484,10 @@ void VendorRequests(void) {
         temp.w = tilt_dir;
         BD[EP0IN].address[12] = temp.b[0];
         BD[EP0IN].address[13] = temp.b[1];
-        BD[EP0IN].bytecount = 14;    // set EP0 IN byte count to 14
+        temp.w = (int16_t)(stepper_speed);
+        BD[EP0IN].address[14] = temp.b[0];
+        BD[EP0IN].address[15] = temp.b[1];
+        BD[EP0IN].bytecount = 16;    // set EP0 IN byte count to 14
         BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
         break;
 

@@ -11,7 +11,7 @@ def main():
     SERVO_CENTER = int(((SERVO_MAX - SERVO_MIN)/2.) + SERVO_MIN)
     c = PIC_USB(0x0005)
     c.debug_servo_set_freq(50)
-    c.debug_servo_set_pos(1, 400)
+    c.debug_servo_set_pos(4, 300)
 
     # time.sleep(.5)
     # c.debug_servo_set_pos(7, SERVO_CENTER)
