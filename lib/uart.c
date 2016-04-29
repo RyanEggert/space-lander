@@ -542,9 +542,10 @@ void __attribute__((interrupt, auto_psv)) _U1ErrInterrupt(void) {
     IFS4bits.U1ERIF = 0;  // Lower flag
     // If OERR, clear OERR
     if (bitread(uart1.UxSTA, 1) == 1) {  // IF OERR
+        bitclear(uart1.UxSTA, 1); // Clear OERR flag
         uart1.RXbuffer.tail = uart1.RXbuffer.head;
         uart1.RXbuffer.count = 0;
-        bitclear(uart1.UxSTA, 1); // Clear OERR flag
+        led_toggle(&led2);
     }
     // Raise a global flag, accessible by UART reading 
 

@@ -218,12 +218,12 @@ void flying(void) {
     if (pin_read(LEFT)) {
         led_on(&led3);
         // Send command to tilt rocket to left
-        tilt = 2;
+        tilt = 1;
     }
     else if (pin_read(RIGHT)) {
         led_on(&led3);
         // Send command to tilt rocket to right   
-        tilt = 1;
+        tilt = 2;
     }
     else {
         led_off(&led3);
@@ -351,11 +351,11 @@ int16_t main(void) {
     while (1) {
         // concatenate throttle+tilt into value
         uint16_t val = (tilt << 1) + throttle;
-        //clock UART to prevent overflow (1 call/ 1 ms)
-        // if (timer_flag(&timer3)){
-        //     timer_lower(&timer3);
+        // clock UART to prevent overflow (1 call/ 1 ms)
+        if (timer_flag(&timer3)){
+            timer_lower(&timer3);
             UART_ctl(SEND_ROCKET_COMMANDS, val);
-        // }
+        }
         state();
     }
 }

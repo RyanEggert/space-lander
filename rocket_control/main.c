@@ -44,11 +44,10 @@ uint8_t RC_TXBUF[1024], RC_RXBUF[1024];
 
 #define DEBUG_UART_STATUS 70
 
+#define GET_LIMIT_SW_INFO 75
+
 #define X_AXIS_THRUST 0
 #define Y_AXIS_THRUST 1
-
-// endstop pins
-_PIN *Y_END_TOP, *Y_END_BOT, *X_END_L, *X_END_R;
 
 typedef void (*STATE_HANDLER_T)(void);
 
@@ -60,10 +59,11 @@ void lose(void);
 
 STATE_HANDLER_T state, last_state;
 
+
 // kinematic model vals
 float thrust_val = 5.0;
 float grav_val = 4.0;
-float stepper_thrust_val = 0x0200;
+float stepper_thrust_val = 5;
 
 // thrust angle LUT's; contain cos(theta) and sin(theta) vals
 float angle_vals_LUT[10] = {0, 5, 10, 15, 20, 25, 30, 35, 40, 45};
@@ -74,13 +74,13 @@ uint8_t LUT_ind;
 // stepper vars
 uint16_t stepper_count = 0;
 uint16_t stepper_dir_track = 0;
-uint8_t stepper_state = 0;  // 0 = drive to X_END_L, 1 = drive to middle, 2 = stop *** might not need this?
+uint8_t stepper_state = 0;  // 0 = drive to left x endstop, 1 = drive to middle, 2 = stop *** might not need this?
 float stepper_speed = 0;
-uint16_t stepper_speed_limit = 750;
+float stepper_speed_limit = 750;
 uint16_t stepper_reset_lim = 1000;  // # of steps to move stepper during reset state
-uint16_t stepper_deadband = 1;
+float stepper_deadband = 1;
 uint16_t stepper_thrust;
-uint16_t stepper_resist = 0x00F0;
+float stepper_resist = 0x000F;
 
 // dc motor vars
 uint16_t motor_state;
@@ -98,6 +98,7 @@ float tilt_zero = (tilt_max + tilt_min) / 2; //
 uint16_t tilt_ang;  //
 float tilt_scale = 120.0 / (tilt_max - tilt_min); // scale factor to convert digital tilt val [deg/div]
 uint16_t tilt_dir = 0;
+float tilt_incr = 0.01;
 
 // scaling vars
 uint16_t scale_ind;
@@ -198,7 +199,7 @@ void rocket_model() {
         // scale_val_x = thrust_scale_x[0];
         // scale_val_y = thrust_scale_y[0];
         // scale thrust in x+y axes
-        stepper_thrust = (uint16_t)(stepper_thrust_val * scale_val_x);
+        stepper_thrust = (float)(stepper_thrust_val * scale_val_x);
         motor_thrust = (uint16_t)(thrust_val * scale_val_y); // uint16_t = float * float;
         if (motor_dir_track == 0) {  // rocket falling
             // led_on(&led2);
@@ -298,7 +299,7 @@ void rocket_model() {
             }
         }
         // set x thrust
-        if (stepper_speed > stepper_deadband + stepper_resist) {
+        if ((uint16_t)(stepper_speed) > stepper_deadband + stepper_resist) {
             stepper_speed = stepper_speed - stepper_resist;
         }
         else {
@@ -334,7 +335,7 @@ void rocket_model() {
         // st_speed(&st_d, 150);
         // led_on(&led3);
         if (rocket_tilt < tilt_max) {
-            rocket_tilt += 0.1;
+            rocket_tilt += tilt_incr;
         }
     }
     else if (tilt == TILT_CW) {
@@ -343,7 +344,7 @@ void rocket_model() {
         // st_speed(&st_d, 150);
         // led_on(&led3);
         if (rocket_tilt > tilt_min) {
-            rocket_tilt -= 0.1;
+            rocket_tilt -= tilt_incr;
         }
     }
     else if (tilt == TILT_ZERO) {
@@ -478,7 +479,10 @@ void VendorRequests(void) {
         temp.w = tilt_dir;
         BD[EP0IN].address[12] = temp.b[0];
         BD[EP0IN].address[13] = temp.b[1];
-        BD[EP0IN].bytecount = 14;    // set EP0 IN byte count to 14
+        temp.w = (int16_t)(stepper_speed);
+        BD[EP0IN].address[14] = temp.b[0];
+        BD[EP0IN].address[15] = temp.b[1];
+        BD[EP0IN].bytecount = 16;    // set EP0 IN byte count to 14
         BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
         break;
 
@@ -492,6 +496,21 @@ void VendorRequests(void) {
         BD[EP0IN].address[4] = temp.b[0];
         BD[EP0IN].address[5] = temp.b[1];
         BD[EP0IN].bytecount = 6;    // set EP0 IN byte count to 4
+        BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
+        break;
+
+    case GET_LIMIT_SW_INFO:  // Python unimplemented
+        temp.b[0] = es_y_bot.hit;
+        temp.b[1] = es_y_top.hit;
+        BD[EP0IN].address[0] = temp.b[0];
+        BD[EP0IN].address[1] = temp.b[1];
+        temp.b[0] = es_x_l.hit;
+        temp.b[1] = es_x_r.hit;
+        BD[EP0IN].address[2] = temp.b[0];
+        BD[EP0IN].address[3] = temp.b[1];
+        temp.b[0] = es_landing.hit;
+        BD[EP0IN].address[4] = temp.b[0];
+        BD[EP0IN].bytecount = 5;    // set EP0 IN byte count to 4
         BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
         break;
 
@@ -599,7 +618,7 @@ void reset(void) {
         timer_lower(&timer3);
         switch (stepper_state) {
         case 0:
-            if (!pin_read(X_END_L)) {
+            if (!(st_d.stop_min->hit)) { // If X-axis min (left) endstop is not hit
                 st_direction(&st_d, 1);
                 st_speed(&st_d, 1000);
             }
@@ -615,7 +634,7 @@ void reset(void) {
                 st_speed(&st_d, 1000);
             }
             else {
-                stepper_state = 2;
+                stepper_state = 2;  // READY
             }
             break;
         case 2:
@@ -625,7 +644,7 @@ void reset(void) {
         // Drive DC Motor up until top y-axis endstop hit
         switch (motor_state) {
         case 0:
-            if (!pin_read(Y_END_TOP)) {
+            if (!(dcm1.stop_max->hit)) {  // If DC motor max (top) endstop is not hit
                 dcm_velocity(&dcm1, 64000, 1);
             }
             else {
@@ -633,11 +652,11 @@ void reset(void) {
             }
             break;
         case 1:
-            if (pin_read(Y_END_TOP)) {
-                dcm_velocity(&dcm1, 64000, 0);
+            if (dcm1.stop_max->hit) {
+                dcm_velocity(&dcm1, 20000, 0); // Move downwards slightly
             }
             else {
-                motor_state = 2;
+                motor_state = 2;  // READY
             }
             break;
         case 2:
@@ -787,17 +806,6 @@ void setup() {
     // General use debugging output pin
     // pin_digitalOut(&D[2]);
 
-    // // Init endstop switches
-    // Y_END_TOP = &D[4];
-    // Y_END_BOT = &D[12];
-    // X_END_L = &D[6];
-    // X_END_R = &D[7];
-
-    // pin_digitalIn(Y_END_TOP);
-    // pin_digitalIn(Y_END_BOT);
-    // pin_digitalIn(X_END_L);
-    // pin_digitalIn(X_END_R);
-
     setup_uart();
     throttle, tilt = 0;
     val1, val2 = 8;
@@ -843,6 +851,7 @@ int16_t main(void) {
         UARTrequests();
         // }
         state();
+        pin_toggle(&D[5]);
     }
 
     // ***Test code for quad encoder***

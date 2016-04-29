@@ -146,7 +146,7 @@ void i2c_nak(_I2C *self) {
 
 void i2c_stop(_I2C *self) {
     bitset(self->I2CxCON, 2);   // Initiate a Stop condition on I2Cx
-    while (bitread(self->I2CxCON, 2)==1) {}     // Wait until Stop condition
+    // while (bitread(self->I2CxCON, 2)==1) {}     // Wait until Stop condition
                                                 //   clears
 }
 
