@@ -241,7 +241,7 @@ void flying(void) {
     }
 
     // Check for state transitions
-    UART_ctl(GET_ROCKET_VALS,0);
+    // UART_ctl(GET_ROCKET_VALS,0);
 
     if (rocket_state == CRASHED) {
         state = lose;
