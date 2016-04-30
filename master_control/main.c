@@ -45,7 +45,7 @@ uint16_t rocket_state = READY;
 uint16_t counter, coin;
 uint16_t rocket_speed, rocket_tilt;
 uint16_t throttle, tilt;
-uint8_t rec_msg[64], tx_msg[8];
+uint8_t rec_msg[32], tx_msg[8];
 
 void VendorRequests(void) {
     WORD temp;
@@ -240,8 +240,9 @@ void flying(void) {
         led_off(&led1);
     }
 
-    // Check for state transitions
+    // Check for state transitions: BROKEN
     // UART_ctl(GET_ROCKET_VALS,0);
+
 
     if (rocket_state == CRASHED) {
         state = lose;
@@ -355,6 +356,11 @@ int16_t main(void) {
         if (timer_flag(&timer3)){
             timer_lower(&timer3);
             UART_ctl(SEND_ROCKET_COMMANDS, val);
+            // if (uart1.RXbuffer.count > 10){
+            //     uart_gets(&uart1, rec_msg, 32);
+            //     uint32_t decoded_msg = (uint32_t)strtol(rec_msg, NULL, 16);
+            //     rocket_state = decoded_msg;
+            // }
         }
         state();
     }

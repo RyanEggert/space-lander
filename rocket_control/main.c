@@ -114,7 +114,7 @@ float rocket_tilt;
 float rocket_tilt_last;
 uint16_t counter;
 uint8_t throttle, tilt; //commands
-uint8_t rocketstuff[64], rec_msg[64];
+uint8_t rocketstuff[32], rec_msg[64];
 uint8_t cmd, value;
 uint16_t val1, val2;
 uint16_t tilt_test = 25; //just for testing state machine
@@ -470,26 +470,11 @@ void VendorRequests(void) {
         temp.w = rocket_speed;
         BD[EP0IN].address[2] = temp.b[0];
         BD[EP0IN].address[3] = temp.b[1];
-        temp.w = throttle;
+        temp.w = rocket_state;
         BD[EP0IN].address[4] = temp.b[0];
         BD[EP0IN].address[5] = temp.b[1];
-        temp.w = motor_speed;
-        BD[EP0IN].address[6] = temp.b[0];
-        BD[EP0IN].address[7] = temp.b[1];
-        temp.w = motor_thrust;
-        BD[EP0IN].address[8] = temp.b[0];
-        BD[EP0IN].address[9] = temp.b[1];
-        temp.w = tilt_ang;
-        BD[EP0IN].address[10] = temp.b[0];
-        BD[EP0IN].address[11] = temp.b[1];
-        temp.w = tilt_dir;
-        BD[EP0IN].address[12] = temp.b[0];
-        BD[EP0IN].address[13] = temp.b[1];
-        temp.w = (int16_t)(stepper_speed);
-        BD[EP0IN].address[14] = temp.b[0];
-        BD[EP0IN].address[15] = temp.b[1];
-        BD[EP0IN].bytecount = 16;    // set EP0 IN byte count to 14
-        BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
+        BD[EP0IN].bytecount = 6;    // set EP0 IN byte count to 4
+        BD[EP0IN].status = 0xC8; 
         break;
 
     case GET_QUAD_INFO:
@@ -727,6 +712,9 @@ void flying(void) {
     if (state != last_state) {  // if we are leaving the state, do clean up stuff
         // turn off tilt stick led before exiting state
         led_off(&led3);
+        //send the master the new state
+        // sprintf(rocketstuff, "%01x", rocket_state);
+        // uart_puts(&uart1, rocketstuff);
     }
 }
 
