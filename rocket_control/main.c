@@ -66,10 +66,14 @@ volatile uint16_t sw_state4 = 0;
 
 volatile bool TOP_DSTOP, BOT_DSTOP, RT_DSTOP, LT_DSTOP;  // Not needed. Can remove if endstop test code from below also removed.
 
+// rocket fuel vals
+uint16_t fuel_val = 0xFFFF;
+uint16_t fuel_burn_rate = 1;
+
 // kinematic model vals
 float thrust_val = 5.0;
 float grav_val = 4.0;
-float stepper_thrust_val = 5;
+float stepper_thrust_val = 2;
 
 // thrust angle LUT's; contain cos(theta) and sin(theta) vals
 float angle_vals_LUT[10] = {0, 5, 10, 15, 20, 25, 30, 35, 40, 45};
@@ -82,11 +86,11 @@ uint16_t stepper_count = 0;
 uint16_t stepper_dir_track = 0;
 uint8_t stepper_state = 0;  // 0 = drive to left x endstop, 1 = drive to middle, 2 = stop *** might not need this?
 float stepper_speed = 0;
-float stepper_speed_limit = 1500;
+float stepper_speed_limit = 1250;
 uint16_t stepper_reset_lim = 1000;  // # of steps to move stepper during reset state
-float stepper_deadband = 250;
+float stepper_deadband = 750;
 float stepper_thrust;
-float stepper_resist = 0.1;
+float stepper_resist = 0.01;
 
 // dc motor vars
 uint16_t motor_state;
@@ -318,13 +322,13 @@ void rocket_model() {
         // }
     }
     // drive DC motor
-    if (motor_dir_track) {
-        // pin_set(MOTOR_DIR);
-        dcm_velocity(&dcm1, motor_speed, 0);
-    }
-    else {
-        dcm_velocity(&dcm1, motor_speed, 1);
-    }
+    // if (motor_dir_track) {
+    //     // pin_set(MOTOR_DIR);
+    //     dcm_velocity(&dcm1, motor_speed, 0);
+    // }
+    // else {
+    //     dcm_velocity(&dcm1, motor_speed, 1);
+    // }
     // drive stepper
     if (stepper_speed == 0) {
         st_speed(&st_d, 0);
@@ -493,7 +497,10 @@ void VendorRequests(void) {
         temp.w = (int16_t)(stepper_speed);
         BD[EP0IN].address[14] = temp.b[0];
         BD[EP0IN].address[15] = temp.b[1];
-        BD[EP0IN].bytecount = 16;    // set EP0 IN byte count to 14
+        temp.w = rocket_state;
+        BD[EP0IN].address[16] = temp.b[0];
+        BD[EP0IN].address[17] = temp.b[1];
+        BD[EP0IN].bytecount = 18;    // set EP0 IN byte count to 14
         BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
         break;
 
@@ -804,8 +811,11 @@ void setup() {
 
     // DC MOTOR + QUAD ENCODER
     dcm_init(&dcm1, &D[10], &D[11], 1e3, 0, &oc7, &es_y_bot, &es_y_top);
-    quad_init(&quad1, &D[8], &D[9]); // quad1 uses pins D8 & D9
-    quad_every(&quad1, &timer5, 0.0000875); // quad1 will use timer5 interrupts
+    // quad_init(&quad1, &D[8], &D[9]); // quad1 uses pins D8 & D9
+    // quad_every(&quad1, &timer5, 0.0000875); // quad1 will use timer5 interrupts
+
+    // STEPPER
+    st_init(&st_d, &D[0], &D[1], &D[2], &D[3], &oc5, &timer5, 0x7FFF, &es_x_l, &es_x_r);
 
     timer_every(&timer4, .001, read_limitsw);  // Start timed endstop reading
     // General use debugging output pin
