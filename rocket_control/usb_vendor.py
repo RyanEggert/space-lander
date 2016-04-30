@@ -15,6 +15,8 @@ class PIC_USB(object):
 
         self.DEBUG_UART_STATUS = 70
 
+        self.READ_STATES = 80
+
         self.vendor_id = 0x6666
         self.product_id = product_id
         self.dev = usb.core.find(idVendor=self.vendor_id, idProduct=self.product_id)
@@ -127,6 +129,19 @@ class PIC_USB(object):
             out["tilt"] = self.parse16(ret, 0)
             out["speed"] = self.parse16(ret, 2)
             out["state"] = self.parse16(ret, 4)
+            return out
+
+    def read_states(self):
+        """
+        Reads the rocket's current measured tilt, measured speed, and state.
+        """
+        try:
+            ret = self.dev.ctrl_transfer(0xC0, self.READ_STATES, 0, 0, 2)
+        except usb.core.USBError:
+            print "Could not send GET_ROCKET_INFO vendor request."
+        else:
+            out = {}
+            out["rocket_state"] = self.parse16(ret, 0)
             return out
 
     def get_quad_info(self):

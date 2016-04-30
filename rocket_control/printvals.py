@@ -14,6 +14,7 @@ def main():
             # debug_uart_buffers()
             # debug_uart_status()
             rocket_info()
+            read_state_info()
         except Exception, e:
             print "Error occurred. {}".format(e)
             print "Retrying..."
@@ -61,6 +62,11 @@ def quad_info():
         info["overflow"],
     )
 
+def read_state_info():
+    info = comms.read_states()
+    print "Rocket State {}".format(
+        info["rocket_state"]
+   )
 
 if __name__ == '__main__':
     main()

@@ -240,10 +240,6 @@ void flying(void) {
         led_off(&led1);
     }
 
-    // Check for state transitions: BROKEN
-    // UART_ctl(GET_ROCKET_VALS,0);
-
-
     if (rocket_state == CRASHED) {
         state = lose;
     }

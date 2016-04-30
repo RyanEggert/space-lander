@@ -45,6 +45,7 @@ uint8_t RC_TXBUF[1024], RC_RXBUF[1024];
 #define DEBUG_UART_STATUS 70
 
 #define GET_LIMIT_SW_INFO 75
+#define READ_STATES 80
 
 #define X_AXIS_THRUST 0
 #define Y_AXIS_THRUST 1
@@ -523,6 +524,14 @@ void VendorRequests(void) {
         temp.w = USB_setup.wValue.w;
         servo_driver_configure(&sd1, ((float)(temp.w)) / 10);
         BD[EP0IN].bytecount = 0;    // set EP0 IN byte count to 0
+        BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
+        break;
+
+    case READ_STATES:
+        temp.w = rocket_state;
+        BD[EP0IN].address[0] = temp.b[0];
+        BD[EP0IN].address[1] = temp.b[1];
+        BD[EP0IN].bytecount = 2;    // set EP0 IN byte count to 4
         BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
         break;
 
