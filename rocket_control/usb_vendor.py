@@ -114,6 +114,29 @@ class PIC_USB(object):
             out["ADDEN"] = self.parse8(ret, 5)
             return out
 
+    def debug_oc_status(self):
+        """
+        Reads information about the OC mode, OC timer select, and OC Fault
+        Condition Status. Checks DC motor OC and stepper OC.
+        """
+        try:
+            ret = self.dev.ctrl_transfer(0xC0, self.DEBUG_UART_STATUS, 0, 0, 10)
+        except usb.core.USBError:
+            print "Could not send DEBUG_OC_STATUS vendor request."
+        else:
+            out = {}
+            out["DC_OCM0"] = self.parse8(ret, 0)
+            out["DC_DCM1"] = self.parse8(ret, 1)
+            out["DC_OCM2"] = self.parse8(ret, 2)
+            out["DC_OCTSEL"] = self.parse8(ret, 3)
+            out["DC_OCFLT"] = self.parse8(ret, 4)
+            out["ST_OCM0"] = self.parse8(ret, 5)
+            out["ST_DCM1"] = self.parse8(ret, 6)
+            out["ST_OCM2"] = self.parse8(ret, 7)
+            out["ST_OCTSEL"] = self.parse8(ret, 8)
+            out["ST_OCFLT"] = self.parse8(ret, 9)
+            return out
+
     def get_rocket_info(self):
         """
         Reads the rocket's current measured tilt, measured speed, and state.
