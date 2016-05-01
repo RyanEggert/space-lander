@@ -19,7 +19,7 @@ void init_stops(void) {
     */
 
     // Gantry X-Axis (stepper) endstops
-    stop_init(&es_x_l, &D[12]);
+    stop_init(&es_x_l, &D[8]);
     stop_init(&es_x_r, &D[13]);
 
     // Gantry Y-Axis (dc motor) endstops

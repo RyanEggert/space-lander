@@ -12,8 +12,8 @@ class PIC_USB(object):
 
         self.DEBUG_SERVO_SET_POS = 60
         self.DEBUG_SERVO_SET_FREQ = 61
-
         self.DEBUG_UART_STATUS = 70
+        self.GET_LIMIT_SW_INFO = 75
 
         self.vendor_id = 0x6666
         self.product_id = product_id
@@ -211,3 +211,20 @@ class PIC_USB(object):
             self.dev.ctrl_transfer(0x40, self.DEBUG_SERVO_RESET, 0)
         except usb.core.USBError:
             print "Could not send DEBUG_SERVO_RESET vendor request."
+
+    def get_limit_sw_info(self):
+        """
+        Reads the system's endstops.
+        """
+        try:
+            ret = self.dev.ctrl_transfer(0xC0, self.GET_LIMIT_SW_INFO, 0, 0, 5)
+        except usb.core.USBError:
+            print "Could not send GET_ROCKET_INFO vendor request."
+        else:
+            out = {}
+            out["Y_BOT"] = self.parse8(ret, 0)
+            out["Y_TOP"] = self.parse8(ret, 1)
+            out["X_L"] = self.parse8(ret, 2)
+            out["X_R"] = self.parse8(ret, 3)
+            out["BARGE"] = self.parse8(ret, 4)
+            return out

@@ -320,13 +320,13 @@ void rocket_model() {
         // }
     }
     // drive DC motor
-    // if (motor_dir_track) {
-    //     // pin_set(MOTOR_DIR);
-    //     dcm_velocity(&dcm1, motor_speed, 0);
-    // }
-    // else {
-    //     dcm_velocity(&dcm1, motor_speed, 1);
-    // }
+    if (motor_dir_track) {
+        // pin_set(MOTOR_DIR);
+        dcm_velocity(&dcm1, motor_speed, 0);
+    }
+    else {
+        dcm_velocity(&dcm1, motor_speed, 1);
+    }
     // drive stepper
     if (stepper_speed == 0) {
         st_speed(&st_d, 0);
