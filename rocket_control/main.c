@@ -619,7 +619,7 @@ void UARTrequests() {
     }
 }
 
-void setup_uart() {
+void setup_uart(void) {
     /*
     Configures UART for communications.
     Uses uart1 for inter-PIC communications. Rx on D[1], Tx on D[0].
@@ -749,7 +749,6 @@ void reset(void) {
     }
 }
 
-
 void flying(void) {
     if (state != last_state) {  // if we are entering the state, do initialization stuff
         last_state = state;
@@ -877,7 +876,6 @@ void setup() {
     throttle, tilt = 0;
     val1, val2 = 8;
     // rocket_tilt = 500;
-
 }
 
 int16_t main(void) {
@@ -966,5 +964,4 @@ int16_t main(void) {
     // else{
     //     led_off(&led1);
     // }
-
 }
