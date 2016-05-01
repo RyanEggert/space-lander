@@ -298,7 +298,7 @@ int16_t main(void) {
     float stsp = .10;
     // dcm_speed(&dcm1, 32000);
     // void oc_pwm(_OC *self, _PIN *pin, _TIMER *timer, float freq, uint16_t duty) {
-
+    uint16_t frq = 5000;
     oc_pwm(&oc5, &D[10], NULL, 10000, pwm_duty_pct_to_int(.50));
     oc_pwm(&oc6, &D[11], NULL, 15432, pwm_duty_pct_to_int(.50));
 
@@ -310,11 +310,13 @@ int16_t main(void) {
             led_toggle(&led2);
             if (stsp == .10) {
                 stsp = .20;
+                frq = 32432;
             } else {
                 stsp = .10;
+                frq = 5021;
             }
             oc_free(&oc6);
-            oc_pwm(&oc6, &D[11], NULL, 15432, pwm_duty_pct_to_int(stsp));
+            oc_pwm(&oc6, &D[11], NULL, frq, pwm_duty_pct_to_int(stsp));
             // st_speed(&st_d, stsp);
         }
     }
