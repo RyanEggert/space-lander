@@ -42,6 +42,7 @@ uint8_t RC_TXBUF[1024], RC_RXBUF[1024];
 #define DEBUG_SERVO_SET_FREQ 61
 
 #define DEBUG_UART_STATUS 70
+#define DEBUG_OC_STATUS 72
 
 #define GET_LIMIT_SW_INFO 75
 
@@ -58,13 +59,8 @@ void lose(void);
 
 STATE_HANDLER_T state, last_state;
 
-_OC dcm_oc = oc_7;
-_OC st_oc = oc_5;
-
-volatile uint16_t sw_state = 0;
-volatile uint16_t sw_state2 = 0;
-volatile uint16_t sw_state3 = 0;
-volatile uint16_t sw_state4 = 0;
+_OC *dcm_oc = &oc7;
+_OC *st_oc = &oc5;
 
 volatile bool TOP_DSTOP, BOT_DSTOP, RT_DSTOP, LT_DSTOP;  // Not needed. Can remove if endstop test code from below also removed.
 
@@ -475,22 +471,22 @@ void VendorRequests(void) {
         break;
 
     case DEBUG_OC_STATUS:
-        temp.b[0] = bitread(dcm_oc.OCxCON, 0);  // Receive buffer data available
-        temp.b[1] = bitread(dcm_oc.OCxCON, 1);  // Read overrun error bit
+        temp.b[0] = bitread(dcm_oc->OCxCON1, 0);  // Receive buffer data available
+        temp.b[1] = bitread(dcm_oc->OCxCON1, 1);  // Read overrun error bit
         BD[EP0IN].address[0] = temp.b[0];  // OCM0
         BD[EP0IN].address[1] = temp.b[1];  // OCM1
-        temp.b[0] = bitread(dcm_oc.OCxCON, 2);  // Read framing error bit
-        temp.b[1] = bitread(dcm_oc.OCxCON, 3);  // Read parity error bit
+        temp.b[0] = bitread(dcm_oc->OCxCON1, 2);  // Read framing error bit
+        temp.b[1] = bitread(dcm_oc->OCxCON1, 3);  // Read parity error bit
         BD[EP0IN].address[2] = temp.b[0];  // OCM2
         BD[EP0IN].address[3] = temp.b[1];  // OCTSEL
-        temp.b[0] = bitread(dcm_oc.OCxCON, 4);  // Read receiver idle bit
+        temp.b[0] = bitread(dcm_oc->OCxCON1, 4);  // Read receiver idle bit
         BD[EP0IN].address[4] = temp.b[0];  // OCTFLT
-        temp.b[0] = bitread(st_oc.OCxCON, 0);  // Receive buffer data available
-        temp.b[1] = bitread(st_oc.OCxCON, 1);  // Read overrun error bit
+        temp.b[0] = bitread(st_oc->OCxCON1, 0);  // Receive buffer data available
+        temp.b[1] = bitread(st_oc->OCxCON1, 1);  // Read overrun error bit
         BD[EP0IN].address[0] = temp.b[0];  // OCM0
         BD[EP0IN].address[1] = temp.b[1];  // OCM1
-        temp.b[0] = bitread(st_oc.OCxCON, 2);  // Receive buffer data available
-        temp.b[1] = bitread(st_oc.OCxCON, 3);  // Read overrun error bit
+        temp.b[0] = bitread(st_oc->OCxCON1, 2);  // Receive buffer data available
+        temp.b[1] = bitread(st_oc->OCxCON1, 3);  // Read overrun error bit
         BD[EP0IN].address[0] = temp.b[0];  // OCM2
         BD[EP0IN].address[1] = temp.b[1];  // OCTFLT
 
@@ -835,12 +831,12 @@ void setup() {
     // timer_start(&timer5);
 
     // DC MOTOR + QUAD ENCODER
-    dcm_init(&dcm1, &D[10], &D[11], 1e3, 0, &dcm_oc, &es_y_bot, &es_y_top);
+    dcm_init(&dcm1, &D[10], &D[11], 1e3, 0, dcm_oc, &es_y_bot, &es_y_top);
     // quad_init(&quad1, &D[8], &D[9]); // quad1 uses pins D8 & D9
     // quad_every(&quad1, &timer5, 0.0000875); // quad1 will use timer5 interrupts
 
     // STEPPER
-    st_init(&st_d, &D[0], &D[1], &D[2], &D[3], &st_oc, &timer5, 0x7FFF, &es_x_l, &es_x_r);
+    st_init(&st_d, &D[0], &D[1], &D[2], &D[3], st_oc, 0x7FFF, &es_x_l, &es_x_r);
 
     timer_every(&timer4, .001, read_limitsw);  // Start timed endstop reading
     // General use debugging output pin
