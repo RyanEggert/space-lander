@@ -35,11 +35,11 @@ _ST st_d;
 
 void init_st(void) {
     // init stepper object on oc5 w/ 50% duty cycle
-    st_init(&st_d, &D[0], &D[1], &D[2], &D[3], &oc5, 0x7FFF, &es_x_l, &es_x_r);
+    st_init(&st_d, &D[0], &D[1], &D[2], &D[3], &oc5, 0x7FFF, NULL, &es_x_l, &es_x_r);
     init_ui();
 }
 
-void st_init(_ST *self, _PIN *pin1, _PIN *pin2, _PIN *pin3, _PIN *pin4, _OC *oc, uint16_t duty_cyc, _ESTOP *endstop_min, _ESTOP *endstop_max) {
+void st_init(_ST *self, _PIN *pin1, _PIN *pin2, _PIN *pin3, _PIN *pin4, _OC *oc, uint16_t duty_cyc, _TIMER * oc_timer, _ESTOP *endstop_min, _ESTOP *endstop_max) {
     self->dir = 0;
     self->speed = 0;
     self->step_size = 0;
