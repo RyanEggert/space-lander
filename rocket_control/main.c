@@ -659,7 +659,7 @@ void reset_from_origin(void) {
         st_manual_init(&st_d);
         stepper_reset = false;
         float pulley_rad = 6.35;  // Radius of pulley in mm
-        float dist_const = 0.0279253 * pulley_rad;  // (1.6 degrees -> radians) * belt pulley radius (mm)
+        float dist_const = (0.0279253 * pulley_rad)/(8);  // (1.6 degrees -> radians) * belt pulley radius (mm) / (8th steps)
         uint16_t reset_dist = 275;  // Distance from origin to reset position (mm)
         reset_steps = (uint16_t)(reset_dist/dist_const);  // No. steps from origin to reset position
         // zero quad encoder
@@ -668,8 +668,6 @@ void reset_from_origin(void) {
         dcm_velocity(&dcm1, 20000, 1);  // Drive motor downwards
         dc_reset = false;
     }
-
-    
 
     if (st_d.manual_count >= reset_steps ) {
         // Stepper has reached reset location.
@@ -730,7 +728,6 @@ void reset(void) {
         // led_off(&led2);  // if we are leaving the state, do clean up stuff
     }
 }
-
 
 
 void flying(void) {
