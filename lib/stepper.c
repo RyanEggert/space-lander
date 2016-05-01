@@ -161,6 +161,18 @@ void st_manual_init(_ST *self) {
 }
 
 void st_manual_toggle(_ST *self){
+    if ((self->stop_min->hit == true) && (dir == 0)) {
+        // If endstop is hit and we specify moving towards it,
+        // then do not change direction. Movement in the specified direction is
+        // not allowed.
+        return;
+    } else if ((self->stop_max->hit == true) && (dir == 1)) {
+        // If endstop is hit and we specify moving towards it,
+        // then do not change direction. Movement in the specified direction is
+        // not allowed.
+        return;
+    }
+    
     if(self->_pseudo_freq_count == self->manual_pseudo_freq) {
         pin_toggle(self->pins[0]);
         self->_manual_toggle_st = (self->_manual_toggle_st + 1) % 2;
