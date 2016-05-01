@@ -53,6 +53,7 @@ typedef void (*STATE_HANDLER_T)(void);
 
 void idle(void);
 void reset(void);
+void reset_from_origin(void);
 void flying(void);
 void win(void);
 void lose(void);
@@ -483,14 +484,16 @@ void VendorRequests(void) {
         BD[EP0IN].address[4] = temp.b[0];  // OCTFLT
         temp.b[0] = bitread(st_oc->OCxCON1, 0);  // Receive buffer data available
         temp.b[1] = bitread(st_oc->OCxCON1, 1);  // Read overrun error bit
-        BD[EP0IN].address[0] = temp.b[0];  // OCM0
-        BD[EP0IN].address[1] = temp.b[1];  // OCM1
+        BD[EP0IN].address[5] = temp.b[0];  // OCM0
+        BD[EP0IN].address[6] = temp.b[1];  // OCM1
         temp.b[0] = bitread(st_oc->OCxCON1, 2);  // Receive buffer data available
         temp.b[1] = bitread(st_oc->OCxCON1, 3);  // Read overrun error bit
-        BD[EP0IN].address[0] = temp.b[0];  // OCM2
-        BD[EP0IN].address[1] = temp.b[1];  // OCTFLT
+        BD[EP0IN].address[7] = temp.b[0];  // OCM2
+        BD[EP0IN].address[8] = temp.b[1];  // OCTFLT
+        temp.b[0] = bitread(st_oc->OCxCON1, 4);  // Read receiver idle bit
+        BD[EP0IN].address[9] = temp.b[0];  // OCTFLT
 
-        BD[EP0IN].bytecount = 10;    // set EP0 IN byte count to 4
+        BD[EP0IN].bytecount = 10;    // set EP0 IN byte count to 9
         BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
 
     case GET_ROCKET_INFO:
@@ -634,6 +637,7 @@ void idle(void) {
         last_state = state;
         // trials = 0; // let master handle # trials
         led_on(&led1);
+        st_speed(&st_d, 500);
     }
 
     if (state != last_state) {
@@ -653,6 +657,8 @@ void reset_from_origin(void) {
     if (state != last_state) {
         // State initialization
         last_state = state;
+        led_on(&led3);
+
 
         // Set up stepper positioning system
         st_direction(&st_d, 1);  // Drive stepper right
@@ -660,14 +666,18 @@ void reset_from_origin(void) {
         stepper_reset = false;
         float pulley_rad = 6.35;  // Radius of pulley in mm
         float dist_const = (0.0279253 * pulley_rad)/(8);  // (1.6 degrees -> radians) * belt pulley radius (mm) / (8th steps)
-        uint16_t reset_dist = 275;  // Distance from origin to reset position (mm)
+        uint16_t reset_dist = 220;  // Distance from origin to reset position (mm)
         reset_steps = (uint16_t)(reset_dist/dist_const);  // No. steps from origin to reset position
         // zero quad encoder
 
         // Set up DC motor positioning system
         dcm_velocity(&dcm1, 20000, 1);  // Drive motor downwards
+
         dc_reset = false;
     }
+
+    dcm_velocity(&dcm1, 20000, 1);  // Drive motor downwards
+
 
     if (st_d.manual_count >= reset_steps ) {
         // Stepper has reached reset location.
@@ -687,11 +697,13 @@ void reset_from_origin(void) {
         // Both axes have reached their reset positions.
         // Move to next state
         // if()
-        state = idle;
+        state = flying;
     }
 
     if (state != last_state) {
         // State exit
+        led_off(&led3);
+
         st_manual_exit(&st_d); // Leave manual toggling mode
         st_stop(&st_d); // Make sure stepper is stationary.
     }
@@ -707,7 +719,7 @@ void reset(void) {
         last_state = state;
         stepper_count = 0;
         stepper_state = 0;  // drive to X_END_L
-
+        led_on(&led1);
         // Move motors towards reset position.
         dcm_velocity(&dcm1, 40000, 0);  // Drive upwards at 40000.
 
@@ -717,6 +729,10 @@ void reset(void) {
         // led_on(&led2);
     }
 
+    dcm_velocity(&dcm1, 40000, 0);  // Drive upwards at 40000.
+    st_direction(&st_d, 0);  // Drive stepper left.
+    st_speed(&st_d, 1000);  // Drive stepper left.
+
     // Perform state tasks
     if ((st_d.stop_min->hit) && (dcm1.stop_max->hit)) {
         state = reset_from_origin;
@@ -725,6 +741,10 @@ void reset(void) {
     }
     
     if (state != last_state) {
+        led_off(&led1);
+        dcm_stop(&dcm1);
+        st_stop(&st_d);
+
         // led_off(&led2);  // if we are leaving the state, do clean up stuff
     }
 }
@@ -885,7 +905,7 @@ int16_t main(void) {
     IFS5bits.USB1IF = 0; //flag
     IEC5bits.USB1IE = 1; //enable
 
-    state = flying;
+    state = reset;
     last_state = (STATE_HANDLER_T)NULL;
 
     // dcm_velocity(&dcm1, 64000, 1);
@@ -894,7 +914,7 @@ int16_t main(void) {
     st_state(&st_d, 1);
     // servo_set(&servo0, 150, 0);
     while (1) {
-        ServiceUSB();
+        // ServiceUSB();
         // clock UART to prevent seizing
         // if (timer_flag(&timer4)) {
         // timer_lower(&timer4);
