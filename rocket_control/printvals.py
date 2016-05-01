@@ -23,7 +23,7 @@ def main():
 
 def rocket_info():
     info = comms.get_rocket_info()
-    print "Rocket Tilt {} | Rocket Speed {} | Throttle {} | Motor Speed {} | Motor Thrust {} | Stepper Speed {} | Tilt Angle {} | Tilt Direction {} | Rocket State {}".format(
+    print "Rocket Tilt {} | Rocket Speed {} | Throttle {} | Motor Speed {} | Motor Thrust {} | Stepper Speed {} | Tilt Angle {} | Tilt Direction {}".format(
         info["tilt"],
         info["speed"],
         info["throttle"],
@@ -32,7 +32,6 @@ def rocket_info():
         info["stepper_speed"],
         info["tilt_ang"],
         info["tilt_dir"],
-        info["rocket_state"],
     )
 
 
@@ -59,6 +58,24 @@ def debug_uart_status():
         info["RIDLE"],
         info["ADDEN"]
     )
+
+def debug_oc_status():
+    info = comms.debug_uart_status()
+    print "DC_OCM0 {} | DC_OCM1 {} | DC_OCM2 {} | DC_OCTSEL {} | DC_OCFLT {}".format(
+        info["DC_OCM0"],
+        info["DC_OCM1"],
+        info["DC_CM2"],
+        info["DC_OCTSEL"],
+        info["DC_OCFLT"],
+    )
+    print "ST_OCM0 {} | ST_OCM1 {} | ST_OCM2 {} | ST_OCTSEL {} | ST_OCFLT {}".format(
+        info["ST_OCM0"],
+        info["ST_OCM1"],
+        info["ST_CM2"],
+        info["ST_OCTSEL"],
+        info["ST_OCFLT"]
+    )
+
 
 def quad_info():
     info = comms.get_quad_info()
