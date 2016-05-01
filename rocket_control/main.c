@@ -42,6 +42,7 @@ uint8_t RC_TXBUF[1024], RC_RXBUF[1024];
 #define DEBUG_SERVO_SET_FREQ 61
 
 #define DEBUG_UART_STATUS 70
+#define DEBUG_OC_STATUS 72
 
 #define GET_LIMIT_SW_INFO 75
 
@@ -57,9 +58,6 @@ void win(void);
 void lose(void);
 
 STATE_HANDLER_T state, last_state;
-
-_OC dcm_oc = oc_7;
-_OC st_oc = oc_5;
 
 volatile uint16_t sw_state = 0;
 volatile uint16_t sw_state2 = 0;
@@ -471,24 +469,26 @@ void VendorRequests(void) {
         break;
 
     case DEBUG_OC_STATUS:
-        temp.b[0] = bitread(dcm_oc.OCxCON, 0);  // Receive buffer data available
-        temp.b[1] = bitread(dcm_oc.OCxCON, 1);  // Read overrun error bit
+        temp.b[0] = bitread(oc7.OCxCON1, 0);  // Receive buffer data available
+        temp.b[1] = bitread(oc7.OCxCON1, 1);  // Read overrun error bit
         BD[EP0IN].address[0] = temp.b[0];  // OCM0
         BD[EP0IN].address[1] = temp.b[1];  // OCM1
-        temp.b[0] = bitread(dcm_oc.OCxCON, 2);  // Read framing error bit
-        temp.b[1] = bitread(dcm_oc.OCxCON, 3);  // Read parity error bit
+        temp.b[0] = bitread(oc7.OCxCON1, 2);  // Read framing error bit
+        temp.b[1] = bitread(oc7.OCxCON1, 3);  // Read parity error bit
         BD[EP0IN].address[2] = temp.b[0];  // OCM2
         BD[EP0IN].address[3] = temp.b[1];  // OCTSEL
-        temp.b[0] = bitread(dcm_oc.OCxCON, 4);  // Read receiver idle bit
+        temp.b[0] = bitread(oc7.OCxCON1, 4);  // Read receiver idle bit
         BD[EP0IN].address[4] = temp.b[0];  // OCTFLT
-        temp.b[0] = bitread(st_oc.OCxCON, 0);  // Receive buffer data available
-        temp.b[1] = bitread(st_oc.OCxCON, 1);  // Read overrun error bit
-        BD[EP0IN].address[0] = temp.b[0];  // OCM0
-        BD[EP0IN].address[1] = temp.b[1];  // OCM1
-        temp.b[0] = bitread(st_oc.OCxCON, 2);  // Receive buffer data available
-        temp.b[1] = bitread(st_oc.OCxCON, 3);  // Read overrun error bit
-        BD[EP0IN].address[0] = temp.b[0];  // OCM2
-        BD[EP0IN].address[1] = temp.b[1];  // OCTFLT
+        temp.b[0] = bitread(oc5.OCxCON1, 0);  // Receive buffer data available
+        temp.b[1] = bitread(oc5.OCxCON1, 1);  // Read overrun error bit
+        BD[EP0IN].address[5] = temp.b[0];  // OCM0
+        BD[EP0IN].address[6] = temp.b[1];  // OCM1
+        temp.b[0] = bitread(oc5.OCxCON1, 2);  // Receive buffer data available
+        temp.b[1] = bitread(oc5.OCxCON1, 3);  // Read overrun error bit
+        BD[EP0IN].address[7] = temp.b[0];  // OCM2
+        BD[EP0IN].address[8] = temp.b[1];  // OCTFLT
+        temp.b[0] = bitread(oc5.OCxCON1, 4);  // Read receiver idle bit
+        BD[EP0IN].address[9] = temp.b[0];  // OCTFLT
 
         BD[EP0IN].bytecount = 10;    // set EP0 IN byte count to 4
         BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
@@ -638,83 +638,94 @@ void idle(void) {
     }
 }
 
+void reset_from_origin(void) {
+    /*
+    Moves rocket from origin position to reset position (top middle). Moves
+    on to idle state once reset position reached.
+    */
+    static bool dc_reset;
+    static bool stepper_reset;
+    static uint16_t reset_steps;
+
+    if (state != last_state) {
+        // State initialization
+        last_state = state;
+
+        // Set up stepper positioning system
+        st_direction(&st_d, 1);  // Drive stepper right
+        st_manual_init(&st_d);
+        stepper_reset = false;
+        float pulley_rad = 6.35;  // Radius of pulley in mm
+        float dist_const = (0.0279253 * pulley_rad)/(8);  // (1.6 degrees -> radians) * belt pulley radius (mm) / (8th steps)
+        uint16_t reset_dist = 275;  // Distance from origin to reset position (mm)
+        reset_steps = (uint16_t)(reset_dist/dist_const);  // No. steps from origin to reset position
+        // zero quad encoder
+
+        // Set up DC motor positioning system
+        dcm_velocity(&dcm1, 20000, 1);  // Drive motor downwards
+        dc_reset = false;
+    }
+
+    if (st_d.manual_count >= reset_steps ) {
+        // Stepper has reached reset location.
+        stepper_reset = true;
+    } else {
+        // Stepper has not reached reset location.
+        st_manual_toggle(&st_d);
+    }
+
+    if (!(dcm1.stop_max->hit)) {
+        // DC motor has cleared its top endstop.
+        dcm_stop(&dcm1);
+        dc_reset = true;
+    }
+
+    if (dc_reset && stepper_reset) {
+        // Both axes have reached their reset positions.
+        // Move to next state
+        // if()
+        state = idle;
+    }
+
+    if (state != last_state) {
+        // State exit
+        st_manual_exit(&st_d); // Leave manual toggling mode
+        st_stop(&st_d); // Make sure stepper is stationary.
+    }
+}
+
 void reset(void) {
+    /*
+    This state resets the XY gantry to its origin (top left).
+    Once the origin is reached, the FSM moves on to the `reset_from origin`
+    state.
+    */
     if (state != last_state) {  // if we are entering the state, do initialization stuff
         last_state = state;
         stepper_count = 0;
         stepper_state = 0;  // drive to X_END_L
+
+        // Move motors towards reset position.
+        dcm_velocity(&dcm1, 40000, 0);  // Drive upwards at 40000.
+
+        st_direction(&st_d, 0);  // Drive stepper left.
+        st_speed(&st_d, 1000);  // Drive stepper left.
+
         // led_on(&led2);
     }
 
     // Perform state tasks
-
-    // Drive stepper left until it hits deadstop
-    // *** Maybe switch this to STATE_HANDLER instead of switch-case?
-    if (timer_flag(&timer3)) {
-        timer_lower(&timer3);
-        switch (stepper_state) {
-        case 0:
-            if (!(st_d.stop_min->hit)) { // If X-axis min (left) endstop is not hit
-                st_direction(&st_d, 1);
-                st_speed(&st_d, 1000);
-            }
-            else {
-                stepper_state = 1;
-            }
-            break;
-        case 1:
-            if (stepper_count < stepper_reset_lim) {
-                st_direction(&st_d, 0);
-                // will need to figure out exact timing/step count for this...
-                // will have to happen after gantry is set up
-                st_speed(&st_d, 1000);
-            }
-            else {
-                stepper_state = 2;  // READY
-            }
-            break;
-        case 2:
-            st_speed(&st_d, 0);
-            break;
-        }
-        // Drive DC Motor up until top y-axis endstop hit
-        switch (motor_state) {
-        case 0:
-            if (!(dcm1.stop_max->hit)) {  // If DC motor max (top) endstop is not hit
-                dcm_velocity(&dcm1, 64000, 1);
-            }
-            else {
-                motor_state = 1;
-            }
-            break;
-        case 1:
-            if (dcm1.stop_max->hit) {
-                dcm_velocity(&dcm1, 20000, 0); // Move downwards slightly
-            }
-            else {
-                motor_state = 2;  // READY
-            }
-            break;
-        case 2:
-            dcm_speed(&dcm1, 0);
-            break;
-        }
-        if (stepper_state == 2 && motor_state == 2) {
-            // rocket zero'd, ready to fly
-            rocket_state == READY;
-        }
+    if ((st_d.stop_min->hit) && (dcm1.stop_max->hit)) {
+        state = reset_from_origin;
+    } else {
+        state = reset;
     }
-
-    // Check for state transitions
-
-    if (rocket_state == READY) {
-        state = flying;
-    }
-
+    
     if (state != last_state) {
         // led_off(&led2);  // if we are leaving the state, do clean up stuff
     }
 }
+
 
 void flying(void) {
     if (state != last_state) {  // if we are entering the state, do initialization stuff
@@ -819,18 +830,18 @@ void setup() {
     timer_setPeriod(&timer1, 1);  // Timer for LED operation/status blink
     timer_setPeriod(&timer2, 0.01);  // Timer for UART servicing
     timer_setPeriod(&timer3, 0.01);
-    timer_setPeriod(&timer4, 0.001);
+    // timer_setPeriod(&timer4, 0.001);
     // timer_setPeriod(&timer5, 0.01);  // Timer for clocking stepper motor
     timer_start(&timer1);
     timer_start(&timer2);
     timer_start(&timer3);
-    timer_start(&timer4);
+    // timer_start(&timer4);
     // timer_start(&timer5);
 
     // DC MOTOR + QUAD ENCODER
     dcm_init(&dcm1, &D[10], &D[11], 1e3, 0, &oc7, &es_y_bot, &es_y_top);
-    quad_init(&quad1, &D[8], &D[9]); // quad1 uses pins D8 & D9
-    quad_every(&quad1, &timer5, 0.0000875); // quad1 will use timer5 interrupts
+    // quad_init(&quad1, &D[8], &D[9]); // quad1 uses pins D8 & D9
+    // quad_every(&quad1, &timer5, 0.0000875); // quad1 will use timer5 interrupts
     timer_every(&timer4, .001, read_limitsw);  // Start timed endstop reading
     // General use debugging output pin
     // pin_digitalOut(&D[2]);

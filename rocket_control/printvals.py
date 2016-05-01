@@ -14,6 +14,7 @@ def main():
             # debug_uart_buffers()
             # debug_uart_status()
             rocket_info()
+            endstops()
         except Exception, e:
             print "Error occurred. {}".format(e)
             print "Retrying..."
@@ -84,6 +85,18 @@ def quad_info():
         info["overflow"],
     )
 
+def endstops():
+    """
+    Reads the system's endstops.
+    """
+    info = comms.get_limit_sw_info()
+    print("Y_BOT {} | Y_TOP {} | X_L {} | X_R {} | BARGE {} ".format(
+    info["Y_BOT"],
+    info["Y_TOP"],
+    info["X_L"],
+    info["X_R"],
+    info["BARGE"])
+    )
 
 if __name__ == '__main__':
     main()
