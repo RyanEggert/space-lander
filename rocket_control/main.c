@@ -833,12 +833,12 @@ void setup() {
     timer_setPeriod(&timer1, 1);  // Timer for LED operation/status blink
     timer_setPeriod(&timer2, 0.01);  // Timer for UART servicing
     timer_setPeriod(&timer3, 0.01);
-    timer_setPeriod(&timer4, 0.001);
+    // timer_setPeriod(&timer4, 0.001);
     // timer_setPeriod(&timer5, 0.01);  // Timer for clocking stepper motor
     timer_start(&timer1);
     timer_start(&timer2);
     timer_start(&timer3);
-    timer_start(&timer4);
+    // timer_start(&timer4);
     // timer_start(&timer5);
 
     // DC MOTOR + QUAD ENCODER
