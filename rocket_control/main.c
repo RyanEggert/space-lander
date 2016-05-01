@@ -66,6 +66,21 @@ volatile uint16_t sw_state4 = 0;
 
 volatile bool TOP_DSTOP, BOT_DSTOP, RT_DSTOP, LT_DSTOP;  // Not needed. Can remove if endstop test code from below also removed.
 
+// tilt vals (maxes out at 4096; may use smaller range)
+#define tilt_max 450
+#define tilt_min 120
+
+// maximum value for fuel (0xFFFF)
+#define fuel_max 65535
+
+// rocket fuel vals
+uint16_t fuel_val = 0xFFFF;
+uint16_t fuel_burn_rate = 1;
+uint16_t fuel_scale = (tilt_max - tilt_min) / fuel_max;
+uint16_t fuel_offset = tilt_min;
+uint16_t fuel_servo_set;
+
+
 // kinematic model vals
 float thrust_val = 5.0;
 float grav_val = 4.0;
@@ -92,14 +107,15 @@ float stepper_resist = 0.1;
 uint16_t motor_state;
 uint16_t motor_dir_track = 0;
 uint16_t motor_speed = 0;
-uint16_t motor_speed_limit = 0x7FFF;
-uint16_t motor_deadband = 7000;  // will find once gantry is built
+// uint16_t motor_speed_limit = 0x7FFF;
+#define motor_speed_limit_constant 32767;
+uint16_t motor_speed_limit = motor_speed_limit_constant;
+#define motor_deadband_constant 7000
+uint16_t motor_deadband = motor_deadband_constant;  // will find once gantry is built
+#define motor_speed_range 32767 - 7000
 uint16_t motor_thrust;
 
-// tilt vals (maxes out at 4096; may use smaller range)
-#define tilt_max 450
-#define tilt_min 120
-
+// tilt vars
 float tilt_zero = (tilt_max + tilt_min) / 2; //
 uint16_t tilt_ang;  //
 float tilt_scale = 120.0 / (tilt_max - tilt_min); // scale factor to convert digital tilt val [deg/div]
@@ -116,6 +132,10 @@ uint16_t search_ind, array_length;
 // state + high-level rocket vals
 uint16_t rocket_state = FLYING;
 uint16_t rocket_speed;
+uint16_t rocket_speed_servo_set;
+// uint16_t rocket_speed_range = motor_speed_limit_constant - motor_deadband_constant;
+uint16_t rocket_speed_scale = (tilt_max - tilt_min) / motor_speed_range;
+uint16_t rocket_speed_offset = tilt_min;
 float rocket_tilt;
 float rocket_tilt_last;
 uint16_t counter;
@@ -163,6 +183,14 @@ uint16_t linear_search(uint16_t target_val, float target_array[], uint16_t targe
 }
 
 uint16_t get_thrust_scale_ind() {
+    if (fuel_val > 0) {
+        // fuel still greater than 0; continue decrementing
+        fuel_val -= fuel_burn_rate;
+    }
+    else if (fuel_val == 0) {
+        // fuel exhausted; round lost
+        rocket_state = CRASHED;
+    }
     // translate tilt val into angle, get direction of tilt
     if (rocket_tilt != rocket_tilt_last && timer_flag(&timer3)) {
         timer_lower(&timer3);
@@ -193,6 +221,15 @@ uint16_t get_thrust_scale_ind() {
 }
 
 void rocket_model() {
+    // handle fuel value
+    if (fuel_val > 0) {
+        // fuel still greater than 0; continue decrementing
+        fuel_val -= fuel_burn_rate;
+    }
+    else if (fuel_val == 0) {
+        // fuel exhausted; round lost
+        rocket_state = CRASHED;
+    }
     // determines speed setpoint of rocket in x + y axes
     if (throttle) { // Thrust on
         led_on(&led1);
@@ -368,6 +405,11 @@ void rocket_model() {
         timer_lower(&timer2);
         // servo_set(&servo0, 350, 0);
         servo_set(&servo0, (uint16_t)(rocket_tilt), 0);
+        fuel_servo_set = (fuel_val*fuel_scale)+fuel_offset;
+        servo_set(&servo4, fuel_servo_set, 0);
+        // scale rocket_speed to servo drive value
+        rocket_speed_servo_set = (motor_speed*rocket_speed_scale)+rocket_speed_offset;
+        servo_set(&servo5, rocket_speed_servo_set, 0);
     }
 
     rocket_speed = motor_speed;
@@ -889,56 +931,8 @@ int16_t main(void) {
     while (1) {
         ServiceUSB();
         // clock UART to prevent seizing
-        // if (timer_flag(&timer4)) {
-        // timer_lower(&timer4);
         UARTrequests();
-        // }
         state();
         pin_toggle(&D[5]);
     }
-
-    // ***Test code for quad encoder***
-    // dcm_velocity(&dcm1, 64000, 1);
-    // while (1) {
-    //     if (timer_flag(&timer1)) {
-    //         // Blink green light to show normal operation.
-    //         timer_lower(&timer1);
-    //         led_toggle(&led2);
-    //     }
-
-    //     if (timer_flag(&timer2)) {
-    //         timer_lower(&timer2);
-    //         // UARTrequests();
-    //         if (quad1.counter > 5000)
-    //         {
-    //             led_on(&led1);
-    //         } else {
-    //             led_off(&led1);
-    //         }
-    //     }
-    // }
-
-
-    // *** test code for limit switches***
-    // if (TOP_DSTOP==1){
-    //     led_on(&led3);
-    // }
-    // else{
-    //     led_off(&led3);
-    // }
-
-    // if (BOT_DSTOP==1){
-    //     led_on(&led2);
-    // }
-    // else{
-    //     led_off(&led2);
-    // }
-
-    // if (LT_DSTOP==1){
-    //     led_on(&led1);
-    // }
-    // else{
-    //     led_off(&led1);
-    // }
-
 }
