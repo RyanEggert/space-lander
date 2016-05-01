@@ -240,7 +240,7 @@ void read_limitsw(_TIMER *timer) { //debounce the things
 }
 
 void setup() {
-    timer_setPeriod(&timer1, 0.001);  // Timer for LED operation/status blink
+    timer_setPeriod(&timer1, 1);  // Timer for LED operation/status blink
     timer_setPeriod(&timer2, 0.01);  // Timer for UART servicing
     timer_setPeriod(&timer3, 0.01);
     timer_setPeriod(&timer4, 0.001);
@@ -299,24 +299,36 @@ int16_t main(void) {
     // dcm_speed(&dcm1, 32000);
     // void oc_pwm(_OC *self, _PIN *pin, _TIMER *timer, float freq, uint16_t duty) {
     uint16_t frq = 5000;
-    oc_pwm(&oc5, &D[10], NULL, 10000, pwm_duty_pct_to_int(.50));
-    oc_pwm(&oc6, &D[11], NULL, 15432, pwm_duty_pct_to_int(.50));
+    oc_pwm(&oc5, &D[0], NULL, 500, pwm_duty_pct_to_int(.50));
+    pin_digitalOut(&D[1]);
+    pin_digitalOut(&D[2]);
+    pin_digitalOut(&D[3]);
 
+    pin_set(&D[2]);
+    pin_clear(&D[3]);
+
+    oc_pwm(&oc6, &D[11], NULL, 15432, pwm_duty_pct_to_int(.50));
+    uint16_t counter_stepper = 0;
     while (1) {
         // ServiceUSB();
         pin_toggle(&D[5]);
         if (timer_flag(&timer1)) {
             timer_lower(&timer1);
             led_toggle(&led2);
-            if (stsp == .10) {
-                stsp = .20;
-                frq = 32432;
-            } else {
-                stsp = .10;
-                frq = 5021;
+            counter_stepper += 1;
+            if (counter_stepper > 3) {
+                pin_toggle(&D[1]);
+                counter_stepper = 0;
             }
-            oc_free(&oc6);
-            oc_pwm(&oc6, &D[11], NULL, frq, pwm_duty_pct_to_int(stsp));
+            // if (stsp == .10) {
+            //     stsp = .20;
+            //     frq = 32432;
+            // } else {
+            //     stsp = .10;
+            //     frq = 5021;
+            // }
+            // oc_free(&oc6);
+            // oc_pwm(&oc6, &D[11], NULL, frq, pwm_duty_pct_to_int(stsp));
             // st_speed(&st_d, stsp);
         }
     }
