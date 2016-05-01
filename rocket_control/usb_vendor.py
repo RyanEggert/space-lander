@@ -13,6 +13,7 @@ class PIC_USB(object):
         self.DEBUG_SERVO_SET_POS = 60
         self.DEBUG_SERVO_SET_FREQ = 61
         self.DEBUG_UART_STATUS = 70
+        self.DEBUG_OC_STATUS = 72
         self.GET_LIMIT_SW_INFO = 75
 
         self.vendor_id = 0x6666
@@ -120,11 +121,12 @@ class PIC_USB(object):
         Condition Status. Checks DC motor OC and stepper OC.
         """
         try:
-            ret = self.dev.ctrl_transfer(0xC0, self.DEBUG_UART_STATUS, 0, 0, 10)
+            ret = self.dev.ctrl_transfer(0xC0, self.DEBUG_OC_STATUS, 0, 0, 10)
         except usb.core.USBError:
             print "Could not send DEBUG_OC_STATUS vendor request."
         else:
             out = {}
+            print ret
             out["DC_OCM0"] = self.parse8(ret, 0)
             out["DC_DCM1"] = self.parse8(ret, 1)
             out["DC_OCM2"] = self.parse8(ret, 2)
