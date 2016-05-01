@@ -910,7 +910,6 @@ int16_t main(void) {
 
     // dcm_velocity(&dcm1, 64000, 1);
     pin_digitalOut(&D[5]);
-
     st_state(&st_d, 1);
     // servo_set(&servo0, 150, 0);
     while (1) {
