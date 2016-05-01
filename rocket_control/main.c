@@ -703,17 +703,17 @@ void flying(void) {
 
     //check to see if barge switch is pressed
     if (es_x_l.hit | es_x_r.hit | es_y_top.hit | es_y_bot.hit){
-        rocket_state == CRASHED;
+        rocket_state = CRASHED;
         state = lose;
     }
 
     if (es_landing.hit == 1){
         if (abs(rocket_speed) <= 10 && abs(tilt_test) <= 30){
-        rocket_state == LANDED;
+        rocket_state = LANDED;
         state = win;
         }
         else{
-            rocket_state == CRASHED;
+            rocket_state = CRASHED;
             state = lose;
         }
     }
@@ -722,8 +722,8 @@ void flying(void) {
         // turn off tilt stick led before exiting state
         led_off(&led3);
         //send the master the new state
-        // sprintf(rocketstuff, "%01x", rocket_state);
-        // uart_puts(&uart1, rocketstuff);
+        sprintf(rocketstuff, "%01x", rocket_state);
+        uart_puts(&uart1, rocketstuff);
     }
 }
 

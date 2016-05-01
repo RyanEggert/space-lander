@@ -58,7 +58,7 @@ class PIC_USB(object):
         and receive ("rx") software UART buffers.
         """
         try:
-            ret = self.dev.ctrl_transfer(0xC0, self.DEBUG_UART_BUFFERS, 0, 0, 12)
+            ret = self.dev.ctrl_transfer(0xC0, self.DEBUG_UART_BUFFERS, 0, 0, 14)
         except usb.core.USBError:
             print "Could not send DEBUG_UART_BUFFERS vendor request."
         else:
@@ -72,6 +72,8 @@ class PIC_USB(object):
             rxbuf["head"] = self.parse16(ret, 6)
             rxbuf["tail"] = self.parse16(ret, 8)
             rxbuf["count"] = self.parse16(ret, 10)
+
+            out["rocket_state"] = self.parse16(ret,12)
             out["tx"] = txbuf
             out["rx"] = rxbuf
             return out

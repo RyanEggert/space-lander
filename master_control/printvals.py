@@ -29,13 +29,14 @@ def debug_uart_buffers():
     info = comms.debug_uart_buffers()
     rx = info["rx"]
     tx = info["tx"]
-    print "TX_head {} | TX_tail {} | TX_count {} || RX_head {} | RX_tail {} | RX_count {}".format(
+    print "TX_head {} | TX_tail {} | TX_count {} || RX_head {} | RX_tail {} | RX_count {} | Rocket State {}".format(
         tx["head"],
         tx["tail"],
         tx["count"],
         rx["head"],
         rx["tail"],
         rx["count"],
+        info["rocket_state"]
     )
 
 if __name__ == '__main__':

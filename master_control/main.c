@@ -99,7 +99,10 @@ void VendorRequests(void) {
         temp.w = uart1.RXbuffer.count;
         BD[EP0IN].address[10] = temp.b[0];
         BD[EP0IN].address[11] = temp.b[1];
-        BD[EP0IN].bytecount = 12;    // set EP0 IN byte count to 4
+        temp.w = rocket_state;
+        BD[EP0IN].address[12] = temp.b[0];
+        BD[EP0IN].address[13] = temp.b[1];
+        BD[EP0IN].bytecount = 14;    // set EP0 IN byte count to 4
         BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
         break;
 
@@ -352,11 +355,12 @@ int16_t main(void) {
         if (timer_flag(&timer3)){
             timer_lower(&timer3);
             UART_ctl(SEND_ROCKET_COMMANDS, val);
-            // if (uart1.RXbuffer.count > 10){
-            //     uart_gets(&uart1, rec_msg, 32);
-            //     uint32_t decoded_msg = (uint32_t)strtol(rec_msg, NULL, 16);
-            //     rocket_state = decoded_msg;
-            // }
+            // UART_ctl(GET_ROCKET_VALS,0);
+            if (uart1.RXbuffer.count > 15){
+                uart_gets(&uart1, rec_msg, 32);
+                uint32_t decoded_msg = (uint32_t)strtol(rec_msg, NULL, 16);
+                rocket_state = decoded_msg;
+            }
         }
         state();
     }
