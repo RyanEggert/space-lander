@@ -82,7 +82,7 @@ void st_state(_ST *self, uint8_t state) {
 void st_speed(_ST *self, float speed) {
     /*
     speed = 1.6 deg/step / (360 deg/rev) * freq step/sec
-    = 0.004*freq rev/sec
+    = (0.004/8)*freq rev/sec
     */
 
     if ((self->stop_min->hit == true) && (self->dir == 0)) {
@@ -149,6 +149,36 @@ void st_direction(_ST *self, uint8_t dir) {
 
 void st_stop(_ST *self) {
     st_speed(self, 0);
+}
+
+void st_manual_init(_ST *self) {
+    oc_free(self->oc);
+    pin_digitalOut(self->pins[0]);
+    pin_clear(self->pins[0]);
+    self->manual_count = 0;
+    self->_manual_toggle_st = 0;
+    self->_pseudo_freq_count = 0;
+}
+
+void st_manual_toggle(_ST *self){
+    if(self->_pseudo_freq_count == self->manual_pseudo_freq) {
+        pin_toggle(self->pins[0]);
+        self->_manual_toggle_st = (self->_manual_toggle_st + 1) % 2;
+        self->_pseudo_freq_count = 0;
+    } else {
+        self->_pseudo_freq_count += 1;
+    }
+    
+    // Increment step counter if rising edge
+    if(self->_manual_toggle_st == 1) {
+        // Rising edge
+        self->manual_count += 1;
+    } 
+}
+
+void st_manual_exit(_ST *self) {
+    oc_free(self->oc);
+    oc_pwm(self->oc, self->pins[0], NULL, self->speed, 0);
 }
 
 void st_check_stops(_ST *self) {

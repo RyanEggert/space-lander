@@ -641,83 +641,97 @@ void idle(void) {
     }
 }
 
+void reset_from_origin(void) {
+    /*
+    Moves rocket from origin position to reset position (top middle). Moves
+    on to idle state once reset position reached.
+    */
+    static bool dc_reset;
+    static bool stepper_reset;
+    static uint16_t reset_steps;
+
+    if (state != last_state) {
+        // State initialization
+        last_state = state;
+
+        // Set up stepper positioning system
+        st_direction(&st_d, 1);  // Drive stepper right
+        st_manual_init(&st_d);
+        stepper_reset = false;
+        float pulley_rad = 6.35;  // Radius of pulley in mm
+        float dist_const = 0.0279253 * pulley_rad;  // (1.6 degrees -> radians) * belt pulley radius (mm)
+        uint16_t reset_dist = 275;  // Distance from origin to reset position (mm)
+        reset_steps = (uint16_t)(reset_dist/dist_const);  // No. steps from origin to reset position
+        // zero quad encoder
+
+        // Set up DC motor positioning system
+        dcm_velocity(&dcm1, 20000, 1);  // Drive motor downwards
+        dc_reset = false;
+    }
+
+    
+
+    if (st_d.manual_count >= reset_steps ) {
+        // Stepper has reached reset location.
+        stepper_reset = true;
+    } else {
+        // Stepper has not reached reset location.
+        st_manual_toggle(&st_d);
+    }
+
+    if (!(dcm1.stop_max->hit)) {
+        // DC motor has cleared its top endstop.
+        dcm_stop(&dcm1);
+        dc_reset = true;
+    }
+
+    if (dc_reset && stepper_reset) {
+        // Both axes have reached their reset positions.
+        // Move to next state
+        // if()
+        state = idle;
+    }
+
+    if (state != last_state) {
+        // State exit
+        st_manual_exit(&st_d); // Leave manual toggling mode
+        st_stop(&st_d); // Make sure stepper is stationary.
+    }
+}
+
 void reset(void) {
+    /*
+    This state resets the XY gantry to its origin (top left).
+    Once the origin is reached, the FSM moves on to the `reset_from origin`
+    state.
+    */
     if (state != last_state) {  // if we are entering the state, do initialization stuff
         last_state = state;
         stepper_count = 0;
         stepper_state = 0;  // drive to X_END_L
+
+        // Move motors towards reset position.
+        dcm_velocity(&dcm1, 40000, 0);  // Drive upwards at 40000.
+
+        st_direction(&st_d, 0);  // Drive stepper left.
+        st_speed(&st_d, 1000);  // Drive stepper left.
+
         // led_on(&led2);
     }
 
     // Perform state tasks
-
-    // Drive stepper left until it hits deadstop
-    // *** Maybe switch this to STATE_HANDLER instead of switch-case?
-    if (timer_flag(&timer3)) {
-        timer_lower(&timer3);
-        switch (stepper_state) {
-        case 0:
-            if (!(st_d.stop_min->hit)) { // If X-axis min (left) endstop is not hit
-                st_direction(&st_d, 1);
-                st_speed(&st_d, 1000);
-            }
-            else {
-                stepper_state = 1;
-            }
-            break;
-        case 1:
-            if (stepper_count < stepper_reset_lim) {
-                st_direction(&st_d, 0);
-                // will need to figure out exact timing/step count for this...
-                // will have to happen after gantry is set up
-                st_speed(&st_d, 1000);
-            }
-            else {
-                stepper_state = 2;  // READY
-            }
-            break;
-        case 2:
-            st_speed(&st_d, 0);
-            break;
-        }
-        // Drive DC Motor up until top y-axis endstop hit
-        switch (motor_state) {
-        case 0:
-            if (!(dcm1.stop_max->hit)) {  // If DC motor max (top) endstop is not hit
-                dcm_velocity(&dcm1, 64000, 1);
-            }
-            else {
-                motor_state = 1;
-            }
-            break;
-        case 1:
-            if (dcm1.stop_max->hit) {
-                dcm_velocity(&dcm1, 20000, 0); // Move downwards slightly
-            }
-            else {
-                motor_state = 2;  // READY
-            }
-            break;
-        case 2:
-            dcm_speed(&dcm1, 0);
-            break;
-        }
-        if (stepper_state == 2 && motor_state == 2) {
-            // rocket zero'd, ready to fly
-            rocket_state == READY;
-        }
+    if ((st_d.stop_min->hit) && (dcm1.stop_max->hit)) {
+        state = reset_from_origin;
+    } else {
+        state = reset;
     }
-
-    // Check for state transitions
-
-    if (rocket_state == READY) {
-        state = flying;
-    }
-
+    
     if (state != last_state) {
         // led_off(&led2);  // if we are leaving the state, do clean up stuff
     }
 }
+
+
 
 void flying(void) {
     if (state != last_state) {  // if we are entering the state, do initialization stuff
