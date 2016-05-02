@@ -155,9 +155,17 @@ void UART_send(uint8_t value) {
 
 uint32_t UART_receive() {
     char *ptr;
+    uint32_t decoded_msg;
     uart_gets(&uart1, rx_msg, 64);
     printf("REC: %s\n\r", rx_msg);
-    uint32_t decoded_msg = strtol(rx_msg, &ptr, 16);
+    if (rx_msg[0] == '\0') {
+        led_on(&led2);
+        decoded_msg = -1;
+    } else {
+        // printf("FIRST %s\n\r", rx_msg[0..10]);
+        led_off(&led2);
+        decoded_msg = strtol(rx_msg, &ptr, 16);
+    }
     return decoded_msg;
 }
 
@@ -177,7 +185,7 @@ void setup_uart() {
 void setup() {
     timer_setPeriod(&timer1, 1);  // Timer for LED operation/status blink
     timer_setPeriod(&timer2, 0.5);
-    timer_setPeriod(&timer3, 0.5);
+    timer_setPeriod(&timer3, 0.1);
     timer_start(&timer1);
     timer_start(&timer2);
     timer_start(&timer3);
@@ -211,7 +219,7 @@ int16_t main(void) {
     pin_digitalOut(&D[5]);
     pin_digitalOut(&D[0]); // RX LED
     pin_digitalOut(&D[1]); // TX LED
-
+    uint8_t val = 0;
     while (1) {
         if (timer_flag(&timer1)){
             timer_lower(&timer1);
@@ -220,15 +228,23 @@ int16_t main(void) {
             // pin_toggle(&D[0]);
         }
 
-        // if (timer_flag(&timer2)){  // UART Rx timer
-        //     timer_lower(&timer2);
-        //     uint32_t recd;
-        //     recd = UART_receive();
-        // }
+        if (timer_flag(&timer2)){  // UART Rx timer
+            timer_lower(&timer2);
+            uint32_t recd;
+            recd = UART_receive();
+            pin_toggle(&D[0]);
+            printf("RECD %lu\n\r", recd);
+            if (recd == 5) {
+                led_on(&led3);
+            } else {
+                led_off(&led3);
+            }
+        }
 
         if (timer_flag(&timer3)){  // UART Tx timer
             timer_lower(&timer3);
-            UART_send(10);
+            val = (val + 1) % 11;
+            UART_send(val);
             pin_toggle(&D[1]);
         }
     }

@@ -319,7 +319,7 @@ uint32_t UART_receive() {
 void setup() {
     timer_setPeriod(&timer1, 1);  // Timer for LED operation/status blink
     timer_setPeriod(&timer2, 0.1);  // Timer for UART servicing
-    timer_setPeriod(&timer3, 0.1);
+    timer_setPeriod(&timer3, 0.5);
     // timer_setPeriod(&timer4, 0.001);
     // timer_setPeriod(&timer5, 0.01);  // Timer for clocking stepper motor
     timer_start(&timer1);
@@ -373,7 +373,7 @@ int16_t main(void) {
     pin_digitalOut(&D[5]);
     pin_digitalOut(&D[0]);
     pin_digitalOut(&D[1]);
-
+    uint8_t val = 0;
 
     st_state(&st_d, 1);
     while (1) {
@@ -398,11 +398,12 @@ int16_t main(void) {
             }
         }
 
-        // if (timer_flag(&timer3)){  // UART Tx timer
-        //     timer_lower(&timer3);
-        //     UART_send(10);
-               // pin_toggle(&D[1]);
-        // }
+        if (timer_flag(&timer3)){  // UART Tx timer
+            timer_lower(&timer3);
+            val = (val + 1) % 11;
+            UART_send(val);
+            pin_toggle(&D[1]);
+        }
         pin_toggle(&D[5]);
     }
 }
