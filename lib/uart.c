@@ -79,7 +79,10 @@ void __serviceTxInterrupt(_UART *self) {
 uint8_t __getc_buffer(_UART *self) {
     uint8_t ch;
 
-    while (self->RXbuffer.count==0) {}  // Wait until RX buffer is not empty
+    if (self->RXbuffer.count==0) {
+        return 15;
+    }
+    // while (self->RXbuffer.count==0) {}  // Wait until RX buffer is not empty
     disable_interrupts();
     ch = self->RXbuffer.data[self->RXbuffer.head];
     self->RXbuffer.head = (self->RXbuffer.head+1)%(self->RXbuffer.length);

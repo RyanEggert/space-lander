@@ -207,6 +207,8 @@ void flying(void) {
     if (state != last_state) {  // if we are entering the state, do initialization stuff
         last_state = state;
         rocket_state = FLYING;
+        pin_clear(&D[8]);
+        pin_set(&D[9]);
     }
 
     // Perform state tasks
@@ -256,6 +258,8 @@ void lose(void) {
         last_state = state;
         timer_start(&timer1);
         counter = 0;
+        pin_set(&D[8]);
+        pin_clear(&D[9]);
     }
 
     if (timer_flag(&timer1)) {
@@ -279,6 +283,8 @@ void win(void) {
         last_state = state;
         timer_start(&timer1);
         counter = 0;
+        pin_set(&D[8]);
+        pin_set(&D[9]);
     }
 
     if (timer_flag(&timer1)) {
@@ -335,7 +341,7 @@ int16_t main(void) {
     IFS5bits.USB1IF = 0; //flag
     IEC5bits.USB1IE = 1; //enable
     // normallly start in idle; using flying for now
-    state = reset;
+    state = flying;
     last_state = (STATE_HANDLER_T)NULL;
     led_off(&led1);
 
@@ -346,6 +352,13 @@ int16_t main(void) {
         if (timer_flag(&timer3)){
             timer_lower(&timer3);
             UART_ctl(SEND_ROCKET_COMMANDS, val);
+            // if (uart1.RXbuffer.count > 15){
+                uart_gets(&uart1, rec_msg, 32);
+                if (rec_msg[0]!='\0') {
+                    uint32_t decoded_msg = (uint32_t)strtol(rec_msg, NULL, 16);
+                    rocket_state = decoded_msg;
+                }
+            // }
         }
         state();
     }

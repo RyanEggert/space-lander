@@ -22,7 +22,8 @@ uint8_t RC_TXBUF[1024], RC_RXBUF[1024];
 // Handle flying state
 #define LANDED 0
 #define CRASHED 1
-//flying is already defined as 2
+//FLYING is already defined as 2
+#define FLYING 2
 #define READY 3 //rocket has been zeroed
 #define TESTING 4
 
@@ -519,7 +520,10 @@ void VendorRequests(void) {
         temp.w = (int16_t)(stepper_speed);
         BD[EP0IN].address[14] = temp.b[0];
         BD[EP0IN].address[15] = temp.b[1];
-        BD[EP0IN].bytecount = 16;    // set EP0 IN byte count to 14
+        temp.w = rocket_state;
+        BD[EP0IN].address[16] = temp.b[0];
+        BD[EP0IN].address[17] = temp.b[1];
+        BD[EP0IN].bytecount = 18;    // set EP0 IN byte count to 14
         BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
         break;
 
@@ -595,9 +599,15 @@ void VendorRequestsOut(void) {
 void UARTrequests() {
     // received uart message length = 8
     uart_gets(&uart1, rec_msg, 8);
-    uint32_t decoded_msg = (uint32_t)strtol(rec_msg, NULL, 16);
-    cmd = decoded_msg & 0x0f;
-    value = (decoded_msg & 0xf0) >> 4;
+    if (rec_msg[0]!='\0') {
+        uint32_t decoded_msg = (uint32_t)strtol(rec_msg, NULL, 16);
+        cmd = decoded_msg & 0x0f;
+        value = (decoded_msg & 0xf0) >> 4;
+    }
+    else {
+        // dummy command, pass
+        cmd = 99;
+    }
     switch (cmd) {
     case GET_ROCKET_VALS:
         //speed, orientation
@@ -610,6 +620,8 @@ void UARTrequests() {
     case SEND_ROCKET_COMMANDS:
         throttle = value & 0b01;
         tilt = (value & 0b110) >> 1;
+        break;
+    case 99:
         break;
     }
 }
@@ -746,6 +758,7 @@ void reset(void) {
 
 void flying(void) {
     if (state != last_state) {  // if we are entering the state, do initialization stuff
+        rocket_state = FLYING;
         last_state = state;
         motor_speed = motor_deadband;
         rocket_tilt = tilt_zero;
@@ -758,21 +771,49 @@ void flying(void) {
 
     // if (timer_flag(&timer3)) {
     //     timer_lower(&timer3);
+    if (rocket_state == FLYING) {
         rocket_model();
+    }
+    else {
+        if (timer_flag(&timer5)){
+            timer_lower(&timer5);
+            led_toggle(&led2);
+            sprintf(rocketstuff, "%02x", rocket_state);
+            uart_puts(&uart1, rocketstuff);
+        }
+    }
     // }
     // *** use to determine stepper deadband over vendor requests ***
     // stepper_test();
 
     // Check for state transitions
 
-    // crash condition:
-    if (rocket_state == CRASHED) {
-        state = lose;
+    //check to see if barge switch is pressed
+    if (es_x_l.hit | es_x_r.hit | es_y_top.hit | es_y_bot.hit){
+        rocket_state = CRASHED;
+        // state = lose;
     }
-    // landing condition
-    if (rocket_state == LANDED) {
-        state = win;
+
+    if (es_landing.hit == 1){
+        // led_on(&led2);
+        if (abs(rocket_speed) <= 10 && abs(tilt_ang) <= 30){
+        rocket_state = LANDED;
+        // state = win;
+        }
+        else{
+            rocket_state = CRASHED;
+            // state = lose;
+        }
     }
+
+    // // crash condition:
+    // if (rocket_state == CRASHED) {
+    //     state = lose;
+    // }
+    // // landing condition
+    // if (rocket_state == LANDED) {
+    //     state = win;
+    // }
 
     if (state != last_state) {  // if we are leaving the state, do clean up stuff
         // turn off tilt stick led before exiting state
@@ -848,12 +889,12 @@ void setup() {
     timer_setPeriod(&timer2, 0.01);  // Timer for UART servicing
     timer_setPeriod(&timer3, 0.01);
     // timer_setPeriod(&timer4, 0.001);
-    // timer_setPeriod(&timer5, 0.01);  // Timer for clocking stepper motor
+    timer_setPeriod(&timer5, 0.1);  // Timer for clocking stepper motor
     timer_start(&timer1);
     timer_start(&timer2);
     timer_start(&timer3);
     // timer_start(&timer4);
-    // timer_start(&timer5);
+    timer_start(&timer5);
 
     // DC MOTOR + QUAD ENCODER
     dcm_init(&dcm1, &D[10], &D[11], 1e3, 0, &oc7, &es_y_bot, &es_y_top);
