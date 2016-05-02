@@ -259,14 +259,24 @@ void flying(void) {
         throttle = 0;
         led_off(&led1);
     }
-
-    // Check for state transitions
-    if (rocket_state == CRASHED) {
-        state = lose;
-    }
-
-    if (rocket_state == LANDED){
+    // Call uart_send(). We must inform the master PIC of the commanded throttle and tilt.
+    uart_send((tilt << 1) + throttle);  // Concatenate throttle+tilt into value
+    
+    // Call uart_receive(). We are waiting for one of the following messages:
+    //    * The rocket has crashed
+    //    * The rocket has landed
+    uint32_t landing_msg;
+    landing_msg = uart_receive();
+    if (landing_msg == -1) {
+        // No UART data available
+        state = flying;
+    } else if (landing_msg == 911) {  // 911 indicates a crashed rocket.
         state = win;
+    } else if (landing_msg == 10000) { // 10000 indicates a landed rocket.
+        state = lose;
+    } else {
+        // Some other message receieved.
+        // DANGER, why are we here?
     }
 
     if (state != last_state) {  // if we are leaving the state, do clean up stuff
@@ -385,8 +395,6 @@ int16_t main(void) {
 
     pin_digitalOut(&D[5]);  // Heartbeat pin
     while (1) {
-        // concatenate throttle+tilt into value
-        // uint16_t val = (tilt << 1) + throttle;
         state();
         pin_toggle(&D[5]);  // Heartbeat
     }

@@ -886,26 +886,58 @@ void flying(void) {
         stepper_speed = 0;
     }
 
-    // Perform state tasks
+    // Call uart_receive(). We are waiting for one of the following messages:
+    //    * Status message with tilt and throttle commands
+    uint32_t command_msg;
+    command_msg = uart_receive();
+    if (command_msg == -1) {
+        // No UART data available
+    } else if (command_msg <= 7) {  // If we have received a valid command_msg,
+        // then update throttle and tilt accordingly.
+        throttle = command_msg & 0b01;
+        tilt = (command_msg & 0b110) >> 1;
+    } else {
+        // Some other message receieved.
+        // DANGER, why are we here?
+    }
 
     // *** rocket model handles thrust scaling for x+y axes, drives DCM, stepper, servo ***
 
     // if (timer_flag(&timer3)) {
     //     timer_lower(&timer3);
-        rocket_model();
+    rocket_model();
     // }
     // *** use to determine stepper deadband over vendor requests ***
     // stepper_test();
 
-    // Check for state transitions
+    // Check for landings, intentional and non-intentional
+    if (es_x_l.hit | es_x_r.hit | es_y_top.hit | es_y_bot.hit) {
+        // If gantry endstops pressed, rocket crashes, player loses.
+        rocket_state = CRASHED;
+        // state = lose;
+    }
+
+    if (es_landing.hit == 1){
+        // Rocket has landed on the barge.
+        // led_on(&led2);
+        if (abs(rocket_speed) <= 10 && abs(tilt_ang) <= 30) {
+            // If rocket has landed within a range of feasible parameter values,
+            rocket_state = LANDED;  // then the landing is successful.
+        } else {
+            rocket_state = CRASHED;  // else, the rocket crashes.
+        }
+    }
+
 
     // crash condition:
     if (rocket_state == CRASHED) {
         state = lose;
+        uart_send(911);  // Notify master that rocket has crashed.
     }
     // landing condition
     if (rocket_state == LANDED) {
         state = win;
+        uart_send(10000);  // Notify master that rocket has landed.
     }
 
     if (state != last_state) {  // if we are leaving the state, do clean up stuff
