@@ -48,6 +48,42 @@ uint16_t counter, coin;
 uint16_t rocket_speed, rocket_tilt;
 uint16_t throttle, tilt;
 
+void uart_sendstr(uint8_t *str) {
+    /*
+    Sends a string on uart1. UNTESTED
+    */
+    // printf("SENDING: %s\n\r", tx_msg);
+    uart_puts(&uart1, str);
+}
+
+void uart_send(uint16_t value) {
+    /*
+    Formats and sends a value on uart1. Formats "value" as a hexadecimal string.
+    */
+    sprintf(tx_msg, "%x\r", value);
+    // printf("SENDING: %s\n\r", tx_msg);
+    uart_puts(&uart1, tx_msg);
+}
+
+uint32_t uart_receive() {
+    /*
+    Non-blockingly receieves a string on uart2. Returns -1 if no data available
+    on uart2. Else returns the string received on uart2 parsed as a hexadecimal
+    uint32_t.
+    */
+    char *ptr;
+    uint32_t decoded_msg;
+    uart_gets(&uart2, rx_msg, 64);
+    // printf("REC: %s\n\r", rx_msg);
+    if (rx_msg[0] == '\0') {  // If first char is null, then no data available
+        decoded_msg = -1;  // Return -1
+    } else {
+        decoded_msg = strtol(rx_msg, &ptr, 16);  // Else return hex parsing
+    }
+    return decoded_msg;
+}
+
+
 void VendorRequests(void) {
     WORD temp;
     switch (USB_setup.bRequest) {
@@ -140,18 +176,20 @@ void idle(void) {
     if (state != last_state) {  // if we are entering the state, do initialization stuff
         last_state = state;
         trials = 0;
-        led_on(&led1);
     }
 
-    coin = pin_read(&D[2]); //digital read of the coin acceptor.
+    coin = !pin_read(&D[2]);  // digital read of the coin acceptor.
 
     //Note: might be a good idea to add input conditioner later on.
 
-    // Perform state tasks
 
     // Check for state transitions
-    if (coin == 0) {
+    if (coin) {
+        // A coin has been detected.
         state = reset;
+        // Call uart_send(). If a coin has been detected, we must inform the 
+        // rocket PIC.
+        uart_send(121);  // Send 121 to indicate coin inserted.
     }
 
     if (state != last_state) {
@@ -162,23 +200,30 @@ void idle(void) {
 void reset(void) {
     if (state != last_state) {  // if we are entering the state, do initialization stuff
         last_state = state;
-        led_on(&led2);
     }
-
-    // Perform state tasks
-
+    uint32_t reset_msg;
+    // Call uart_send(). We must inform the rocket PIC how many trials remain
+    // master PIC.
+    uart_send((trials << 8) | 0xaa);  // Send xx10101010, where xx is no. of trials.
     // Check for state transitions
 
-    if (trials == 3){
+    // Call uart_receive(). We are waiting for one of the following messages:
+    //    * The rocket PIC has finished resetting to game-playable state
+    //    * The rocket PIC has finished resetting to game-over state.
+    reset_msg = uart_receive();
+    if (reset_msg == -1) {
+        // No UART data available
         state = idle;
-    }
-
-    if (rocket_state == READY) {
+    } else if (reset_msg == 4313) {  // Reset to game start complete
         state = flying;
+    } else if (reset_msg == 4315) { // Reset to game over complete
+        state = idle;
+    } else {
+        // Some other message receieved.
+        // DANGER, why are we here?
     }
 
     if (state != last_state) {
-        led_off(&led2);  // if we are leaving the state, do clean up stuff
     }
 }
 
@@ -276,41 +321,6 @@ void win(void) {
     }
 }
 
-void UART_sendstr(uint8_t *str) {
-    /*
-    Sends a string on uart1. UNTESTED
-    */
-    // printf("SENDING: %s\n\r", tx_msg);
-    uart_puts(&uart1, str);
-}
-
-void UART_send(uint16_t value) {
-    /*
-    Formats and sends a value on uart1. Formats "value" as a hexadecimal string.
-    */
-    sprintf(tx_msg, "%x\r", value);
-    // printf("SENDING: %s\n\r", tx_msg);
-    uart_puts(&uart1, tx_msg);
-}
-
-uint32_t UART_receive() {
-    /*
-    Non-blockingly receieves a string on uart2. Returns -1 if no data available
-    on uart2. Else returns the string received on uart2 parsed as a hexadecimal
-    uint32_t.
-    */
-    char *ptr;
-    uint32_t decoded_msg;
-    uart_gets(&uart2, rx_msg, 64);
-    // printf("REC: %s\n\r", rx_msg);
-    if (rx_msg[0] == '\0') {  // If first char is null, then no data available
-        decoded_msg = -1;  // Return -1
-    } else {
-        decoded_msg = strtol(rx_msg, &ptr, 16);  // Else return hex parsing
-    }
-    return decoded_msg;
-}
-
 void setup_uart() {
     /*
     Configures UART for communications.
@@ -370,7 +380,7 @@ int16_t main(void) {
     IEC5bits.USB1IE = 1; //enable
     
     // Initialize State Machine
-    state = reset;
+    state = idle;
     last_state = (STATE_HANDLER_T)NULL;
 
     pin_digitalOut(&D[5]);  // Heartbeat pin

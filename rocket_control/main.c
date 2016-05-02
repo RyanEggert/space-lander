@@ -56,6 +56,7 @@ typedef void (*STATE_HANDLER_T)(void);
 void idle(void);
 void reset(void);
 void reset_from_origin(void);
+void reset_to_game_over(void);
 void flying(void);
 void win(void);
 void lose(void);
@@ -127,6 +128,41 @@ uint16_t counter;
 uint8_t throttle, tilt; //commands
 uint8_t rocketstuff[64], rec_msg[64];
 uint8_t cmd, value;
+
+void uart_sendstr(uint8_t *str) {
+    /*
+    Sends a string on uart2. UNTESTED
+    */
+    // printf("SENDING: %s\n\r", tx_msg);
+    uart_puts(&uart2, str);
+}
+
+void uart_send(uint16_t value) {
+    /*
+    Formats and sends a value on uart2. Formats "value" as a hexadecimal string.
+    */
+    sprintf(tx_msg, "%x\r", value);
+    // printf("SENDING: %s\n\r", tx_msg);
+    uart_puts(&uart2, tx_msg);
+}
+
+uint32_t uart_receive() {
+    /*
+    Non-blockingly receieves a string on uart1. Returns -1 if no data available
+    on uart1. Else returns the string received on uart1 parsed as a hexadecimal
+    uint32_t.
+    */
+    char *ptr;
+    uint32_t decoded_msg;
+    uart_gets(&uart1, rx_msg, 64);
+    // printf("REC: %s\n\r", rx_msg);
+    if (rx_msg[0] == '\0') {  // If first char is null, then no data available
+        decoded_msg = -1;  // Return -1
+    } else {
+        decoded_msg = strtol(rx_msg, &ptr, 16);  // Else return hex parsing
+    }
+    return decoded_msg;
+}
 
 uint16_t binary_search(uint16_t target_val, float target_array[], uint16_t min, uint16_t max) {
     // led_on(&led2);
@@ -625,20 +661,32 @@ void VendorRequestsOut(void) {
 void idle(void) {
     if (state != last_state) {  // if we are entering the state, do initialization stuff
         last_state = state;
-        // trials = 0; // let master handle # trials
-        led_on(&led1);
-        st_speed(&st_d, 500);
+    }
+    uint32_t coin_msg;
+    // Call uart_receive(). We are waiting for one of the following messages:
+    //    * A coin has been inserted
+    coin_msg = uart_receive();
+    
+    if (coin_msg == -1) {
+        // No UART data available
+        state = idle;
+    } else if (coin_msg == 121) {
+        // Coin message received
+        state = reset;  // If coin, then proceed to reset state.
+    } else {
+        // Some other message receieved.
+        // DANGER, why are we here?
     }
 
-    if (state != last_state) {
-        led_off(&led1);  // if we are leaving the state, do clean up stuff
+    if (state != last_state) {  // if we are leaving the state, do clean up stuff
+
     }
 }
 
 void reset_from_origin(void) {
     /*
     Moves rocket from origin position to reset position (top middle). Moves
-    on to idle state once reset position reached.
+    on to flying state once reset position reached.
     */
     static bool dc_reset;
     static bool stepper_reset;
@@ -696,6 +744,75 @@ void reset_from_origin(void) {
 
         st_manual_exit(&st_d); // Leave manual toggling mode
         st_stop(&st_d); // Make sure stepper is stationary.
+
+        // Call uart_send(). When we are done resetting, we must inform the 
+        // master PIC.
+        uart_send(4313);  // Send 4313 to indicate reset to game start complete.
+    }
+}
+
+void reset_to_game_over(void) {
+    /*
+    Moves rocket from origin position to game-over position (below top left). Moves
+    on to idle state once reset position reached.
+    */
+    static bool dc_reset;
+    static bool stepper_reset;
+    static uint16_t reset_steps;
+
+    if (state != last_state) {
+        // State initialization
+        last_state = state;
+        led_on(&led3);
+
+        // Set up stepper positioning system
+        st_direction(&st_d, 1);  // Drive stepper right
+        st_manual_init(&st_d);
+        stepper_reset = false;
+        float pulley_rad = 6.35;  // Radius of pulley in mm
+        float dist_const = (0.0279253 * pulley_rad)/(8);  // (1.6 degrees -> radians) * belt pulley radius (mm) / (8th steps)
+        uint16_t reset_dist = 15;  // Distance from origin to reset position (mm)
+        reset_steps = (uint16_t)(reset_dist/dist_const);  // No. steps from origin to reset position
+        // zero quad encoder
+
+        // Set up DC motor positioning system
+        dcm_velocity(&dcm1, 20000, 1);  // Drive motor downwards
+
+        dc_reset = false;
+    }
+
+    dcm_velocity(&dcm1, 20000, 1);  // Drive motor downwards
+
+
+    if (st_d.manual_count >= reset_steps ) {
+        // Stepper has reached reset location.
+        stepper_reset = true;
+    } else {
+        // Stepper has not reached reset location.
+        st_manual_toggle(&st_d);
+    }
+
+    if (!(dcm1.stop_max->hit)) {
+        // DC motor has cleared its top endstop.
+        dcm_stop(&dcm1);
+        dc_reset = true;
+    }
+
+    if (dc_reset && stepper_reset) {
+        // Both axes have reached their reset positions.
+        // Move to next state
+        // if()
+        state = idle;
+    }
+
+    if (state != last_state) {
+        // State exit
+        st_manual_exit(&st_d); // Leave manual toggling mode
+        st_stop(&st_d); // Make sure stepper is stationary.
+
+        // Call uart_send(). When we are done resetting, we must inform the 
+        // master PIC.
+        uart_send(4315);  // Send 4315 to indicate reset to game over complete.
     }
 }
 
@@ -705,37 +822,59 @@ void reset(void) {
     Once the origin is reached, the FSM moves on to the `reset_from origin`
     state.
     */
+    uint32_t trials_msg;
+    uint16_t rxd_trials;
+    static uint8_t trials;
+    static bool rxd_trials_flag;
+
     if (state != last_state) {  // if we are entering the state, do initialization stuff
         last_state = state;
         stepper_count = 0;
         stepper_state = 0;  // drive to X_END_L
-        led_on(&led1);
         // Move motors towards reset position.
         dcm_velocity(&dcm1, 40000, 0);  // Drive upwards at 40000.
 
         st_direction(&st_d, 0);  // Drive stepper left.
         st_speed(&st_d, 1000);  // Drive stepper left.
 
+        rxd_trials_flag = false;  // No new trials received.
         // led_on(&led2);
     }
-
     dcm_velocity(&dcm1, 40000, 0);  // Drive upwards at 40000.
     st_direction(&st_d, 0);  // Drive stepper left.
     st_speed(&st_d, 1000);  // Drive stepper left.
 
+    trials_msg = uart_receive();
+    rxd_trials = trials_msg >> 8;
+    if (trials_msg == -1) {
+        // No UART data available
+        state = idle;
+    } else if (rxd_trials <= 3) {  // Where 3 is max trials
+        // New trials value received
+        trials = rxd_trials;
+        rxd_trials_flag = true;
+    } else {
+        // Some other message receieved.
+        // DANGER, why are we here?
+    }
+
     // Perform state tasks
-    if ((st_d.stop_min->hit) && (dcm1.stop_max->hit)) {
-        state = reset_from_origin;
+    if ((st_d.stop_min->hit) && (dcm1.stop_max->hit) && rxd_trials_flag) {
+        // We are in top left corner and have been told how many trials are left.
+        if (rxd_trials == 0){
+            // if no trials remain, reset to game over position.
+            state = reset_to_game_over;
+        } else {
+            // If 1, 2, or 3 trials, reset to start game position.
+            state = reset_from_origin;
+        }
     } else {
         state = reset;
     }
     
     if (state != last_state) {
-        led_off(&led1);
         dcm_stop(&dcm1);
         st_stop(&st_d);
-
-        // led_off(&led2);  // if we are leaving the state, do clean up stuff
     }
 }
 
@@ -837,40 +976,6 @@ void read_limitsw(_TIMER *timer) { //debounce the things
     // Landing pad endstop
     stop_read(&es_landing);
 }
-void UART_sendstr(uint8_t *str) {
-    /*
-    Sends a string on uart2. UNTESTED
-    */
-    // printf("SENDING: %s\n\r", tx_msg);
-    uart_puts(&uart2, str);
-}
-
-void UART_send(uint16_t value) {
-    /*
-    Formats and sends a value on uart2. Formats "value" as a hexadecimal string.
-    */
-    sprintf(tx_msg, "%x\r", value);
-    // printf("SENDING: %s\n\r", tx_msg);
-    uart_puts(&uart2, tx_msg);
-}
-
-uint32_t UART_receive() {
-    /*
-    Non-blockingly receieves a string on uart1. Returns -1 if no data available
-    on uart1. Else returns the string received on uart1 parsed as a hexadecimal
-    uint32_t.
-    */
-    char *ptr;
-    uint32_t decoded_msg;
-    uart_gets(&uart1, rx_msg, 64);
-    // printf("REC: %s\n\r", rx_msg);
-    if (rx_msg[0] == '\0') {  // If first char is null, then no data available
-        decoded_msg = -1;  // Return -1
-    } else {
-        decoded_msg = strtol(rx_msg, &ptr, 16);  // Else return hex parsing
-    }
-    return decoded_msg;
-}
 
 void setup_uart() {
     /*
@@ -947,7 +1052,7 @@ int16_t main(void) {
     IEC5bits.USB1IE = 1; //enable
 
     // Initialize State Machine
-    state = reset;
+    state = idle;
     last_state = (STATE_HANDLER_T)NULL;
 
     pin_digitalOut(&D[5]);  // Heartbeat pin
