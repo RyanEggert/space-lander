@@ -191,7 +191,7 @@ void setup_uart() {
 
 void setup() {
     timer_setPeriod(&timer1, 1);  // Timer for LED operation/status blink
-    timer_setPeriod(&timer2, 0.1);
+    timer_setPeriod(&timer2, 0.01);
     timer_setPeriod(&timer3, 0.5);
     timer_start(&timer1);
     timer_start(&timer2);

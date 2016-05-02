@@ -270,7 +270,8 @@ void VendorRequestsOut(void) {
 void setup_uart() {
     /*
     Configures UART for communications.
-    Uses uart1 for inter-PIC communications. Rx on D[0], Tx on D[1].
+    Uses uart1 to receive messages from master PIC on ICD3 header (RX2, TX2).
+    Uses uart2 to send messages to master PIC on ICD3 header (RTS2, CTS2).
     Automatically uses uart3 for stdout, stderr to PC via audio jack.
     */
     uart_open(&uart1, &TX2, &RX2, NULL, NULL, 115200., 'N', 1,

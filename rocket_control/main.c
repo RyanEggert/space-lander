@@ -17,7 +17,9 @@
 #include "dcm.h"
 #include "msgs.h"
 
-uint8_t RC_TXBUF[1024], RC_RXBUF[1024];
+uint8_t TXBUF1[1024], RXBUF1[1024];
+uint8_t TXBUF2[1024], RXBUF2[1024];
+char rx_msg[64], tx_msg[64];
 
 // Handle flying state
 #define LANDED 0
@@ -619,17 +621,59 @@ void UARTrequests() {
     }
 }
 
-void setup_uart(void) {
+void UART_sendstr(uint8_t *str) {
+    /*
+    Sends a string on uart2. UNTESTED
+    */
+    // printf("SENDING: %s\n\r", tx_msg);
+    uart_puts(&uart2, str);
+}
+
+void UART_send(uint16_t value) {
+    /*
+    Formats and sends a value on uart2. Formats "value" as a hexadecimal string.
+    */
+    sprintf(tx_msg, "%x\r", value);
+    // printf("SENDING: %s\n\r", tx_msg);
+    uart_puts(&uart2, tx_msg);
+}
+
+uint32_t UART_receive() {
+    /*
+    Non-blockingly receieves a string on uart1. Returns -1 if no data available
+    on uart1. Else returns the string received on uart1 parsed as a hexadecimal
+    uint32_t.
+    */
+    char *ptr;
+    uint32_t decoded_msg;
+    uart_gets(&uart1, rx_msg, 64);
+    // printf("REC: %s\n\r", rx_msg);
+    if (rx_msg[0] == '\0') {  // If first char is null, then no data available
+        decoded_msg = -1;  // Return -1
+    } else {
+        decoded_msg = strtol(rx_msg, &ptr, 16);  // Else return hex parsing
+    }
+    return decoded_msg;
+}
+
+void setup_uart() {
     /*
     Configures UART for communications.
-    Uses uart1 for inter-PIC communications. Rx on D[1], Tx on D[0].
-    Automatically uses uart2 for stdout, stderr to PC via audio jack.
+    Uses uart1 to receive messages from master PIC on ICD3 header (RX2, TX2).
+    Uses uart2 to send messages to master PIC on ICD3 header (RTS2, CTS2).
+    Automatically uses uart3 for stdout, stderr to PC via audio jack.
     */
     uart_open(&uart1, &TX2, &RX2, NULL, NULL, 115200., 'N', 1,
-              0, RC_TXBUF, 1024, RC_RXBUF, 1024);
+              0, TXBUF1, 1024, RXBUF1, 1024);
     // Enable UART ERR interrupt
     IFS4bits.U1ERIF = 0;
     IEC4bits.U1ERIE = 1;
+
+    uart_open(&uart2, &RTS2, &CTS2, NULL, NULL, 115200., 'N', 1,
+              0, TXBUF2, 1024, RXBUF2, 1024);
+    // Enable UART ERR interrupt
+    IFS4bits.U2ERIF = 0;
+    IEC4bits.U2ERIE = 1;
 }
 
 void idle(void) {
@@ -869,13 +913,10 @@ void setup() {
     st_init(&st_d, &D[0], &D[1], &D[2], &D[3], st_oc, 0x7FFF, &es_x_l, &es_x_r);
 
     timer_every(&timer4, .001, read_limitsw);  // Start timed endstop reading
-    // General use debugging output pin
-    // pin_digitalOut(&D[2]);
 
     setup_uart();
     throttle, tilt = 0;
     val1, val2 = 8;
-    // rocket_tilt = 500;
 }
 
 int16_t main(void) {
@@ -906,62 +947,10 @@ int16_t main(void) {
     state = reset;
     last_state = (STATE_HANDLER_T)NULL;
 
-    // dcm_velocity(&dcm1, 64000, 1);
     pin_digitalOut(&D[5]);
     st_state(&st_d, 1);
-    // servo_set(&servo0, 150, 0);
     while (1) {
-        // ServiceUSB();
-        // clock UART to prevent seizing
-        // if (timer_flag(&timer4)) {
-        // timer_lower(&timer4);
-        UARTrequests();
-        // }
         state();
-        pin_toggle(&D[5]);
+        pin_toggle(&D[5]);  // Heartbeat
     }
-
-    // ***Test code for quad encoder***
-    // dcm_velocity(&dcm1, 64000, 1);
-    // while (1) {
-    //     if (timer_flag(&timer1)) {
-    //         // Blink green light to show normal operation.
-    //         timer_lower(&timer1);
-    //         led_toggle(&led2);
-    //     }
-
-    //     if (timer_flag(&timer2)) {
-    //         timer_lower(&timer2);
-    //         // UARTrequests();
-    //         if (quad1.counter > 5000)
-    //         {
-    //             led_on(&led1);
-    //         } else {
-    //             led_off(&led1);
-    //         }
-    //     }
-    // }
-
-
-    // *** test code for limit switches***
-    // if (TOP_DSTOP==1){
-    //     led_on(&led3);
-    // }
-    // else{
-    //     led_off(&led3);
-    // }
-
-    // if (BOT_DSTOP==1){
-    //     led_on(&led2);
-    // }
-    // else{
-    //     led_off(&led2);
-    // }
-
-    // if (LT_DSTOP==1){
-    //     led_on(&led1);
-    // }
-    // else{
-    //     led_off(&led1);
-    // }
 }
