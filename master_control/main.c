@@ -208,6 +208,8 @@ void idle(void) {
     if (state != last_state) {  // if we are entering the state, do initialization stuff
         last_state = state;
         trials = 0;
+        pin_clear(&D[8]);
+        pin_clear(&D[9]);
     }
 
     coin = !pin_read(&D[2]);  // digital read of the coin acceptor.
@@ -267,6 +269,8 @@ void flying(void) {
     if (state != last_state) {  // if we are entering the state, do initialization stuff
         last_state = state;
         rocket_state = FLYING;
+        pin_clear(&D[8]);
+        pin_set(&D[9]);
     }
 
     // Perform state tasks
@@ -326,6 +330,8 @@ void flying(void) {
 void lose(void) {
     if (state != last_state) {  // if we are entering the state, do initialization stuff
         last_state = state;
+        pin_set(&D[8]);
+        pin_clear(&D[9]);
         timer_start(&timer1);
         counter = 0;
     }
@@ -349,6 +355,8 @@ void lose(void) {
 void win(void) {
     if (state != last_state) {  // if we are entering the state, do initialization stuff
         last_state = state;
+        pin_set(&D[8]);
+        pin_set(&D[9]);
         timer_start(&timer1);
         counter = 0;
     }
