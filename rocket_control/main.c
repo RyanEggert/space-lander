@@ -265,64 +265,64 @@ void rocket_model() {
         // ***set stepper thrust val***
         // direction of thrust is dependent on tilt direction
         // if (timer_flag(&timer3)) {
-            if (stepper_dir_track) {
-                /// stepper_dir_track == 1 denotes motion to left
-                if (tilt_dir == TILT_CW) {
-                    // tilting to right
-                    if (stepper_speed - stepper_deadband > stepper_thrust) {
-                        stepper_speed = stepper_speed - stepper_thrust;
-                    }
-                    else {
-                        stepper_dir_track = 0;
-                        stepper_speed = stepper_deadband + stepper_thrust;
-                    }
-                }
-                else if (tilt_dir == TILT_CCW) {
-                    // tilting to left
-                    if (stepper_speed < stepper_speed_limit) {
-                        stepper_speed = stepper_speed + stepper_thrust;
-                    }
-                }
-                else if (tilt_dir == TILT_ZERO) {
-                    // no tilt
-                    if (stepper_speed > stepper_deadband + stepper_resist) {
-                        stepper_speed = stepper_speed - stepper_resist;
-                    }
-                    else {
-                        // wind resistance stops x-axis motion of rocket
-                        stepper_speed = 0;
-                    }
-                }
-            }
-            else if (!stepper_dir_track) {
-                /// stepper_dir_track == 0 denotes motion to right
-                if (tilt_dir == TILT_CW) {
-                    // tilting to left
-                    if (stepper_speed < stepper_speed_limit) {
-                        stepper_speed = stepper_speed + stepper_thrust;
-                    }
-                }
-                else if (tilt_dir == TILT_CCW) {
-                    // tilting to right
-                    if (stepper_speed - stepper_deadband > stepper_thrust) {
-                        stepper_speed = stepper_speed - stepper_thrust;
-                    }
-                    else {
-                        stepper_dir_track = 1;
-                        stepper_speed = stepper_deadband + stepper_thrust;
-                    }
+        if (stepper_dir_track) {
+            /// stepper_dir_track == 1 denotes motion to left
+            if (tilt_dir == TILT_CW) {
+                // tilting to right
+                if (stepper_speed - stepper_deadband > stepper_thrust) {
+                    stepper_speed = stepper_speed - stepper_thrust;
                 }
                 else {
-                    // no tilt
-                    if (stepper_speed > stepper_deadband + stepper_resist) {
-                        stepper_speed = stepper_speed - stepper_resist;
-                    }
-                    else {
-                        // wind resistance stops x-axis motion of rocket
-                        stepper_speed = 0;
-                    }
+                    stepper_dir_track = 0;
+                    stepper_speed = stepper_deadband + stepper_thrust;
                 }
             }
+            else if (tilt_dir == TILT_CCW) {
+                // tilting to left
+                if (stepper_speed < stepper_speed_limit) {
+                    stepper_speed = stepper_speed + stepper_thrust;
+                }
+            }
+            else if (tilt_dir == TILT_ZERO) {
+                // no tilt
+                if (stepper_speed > stepper_deadband + stepper_resist) {
+                    stepper_speed = stepper_speed - stepper_resist;
+                }
+                else {
+                    // wind resistance stops x-axis motion of rocket
+                    stepper_speed = 0;
+                }
+            }
+        }
+        else if (!stepper_dir_track) {
+            /// stepper_dir_track == 0 denotes motion to right
+            if (tilt_dir == TILT_CW) {
+                // tilting to left
+                if (stepper_speed < stepper_speed_limit) {
+                    stepper_speed = stepper_speed + stepper_thrust;
+                }
+            }
+            else if (tilt_dir == TILT_CCW) {
+                // tilting to right
+                if (stepper_speed - stepper_deadband > stepper_thrust) {
+                    stepper_speed = stepper_speed - stepper_thrust;
+                }
+                else {
+                    stepper_dir_track = 1;
+                    stepper_speed = stepper_deadband + stepper_thrust;
+                }
+            }
+            else {
+                // no tilt
+                if (stepper_speed > stepper_deadband + stepper_resist) {
+                    stepper_speed = stepper_speed - stepper_resist;
+                }
+                else {
+                    // wind resistance stops x-axis motion of rocket
+                    stepper_speed = 0;
+                }
+            }
+        }
         //     timer_lower(&timer3);
         // }
         // led_on(&led2);
@@ -348,12 +348,12 @@ void rocket_model() {
         }
         // set x thrust
         // if (timer_flag(&timer3)) {
-            if (stepper_speed > stepper_deadband + stepper_resist) {
-                stepper_speed = stepper_speed - stepper_resist;
-            }
-            else {
-                stepper_speed = 0;
-            }
+        if (stepper_speed > stepper_deadband + stepper_resist) {
+            stepper_speed = stepper_speed - stepper_resist;
+        }
+        else {
+            stepper_speed = 0;
+        }
         //     timer_lower(&timer3);
         // }
     }
@@ -666,7 +666,7 @@ void idle(void) {
     // Call uart_receive(). We are waiting for one of the following messages:
     //    * A coin has been inserted
     coin_msg = uart_receive();
-    
+
     if (coin_msg == -1) {
         // No UART data available
         state = idle;
@@ -703,9 +703,9 @@ void reset_from_origin(void) {
         st_manual_init(&st_d);
         stepper_reset = false;
         float pulley_rad = 6.35;  // Radius of pulley in mm
-        float dist_const = (0.0279253 * pulley_rad)/(8);  // (1.6 degrees -> radians) * belt pulley radius (mm) / (8th steps)
+        float dist_const = (0.0279253 * pulley_rad) / (8); // (1.6 degrees -> radians) * belt pulley radius (mm) / (8th steps)
         uint16_t reset_dist = 220;  // Distance from origin to reset position (mm)
-        reset_steps = (uint16_t)(reset_dist/dist_const);  // No. steps from origin to reset position
+        reset_steps = (uint16_t)(reset_dist / dist_const); // No. steps from origin to reset position
         // zero quad encoder
 
         // Set up DC motor positioning system
@@ -745,7 +745,7 @@ void reset_from_origin(void) {
         st_manual_exit(&st_d); // Leave manual toggling mode
         st_stop(&st_d); // Make sure stepper is stationary.
 
-        // Call uart_send(). When we are done resetting, we must inform the 
+        // Call uart_send(). When we are done resetting, we must inform the
         // master PIC.
         uart_send(4313);  // Send 4313 to indicate reset to game start complete.
     }
@@ -770,9 +770,9 @@ void reset_to_game_over(void) {
         st_manual_init(&st_d);
         stepper_reset = false;
         float pulley_rad = 6.35;  // Radius of pulley in mm
-        float dist_const = (0.0279253 * pulley_rad)/(8);  // (1.6 degrees -> radians) * belt pulley radius (mm) / (8th steps)
+        float dist_const = (0.0279253 * pulley_rad) / (8); // (1.6 degrees -> radians) * belt pulley radius (mm) / (8th steps)
         uint16_t reset_dist = 15;  // Distance from origin to reset position (mm)
-        reset_steps = (uint16_t)(reset_dist/dist_const);  // No. steps from origin to reset position
+        reset_steps = (uint16_t)(reset_dist / dist_const); // No. steps from origin to reset position
         // zero quad encoder
 
         // Set up DC motor positioning system
@@ -810,7 +810,7 @@ void reset_to_game_over(void) {
         st_manual_exit(&st_d); // Leave manual toggling mode
         st_stop(&st_d); // Make sure stepper is stationary.
 
-        // Call uart_send(). When we are done resetting, we must inform the 
+        // Call uart_send(). When we are done resetting, we must inform the
         // master PIC.
         uart_send(4315);  // Send 4315 to indicate reset to game over complete.
     }
@@ -861,7 +861,7 @@ void reset(void) {
     // Perform state tasks
     if ((st_d.stop_min->hit) && (dcm1.stop_max->hit) && rxd_trials_flag) {
         // We are in top left corner and have been told how many trials are left.
-        if (rxd_trials == 0){
+        if (rxd_trials == 0) {
             // if no trials remain, reset to game over position.
             state = reset_to_game_over;
         } else {
@@ -871,7 +871,7 @@ void reset(void) {
     } else {
         state = reset;
     }
-    
+
     if (state != last_state) {
         dcm_stop(&dcm1);
         st_stop(&st_d);
@@ -917,7 +917,7 @@ void flying(void) {
         // state = lose;
     }
 
-    if (es_landing.hit == 1){
+    if (es_landing.hit == 1) {
         // Rocket has landed on the barge.
         // led_on(&led2);
         if (abs(rocket_speed) <= 10 && abs(tilt_ang) <= 30) {

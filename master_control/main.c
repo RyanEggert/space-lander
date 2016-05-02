@@ -13,7 +13,7 @@
 #define SET_STATE    0   // Vendor request that receives 2 unsigned integer values
 #define GET_VALS    1   // Vendor request that returns 2 unsigned integer values 
 #define GET_ROCKET_INFO 2 // Vendor request that returns rocket state, speed, and tilt
-#define DEBUG_UART_BUFFERS 3  
+#define DEBUG_UART_BUFFERS 3
 
 #define IDLE 0 //game states
 #define RESET 1
@@ -187,7 +187,7 @@ void idle(void) {
     if (coin) {
         // A coin has been detected.
         state = reset;
-        // Call uart_send(). If a coin has been detected, we must inform the 
+        // Call uart_send(). If a coin has been detected, we must inform the
         // rocket PIC.
         uart_send(121);  // Send 121 to indicate coin inserted.
     }
@@ -242,7 +242,7 @@ void flying(void) {
     }
     else if (pin_read(RIGHT)) {
         led_on(&led3);
-        // Send command to tilt rocket to right   
+        // Send command to tilt rocket to right
         tilt = 2;
     }
     else {
@@ -261,7 +261,7 @@ void flying(void) {
     }
     // Call uart_send(). We must inform the master PIC of the commanded throttle and tilt.
     uart_send((tilt << 1) + throttle);  // Concatenate throttle+tilt into value
-    
+
     // Call uart_receive(). We are waiting for one of the following messages:
     //    * The rocket has crashed
     //    * The rocket has landed
@@ -388,7 +388,7 @@ int16_t main(void) {
     U1EIE = 0xFF;
     IFS5bits.USB1IF = 0; //flag
     IEC5bits.USB1IE = 1; //enable
-    
+
     // Initialize State Machine
     state = idle;
     last_state = (STATE_HANDLER_T)NULL;
