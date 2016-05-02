@@ -191,7 +191,7 @@ void init_uart(void) {
               (uint16_t *)&IEC5, 9, 8, (uint16_t *)&RPINR27, 
               (uint16_t *)&RPINR27, 0, 8, 30, 31);
 
-    uart_open(&uart3, &AJTX, &AJRX, NULL, NULL, 19200., 'N', 1, 
+    uart_open(&uart3, &AJTX, &AJRX, NULL, NULL, 115200., 'N', 1, 
               0, HWTXBUF, 1024, HWRXBUF, 1024);
 
     _stdout = &uart3;

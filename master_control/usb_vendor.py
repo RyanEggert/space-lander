@@ -7,6 +7,8 @@ class PIC_USB(object):
         self.GET_VALS = 1
         self.GET_ROCKET_INFO = 2
         self.DEBUG_UART_BUFFERS = 3
+        self.DEBUG_UART_STATUS = 70
+
 
         self.DEBUG_SERVO_SET_POS = 60
         self.DEBUG_SERVO_SET_FREQ = 61
@@ -29,8 +31,24 @@ class PIC_USB(object):
     def close(self):
         self.dev = None
     @staticmethod
+    def parse8(ret, start_index):
+        return int(ret[start_index])
+
+    @staticmethod
     def parse16(ret, start_index):
         return int(ret[start_index])+int(ret[start_index + 1])*256
+
+    @staticmethod
+    def parse32(ret, start_index):
+        return int(ret[start_index]) + int(ret[start_index + 1]) * 2**8 + int(ret[start_index + 2]) * 2**16 + int(ret[start_index + 3]) * 2**24
+
+    @staticmethod
+    def parse_gen(ret, start_index, end_index):
+        running_sum = 0 
+        selection = ret[start_index:end_index + 1]
+        for i, val in enumerate(selection):
+            running_sum += int(val) * (2 ** (8* i))
+        return running_sum
 
     # Handlers
     def set_state(self, state):
@@ -74,6 +92,35 @@ class PIC_USB(object):
             rxbuf["count"] = self.parse16(ret, 10)
             out["tx"] = txbuf
             out["rx"] = rxbuf
+            return out
+
+    def debug_uart_status(self):
+        """
+        Reads information about the head, tail, and count of the transmit ("tx")
+        and receive ("rx") software UART buffers.
+        """
+        try:
+            ret = self.dev.ctrl_transfer(0xC0, self.DEBUG_UART_STATUS, 0, 0, 12)
+        except usb.core.USBError:
+            print "Could not send DEBUG_UART_STATUS vendor request."
+        else:
+            uart1 = {}
+            uart2 = {}
+            out = {}
+            uart1["URXDA"] = self.parse8(ret, 0)
+            uart1["OERR"] = self.parse8(ret, 1)
+            uart1["FERR"] = self.parse8(ret, 2)
+            uart1["PERR"] = self.parse8(ret, 3)
+            uart1["RIDLE"] = self.parse8(ret, 4)
+            uart1["ADDEN"] = self.parse8(ret, 5)
+            uart2["URXDA"] = self.parse8(ret, 6)
+            uart2["OERR"] = self.parse8(ret, 7)
+            uart2["FERR"] = self.parse8(ret, 8)
+            uart2["PERR"] = self.parse8(ret, 9)
+            uart2["RIDLE"] = self.parse8(ret, 10)
+            uart2["ADDEN"] = self.parse8(ret, 11)
+            out["uart1"] = uart1
+            out["uart2"] = uart2
             return out
 
     def get_rocket_info(self):

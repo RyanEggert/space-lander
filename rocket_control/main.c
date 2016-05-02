@@ -133,7 +133,7 @@ void uart_sendstr(uint8_t *str) {
     /*
     Sends a string on uart2. UNTESTED
     */
-    // printf("SENDING: %s\n\r", tx_msg);
+    printf("SENDING: %s\n\r", tx_msg);
     uart_puts(&uart2, str);
 }
 
@@ -142,7 +142,7 @@ void uart_send(uint16_t value) {
     Formats and sends a value on uart2. Formats "value" as a hexadecimal string.
     */
     sprintf(tx_msg, "%x\r", value);
-    // printf("SENDING: %s\n\r", tx_msg);
+    printf("SENDING: %s\n\r", tx_msg);
     uart_puts(&uart2, tx_msg);
 }
 
@@ -155,7 +155,7 @@ uint32_t uart_receive() {
     char *ptr;
     uint32_t decoded_msg;
     uart_gets(&uart1, rx_msg, 64);
-    // printf("REC: %s\n\r", rx_msg);
+    printf("REC: %s\n\r", rx_msg);
     if (rx_msg[0] == '\0') {  // If first char is null, then no data available
         decoded_msg = -1;  // Return -1
     } else {
@@ -204,8 +204,8 @@ uint16_t linear_search(uint16_t target_val, float target_array[], uint16_t targe
 
 uint16_t get_thrust_scale_ind() {
     // translate tilt val into angle, get direction of tilt
-    if (rocket_tilt != rocket_tilt_last && timer_flag(&timer3)) {
-        timer_lower(&timer3);
+    if (rocket_tilt != rocket_tilt_last && timer_flag(&timer2)) {
+        timer_lower(&timer2);
         if (rocket_tilt > tilt_zero) {
             // tilt in CW direction
             tilt_ang = (uint16_t)((rocket_tilt - tilt_zero) * tilt_scale);
@@ -504,7 +504,20 @@ void VendorRequests(void) {
         BD[EP0IN].address[4] = temp.b[0];  // RIDLE
         BD[EP0IN].address[5] = temp.b[1];  // ADDEN
 
-        BD[EP0IN].bytecount = 6;    // set EP0 IN byte count to 4
+        temp.b[0] = bitread(uart2.UxSTA, 0);  // Receive buffer data available
+        temp.b[1] = bitread(uart2.UxSTA, 1);  // Read overrun error bit
+        BD[EP0IN].address[6] = temp.b[0];  // URXDA
+        BD[EP0IN].address[7] = temp.b[1];  // OERR
+        temp.b[0] = bitread(uart2.UxSTA, 2);  // Read framing error bit
+        temp.b[1] = bitread(uart2.UxSTA, 3);  // Read parity error bit
+        BD[EP0IN].address[8] = temp.b[0];  // FERR
+        BD[EP0IN].address[9] = temp.b[1];  // PERR
+        temp.b[0] = bitread(uart2.UxSTA, 4);  // Read receiver idle bit
+        temp.b[1] = bitread(uart2.UxSTA, 5);  // Read address char. detect bit
+        BD[EP0IN].address[10] = temp.b[0];  // RIDLE
+        BD[EP0IN].address[11] = temp.b[1];  // ADDEN
+
+        BD[EP0IN].bytecount = 12;    // set EP0 IN byte count to 4
         BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
         break;
 
@@ -662,20 +675,24 @@ void idle(void) {
     if (state != last_state) {  // if we are entering the state, do initialization stuff
         last_state = state;
     }
-    uint32_t coin_msg;
-    // Call uart_receive(). We are waiting for one of the following messages:
-    //    * A coin has been inserted
-    coin_msg = uart_receive();
 
-    if (coin_msg == -1) {
-        // No UART data available
-        state = idle;
-    } else if (coin_msg == 121) {
-        // Coin message received
-        state = reset;  // If coin, then proceed to reset state.
-    } else {
-        // Some other message receieved.
-        // DANGER, why are we here?
+    if (timer_flag(&timer2)) {
+        timer_lower(&timer2);
+        uint32_t coin_msg;
+        // Call uart_receive(). We are waiting for one of the following messages:
+        //    * A coin has been inserted
+        coin_msg = uart_receive();
+
+        if (coin_msg == -1) {
+            // No UART data available
+            state = idle;
+        } else if (coin_msg == 121) {
+            // Coin message received
+            state = reset;  // If coin, then proceed to reset state.
+        } else {
+            // Some other message receieved.
+            // DANGER, why are we here?
+        }
     }
 
     if (state != last_state) {  // if we are leaving the state, do clean up stuff
@@ -844,18 +861,21 @@ void reset(void) {
     st_direction(&st_d, 0);  // Drive stepper left.
     st_speed(&st_d, 1000);  // Drive stepper left.
 
-    trials_msg = uart_receive();
-    rxd_trials = trials_msg >> 8;
-    if (trials_msg == -1) {
-        // No UART data available
-        state = idle;
-    } else if (rxd_trials <= 3) {  // Where 3 is max trials
-        // New trials value received
-        trials = rxd_trials;
-        rxd_trials_flag = true;
-    } else {
-        // Some other message receieved.
-        // DANGER, why are we here?
+    if (timer_flag(&timer2)) {
+        timer_lower(&timer2);
+        trials_msg = uart_receive();
+        rxd_trials = trials_msg >> 8;
+        if (trials_msg == -1) {
+            // No UART data available
+            state = idle;
+        } else if (rxd_trials <= 3) {  // Where 3 is max trials
+            // New trials value received
+            trials = rxd_trials;
+            rxd_trials_flag = true;
+        } else {
+            // Some other message receieved.
+            // DANGER, why are we here?
+        }
     }
 
     // Perform state tasks
@@ -884,21 +904,25 @@ void flying(void) {
         motor_speed = motor_deadband;
         rocket_tilt = tilt_zero;
         stepper_speed = 0;
+        printf("ENTER FLYING STATE");
     }
 
-    // Call uart_receive(). We are waiting for one of the following messages:
-    //    * Status message with tilt and throttle commands
-    uint32_t command_msg;
-    command_msg = uart_receive();
-    if (command_msg == -1) {
-        // No UART data available
-    } else if (command_msg <= 7) {  // If we have received a valid command_msg,
-        // then update throttle and tilt accordingly.
-        throttle = command_msg & 0b01;
-        tilt = (command_msg & 0b110) >> 1;
-    } else {
-        // Some other message receieved.
-        // DANGER, why are we here?
+    if (timer_flag(&timer2)) {
+        timer_lower(&timer2);
+        // Call uart_receive(). We are waiting for one of the following messages:
+        //    * Status message with tilt and throttle commands
+        uint32_t command_msg;
+        command_msg = uart_receive();
+        if (command_msg == -1) {
+            // No UART data available
+        } else if (command_msg <= 7) {  // If we have received a valid command_msg,
+            // then update throttle and tilt accordingly.
+            throttle = command_msg & 0b01;
+            tilt = (command_msg & 0b110) >> 1;
+        } else {
+            // Some other message receieved.
+            // DANGER, why are we here?
+        }
     }
 
     // *** rocket model handles thrust scaling for x+y axes, drives DCM, stepper, servo ***
@@ -972,6 +996,8 @@ void lose(void) {
     if (state != last_state) {
         timer_stop(&timer1);
         // trials++;  // if we are leaving the state, do clean up stuff
+        printf("EXIT FLYING STATE");
+
     }
 }
 
@@ -1038,13 +1064,13 @@ void setup_uart() {
 void setup() {
     // TIMERS
     timer_setPeriod(&timer1, 1);  // Timer for LED operation/status blink
-    timer_setPeriod(&timer2, 0.01);  // Timer for UART servicing
-    timer_setPeriod(&timer3, 0.01);
-    // timer_setPeriod(&timer5, 0.01);  // Timer for clocking stepper motor
+    timer_setPeriod(&timer2, 0.01);  // Motor clocking timer
+    timer_setPeriod(&timer3, 0.5);  // General use timer (state-by-state basis)
+    timer_setPeriod(&timer5, 0.2);  // Timer for debug state printf
     timer_start(&timer1);
     timer_start(&timer2);
     timer_start(&timer3);
-    // timer_start(&timer5);
+    timer_start(&timer5);
 
     // DC MOTOR + QUAD ENCODER
     dcm_init(&dcm1, &D[10], &D[11], 1e3, 0, dcm_oc, &es_y_bot, &es_y_top);
@@ -1090,11 +1116,32 @@ int16_t main(void) {
     IEC5bits.USB1IE = 1; //enable
 
     // Initialize State Machine
-    state = idle;
+    state = flying;
     last_state = (STATE_HANDLER_T)NULL;
 
     pin_digitalOut(&D[5]);  // Heartbeat pin
     while (1) {
+        if (timer_flag(&timer5)) {
+            timer_lower(&timer5);
+            uint8_t state_num = -1;
+            if (state == idle) {
+                printf("State: %d\n\r");
+            } else if (state == reset) {
+                printf("State: RESET\n\r");
+            } else if (state == reset_from_origin) {
+                printf("State: RESET_FROM_ORIGIN\n\r");
+            } else if (state == reset_to_game_over) {
+                printf("State: RESET_TO_GAME_OVER\n\r");
+            } else if (state == flying) {
+                printf("State: FLYING\n\r");
+            } else if (state == win) {
+                printf("State: WIN\n\r");
+            } else if (state == lose) {
+                printf("State: LOSE\n\r");
+            } else {
+                printf("State: UNKNOWN STATE\n\r");
+            }
+        }
         state();
         pin_toggle(&D[5]);  // Heartbeat
     }
