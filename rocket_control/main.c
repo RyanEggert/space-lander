@@ -53,6 +53,7 @@ typedef void (*STATE_HANDLER_T)(void);
 
 void idle(void);
 void reset(void);
+void reset_from_origin(void);
 void flying(void);
 void win(void);
 void lose(void);
@@ -490,7 +491,7 @@ void VendorRequests(void) {
         temp.b[0] = bitread(oc5.OCxCON1, 4);  // Read receiver idle bit
         BD[EP0IN].address[9] = temp.b[0];  // OCTFLT
 
-        BD[EP0IN].bytecount = 10;    // set EP0 IN byte count to 4
+        BD[EP0IN].bytecount = 10;    // set EP0 IN byte count to 9
         BD[EP0IN].status = 0xC8;    // send packet as DATA1, set UOWN bit
 
     case GET_ROCKET_INFO:
@@ -613,7 +614,7 @@ void UARTrequests() {
     }
 }
 
-void setup_uart() {
+void setup_uart(void) {
     /*
     Configures UART for communications.
     Uses uart1 for inter-PIC communications. Rx on D[1], Tx on D[0].
@@ -631,6 +632,7 @@ void idle(void) {
         last_state = state;
         // trials = 0; // let master handle # trials
         led_on(&led1);
+        st_speed(&st_d, 500);
     }
 
     if (state != last_state) {
@@ -650,6 +652,8 @@ void reset_from_origin(void) {
     if (state != last_state) {
         // State initialization
         last_state = state;
+        led_on(&led3);
+
 
         // Set up stepper positioning system
         st_direction(&st_d, 1);  // Drive stepper right
@@ -657,14 +661,18 @@ void reset_from_origin(void) {
         stepper_reset = false;
         float pulley_rad = 6.35;  // Radius of pulley in mm
         float dist_const = (0.0279253 * pulley_rad)/(8);  // (1.6 degrees -> radians) * belt pulley radius (mm) / (8th steps)
-        uint16_t reset_dist = 275;  // Distance from origin to reset position (mm)
+        uint16_t reset_dist = 220;  // Distance from origin to reset position (mm)
         reset_steps = (uint16_t)(reset_dist/dist_const);  // No. steps from origin to reset position
         // zero quad encoder
 
         // Set up DC motor positioning system
         dcm_velocity(&dcm1, 20000, 1);  // Drive motor downwards
+
         dc_reset = false;
     }
+
+    dcm_velocity(&dcm1, 20000, 1);  // Drive motor downwards
+
 
     if (st_d.manual_count >= reset_steps ) {
         // Stepper has reached reset location.
@@ -684,11 +692,13 @@ void reset_from_origin(void) {
         // Both axes have reached their reset positions.
         // Move to next state
         // if()
-        state = idle;
+        state = flying;
     }
 
     if (state != last_state) {
         // State exit
+        led_off(&led3);
+
         st_manual_exit(&st_d); // Leave manual toggling mode
         st_stop(&st_d); // Make sure stepper is stationary.
     }
@@ -704,7 +714,7 @@ void reset(void) {
         last_state = state;
         stepper_count = 0;
         stepper_state = 0;  // drive to X_END_L
-
+        led_on(&led1);
         // Move motors towards reset position.
         dcm_velocity(&dcm1, 40000, 0);  // Drive upwards at 40000.
 
@@ -714,6 +724,10 @@ void reset(void) {
         // led_on(&led2);
     }
 
+    dcm_velocity(&dcm1, 40000, 0);  // Drive upwards at 40000.
+    st_direction(&st_d, 0);  // Drive stepper left.
+    st_speed(&st_d, 1000);  // Drive stepper left.
+
     // Perform state tasks
     if ((st_d.stop_min->hit) && (dcm1.stop_max->hit)) {
         state = reset_from_origin;
@@ -722,10 +736,13 @@ void reset(void) {
     }
     
     if (state != last_state) {
+        led_off(&led1);
+        dcm_stop(&dcm1);
+        st_stop(&st_d);
+
         // led_off(&led2);  // if we are leaving the state, do clean up stuff
     }
 }
-
 
 void flying(void) {
     if (state != last_state) {  // if we are entering the state, do initialization stuff
@@ -850,7 +867,6 @@ void setup() {
     throttle, tilt = 0;
     val1, val2 = 8;
     // rocket_tilt = 500;
-
 }
 
 int16_t main(void) {
@@ -883,11 +899,10 @@ int16_t main(void) {
 
     // dcm_velocity(&dcm1, 64000, 1);
     pin_digitalOut(&D[5]);
-
     st_state(&st_d, 1);
     // servo_set(&servo0, 150, 0);
     while (1) {
-        ServiceUSB();
+        // ServiceUSB();
         // clock UART to prevent seizing
         // if (timer_flag(&timer4)) {
         // timer_lower(&timer4);
@@ -940,5 +955,4 @@ int16_t main(void) {
     // else{
     //     led_off(&led1);
     // }
-
 }

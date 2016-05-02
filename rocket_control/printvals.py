@@ -1,5 +1,6 @@
 import time
 from usb_vendor import PIC_USB
+import traceback
 # Product IDs: Master PIC is 0x0004, Rocket PIC is 0x0005, Barge PIC is 0x0006
 comms = PIC_USB(0x0005)
 
@@ -15,8 +16,10 @@ def main():
             # debug_uart_status()
             rocket_info()
             endstops()
+            # debug_oc_status()
         except Exception, e:
             print "Error occurred. {}".format(e)
+            traceback.print_exc()
             print "Retrying..."
             comms = PIC_USB(0x0005)
         while (time.clock() - start_time) < loop_time:
@@ -61,7 +64,7 @@ def debug_uart_status():
     )
 
 def debug_oc_status():
-    info = comms.debug_uart_status()
+    info = comms.debug_oc_status()
     print "DC_OCM0 {} | DC_OCM1 {} | DC_OCM2 {} | DC_OCTSEL {} | DC_OCFLT {}".format(
         info["DC_OCM0"],
         info["DC_OCM1"],

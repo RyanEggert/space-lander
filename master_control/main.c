@@ -326,7 +326,6 @@ int16_t main(void) {
     init_uart();
     init_pin();
 
-
     setup();
     pin_digitalIn(&D[2]);
 
@@ -336,7 +335,7 @@ int16_t main(void) {
     IFS5bits.USB1IF = 0; //flag
     IEC5bits.USB1IE = 1; //enable
     // normallly start in idle; using flying for now
-    state = flying;
+    state = reset;
     last_state = (STATE_HANDLER_T)NULL;
     led_off(&led1);
 
