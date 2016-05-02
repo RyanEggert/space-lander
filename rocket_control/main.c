@@ -943,6 +943,8 @@ void flying(void) {
     if (state != last_state) {  // if we are leaving the state, do clean up stuff
         // turn off tilt stick led before exiting state
         led_off(&led3);
+        st_stop(&st_d);  // Stop motor
+        dcm_stop(&dcm1);  // Stop motor
     }
 }
 
@@ -953,8 +955,10 @@ void lose(void) {
         counter = 0;
         motor_speed = 0;
         stepper_speed = 0;
+        st_stop(&st_d);  // Be absolutely sure we've stopped motor
+        dcm_stop(&dcm1);  // Be absolutely sure we've stopped motor
     }
-
+    // TODO: Have UART signal from master prompt switch to reset state.
     if (timer_flag(&timer1)) {
         timer_lower(&timer1);
         counter++;
@@ -975,9 +979,11 @@ void win(void) {
     if (state != last_state) {  // if we are entering the state, do initialization stuff
         last_state = state;
         timer_start(&timer1);
+        st_stop(&st_d);  // Be absolutely sure we've stopped motor
+        dcm_stop(&dcm1);  // Be absolutely sure we've stopped motor
         counter = 0;
     }
-
+    // TODO: Have UART signal from master prompt switch to reset state.
     if (timer_flag(&timer1)) {
         timer_lower(&timer1);
         counter++;
