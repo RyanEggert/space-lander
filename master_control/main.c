@@ -26,7 +26,9 @@
 
 _PIN *LEFT, *RIGHT, *THROTTLE;
 
-uint8_t RC_TXBUF[1024], RC_RXBUF[1024];
+uint8_t TXBUF1[1024], RXBUF1[1024];
+uint8_t TXBUF2[1024], RXBUF2[1024];
+char rx_msg[64], tx_msg[64];
 
 typedef void (*STATE_HANDLER_T)(void);
 
@@ -45,7 +47,6 @@ uint16_t rocket_state = READY;
 uint16_t counter, coin;
 uint16_t rocket_speed, rocket_tilt;
 uint16_t throttle, tilt;
-uint8_t rec_msg[64], tx_msg[8];
 
 void VendorRequests(void) {
     WORD temp;
@@ -133,28 +134,6 @@ void VendorRequestsOut(void) {
     default:
         USB_error_flags |= 0x01;                    // set Request Error Flag
     }
-}
-
-void UART_ctl(uint8_t cmd, uint8_t value) {
-    sprintf(tx_msg, "%01x%01x\r", value, cmd); //value could be state or command
-    uart_puts(&uart1, tx_msg);
-    if (cmd == GET_ROCKET_VALS) {
-        uart_gets(&uart1, rec_msg, 64);
-        uint32_t decoded_msg = (uint32_t)strtol(rec_msg, NULL, 16);
-        rocket_speed = (uint16_t)((decoded_msg & 0xFF0000) >> 16);
-        rocket_tilt = (uint16_t)((decoded_msg & 0xFF00) >> 8);
-        rocket_state = decoded_msg & 0xFF;
-    }
-}
-
-void setup_uart() {
-    /*
-    Configures UART for communications.
-    Uses uart1 for inter-PIC communications. Rx on D[0], Tx on D[1].
-    Automatically uses uart2 for stdout, stderr to PC via audio jack.
-    */
-    uart_open(&uart1, &TX2, &RX2, NULL, NULL, 115200., 'N', 1,
-              0, RC_TXBUF, 1024, RC_RXBUF, 1024);
 }
 
 void idle(void) {
@@ -297,6 +276,61 @@ void win(void) {
     }
 }
 
+void UART_sendstr(uint8_t *str) {
+    /*
+    Sends a string on uart1. UNTESTED
+    */
+    // printf("SENDING: %s\n\r", tx_msg);
+    uart_puts(&uart1, str);
+}
+
+void UART_send(uint16_t value) {
+    /*
+    Formats and sends a value on uart1. Formats "value" as a hexadecimal string.
+    */
+    sprintf(tx_msg, "%x\r", value);
+    // printf("SENDING: %s\n\r", tx_msg);
+    uart_puts(&uart1, tx_msg);
+}
+
+uint32_t UART_receive() {
+    /*
+    Non-blockingly receieves a string on uart2. Returns -1 if no data available
+    on uart2. Else returns the string received on uart2 parsed as a hexadecimal
+    uint32_t.
+    */
+    char *ptr;
+    uint32_t decoded_msg;
+    uart_gets(&uart2, rx_msg, 64);
+    // printf("REC: %s\n\r", rx_msg);
+    if (rx_msg[0] == '\0') {  // If first char is null, then no data available
+        decoded_msg = -1;  // Return -1
+    } else {
+        decoded_msg = strtol(rx_msg, &ptr, 16);  // Else return hex parsing
+    }
+    return decoded_msg;
+}
+
+void setup_uart() {
+    /*
+    Configures UART for communications.
+    Uses uart2 to receive messages from rocket PIC on ICD3 header (RX2, TX2).
+    Uses uart1 to send messages to master PIC on ICD3 header (RTS2, CTS2).
+    Automatically uses uart3 for stdout, stderr to PC via audio jack.
+    */
+    uart_open(&uart1, &TX2, &RX2, NULL, NULL, 115200., 'N', 1,
+              0, TXBUF1, 1024, RXBUF1, 1024);
+    // Enable UART ERR interrupt
+    IFS4bits.U1ERIF = 0;
+    IEC4bits.U1ERIE = 1;
+
+    uart_open(&uart2, &RTS2, &CTS2, NULL, NULL, 115200., 'N', 1,
+              0, TXBUF2, 1024, RXBUF2, 1024);
+    // Enable UART ERR interrupt
+    IFS4bits.U2ERIF = 0;
+    IEC4bits.U2ERIE = 1;
+}
+
 void setup() {
     timer_setPeriod(&timer1, 1);  // Timer for LED operation/status blink
     timer_setPeriod(&timer2, 0.5);
@@ -334,20 +368,17 @@ int16_t main(void) {
     U1EIE = 0xFF;
     IFS5bits.USB1IF = 0; //flag
     IEC5bits.USB1IE = 1; //enable
-    // normallly start in idle; using flying for now
+    
+    // Initialize State Machine
     state = reset;
     last_state = (STATE_HANDLER_T)NULL;
-    led_off(&led1);
 
+    pin_digitalOut(&D[5]);  // Heartbeat pin
     while (1) {
         // concatenate throttle+tilt into value
-        uint16_t val = (tilt << 1) + throttle;
-        // clock UART to prevent overflow (1 call/ 1 ms)
-        if (timer_flag(&timer3)){
-            timer_lower(&timer3);
-            UART_ctl(SEND_ROCKET_COMMANDS, val);
-        }
+        // uint16_t val = (tilt << 1) + throttle;
         state();
+        pin_toggle(&D[5]);  // Heartbeat
     }
 }
 

@@ -127,7 +127,6 @@ uint16_t counter;
 uint8_t throttle, tilt; //commands
 uint8_t rocketstuff[64], rec_msg[64];
 uint8_t cmd, value;
-uint16_t val1, val2;
 
 uint16_t binary_search(uint16_t target_val, float target_array[], uint16_t min, uint16_t max) {
     // led_on(&led2);
@@ -599,82 +598,29 @@ void VendorRequestsOut(void) {
     }
 }
 
-void UARTrequests() {
-    // received uart message length = 8
-    uart_gets(&uart1, rec_msg, 8);
-    uint32_t decoded_msg = (uint32_t)strtol(rec_msg, NULL, 16);
-    cmd = decoded_msg & 0x0f;
-    value = (decoded_msg & 0xf0) >> 4;
-    switch (cmd) {
-    case GET_ROCKET_VALS:
-        //speed, orientation
-        sprintf(rocketstuff, "%02x%02x%02x\r", rocket_speed, rocket_tilt, rocket_state);
-        uart_puts(&uart1, rocketstuff);
-        break;
-    case SET_ROCKET_STATE:
-        rocket_state = value;
-        break;
-    case SEND_ROCKET_COMMANDS:
-        throttle = value & 0b01;
-        tilt = (value & 0b110) >> 1;
-        break;
-    }
-}
+// void UARTrequests() {
+//     // received uart message length = 8
+//     uart_gets(&uart1, rec_msg, 8);
+//     uint32_t decoded_msg = (uint32_t)strtol(rec_msg, NULL, 16);
+//     cmd = decoded_msg & 0x0f;
+//     value = (decoded_msg & 0xf0) >> 4;
+//     switch (cmd) {
+//     case GET_ROCKET_VALS:
+//         //speed, orientation
+//         sprintf(rocketstuff, "%02x%02x%02x\r", rocket_speed, rocket_tilt, rocket_state);
+//         uart_puts(&uart1, rocketstuff);
+//         break;
+//     case SET_ROCKET_STATE:
+//         rocket_state = value;
+//         break;
+//     case SEND_ROCKET_COMMANDS:
+//         throttle = value & 0b01;
+//         tilt = (value & 0b110) >> 1;
+//         break;
+//     }
+// }
 
-void UART_sendstr(uint8_t *str) {
-    /*
-    Sends a string on uart2. UNTESTED
-    */
-    // printf("SENDING: %s\n\r", tx_msg);
-    uart_puts(&uart2, str);
-}
 
-void UART_send(uint16_t value) {
-    /*
-    Formats and sends a value on uart2. Formats "value" as a hexadecimal string.
-    */
-    sprintf(tx_msg, "%x\r", value);
-    // printf("SENDING: %s\n\r", tx_msg);
-    uart_puts(&uart2, tx_msg);
-}
-
-uint32_t UART_receive() {
-    /*
-    Non-blockingly receieves a string on uart1. Returns -1 if no data available
-    on uart1. Else returns the string received on uart1 parsed as a hexadecimal
-    uint32_t.
-    */
-    char *ptr;
-    uint32_t decoded_msg;
-    uart_gets(&uart1, rx_msg, 64);
-    // printf("REC: %s\n\r", rx_msg);
-    if (rx_msg[0] == '\0') {  // If first char is null, then no data available
-        decoded_msg = -1;  // Return -1
-    } else {
-        decoded_msg = strtol(rx_msg, &ptr, 16);  // Else return hex parsing
-    }
-    return decoded_msg;
-}
-
-void setup_uart() {
-    /*
-    Configures UART for communications.
-    Uses uart1 to receive messages from master PIC on ICD3 header (RX2, TX2).
-    Uses uart2 to send messages to master PIC on ICD3 header (RTS2, CTS2).
-    Automatically uses uart3 for stdout, stderr to PC via audio jack.
-    */
-    uart_open(&uart1, &TX2, &RX2, NULL, NULL, 115200., 'N', 1,
-              0, TXBUF1, 1024, RXBUF1, 1024);
-    // Enable UART ERR interrupt
-    IFS4bits.U1ERIF = 0;
-    IEC4bits.U1ERIE = 1;
-
-    uart_open(&uart2, &RTS2, &CTS2, NULL, NULL, 115200., 'N', 1,
-              0, TXBUF2, 1024, RXBUF2, 1024);
-    // Enable UART ERR interrupt
-    IFS4bits.U2ERIF = 0;
-    IEC4bits.U2ERIE = 1;
-}
 
 void idle(void) {
     if (state != last_state) {  // if we are entering the state, do initialization stuff
@@ -891,17 +837,70 @@ void read_limitsw(_TIMER *timer) { //debounce the things
     // Landing pad endstop
     stop_read(&es_landing);
 }
+void UART_sendstr(uint8_t *str) {
+    /*
+    Sends a string on uart2. UNTESTED
+    */
+    // printf("SENDING: %s\n\r", tx_msg);
+    uart_puts(&uart2, str);
+}
+
+void UART_send(uint16_t value) {
+    /*
+    Formats and sends a value on uart2. Formats "value" as a hexadecimal string.
+    */
+    sprintf(tx_msg, "%x\r", value);
+    // printf("SENDING: %s\n\r", tx_msg);
+    uart_puts(&uart2, tx_msg);
+}
+
+uint32_t UART_receive() {
+    /*
+    Non-blockingly receieves a string on uart1. Returns -1 if no data available
+    on uart1. Else returns the string received on uart1 parsed as a hexadecimal
+    uint32_t.
+    */
+    char *ptr;
+    uint32_t decoded_msg;
+    uart_gets(&uart1, rx_msg, 64);
+    // printf("REC: %s\n\r", rx_msg);
+    if (rx_msg[0] == '\0') {  // If first char is null, then no data available
+        decoded_msg = -1;  // Return -1
+    } else {
+        decoded_msg = strtol(rx_msg, &ptr, 16);  // Else return hex parsing
+    }
+    return decoded_msg;
+}
+
+void setup_uart() {
+    /*
+    Configures UART for communications.
+    Uses uart1 to receive messages from master PIC on ICD3 header (RX2, TX2).
+    Uses uart2 to send messages to master PIC on ICD3 header (RTS2, CTS2).
+    Automatically uses uart3 for stdout, stderr to PC via audio jack.
+    */
+    uart_open(&uart1, &TX2, &RX2, NULL, NULL, 115200., 'N', 1,
+              0, TXBUF1, 1024, RXBUF1, 1024);
+    // Enable UART ERR interrupt
+    IFS4bits.U1ERIF = 0;
+    IEC4bits.U1ERIE = 1;
+
+    uart_open(&uart2, &RTS2, &CTS2, NULL, NULL, 115200., 'N', 1,
+              0, TXBUF2, 1024, RXBUF2, 1024);
+    // Enable UART ERR interrupt
+    IFS4bits.U2ERIF = 0;
+    IEC4bits.U2ERIE = 1;
+}
 
 void setup() {
+    // TIMERS
     timer_setPeriod(&timer1, 1);  // Timer for LED operation/status blink
     timer_setPeriod(&timer2, 0.01);  // Timer for UART servicing
     timer_setPeriod(&timer3, 0.01);
-    // timer_setPeriod(&timer4, 0.001);
     // timer_setPeriod(&timer5, 0.01);  // Timer for clocking stepper motor
     timer_start(&timer1);
     timer_start(&timer2);
     timer_start(&timer3);
-    // timer_start(&timer4);
     // timer_start(&timer5);
 
     // DC MOTOR + QUAD ENCODER
@@ -911,12 +910,15 @@ void setup() {
 
     // STEPPER
     st_init(&st_d, &D[0], &D[1], &D[2], &D[3], st_oc, 0x7FFF, &es_x_l, &es_x_r);
+    st_state(&st_d, 1);
 
+    // LIMIT SWITCHES
     timer_every(&timer4, .001, read_limitsw);  // Start timed endstop reading
 
+    // UART
     setup_uart();
+
     throttle, tilt = 0;
-    val1, val2 = 8;
 }
 
 int16_t main(void) {
@@ -944,11 +946,11 @@ int16_t main(void) {
     IFS5bits.USB1IF = 0; //flag
     IEC5bits.USB1IE = 1; //enable
 
+    // Initialize State Machine
     state = reset;
     last_state = (STATE_HANDLER_T)NULL;
 
-    pin_digitalOut(&D[5]);
-    st_state(&st_d, 1);
+    pin_digitalOut(&D[5]);  // Heartbeat pin
     while (1) {
         state();
         pin_toggle(&D[5]);  // Heartbeat
