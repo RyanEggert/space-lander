@@ -47,7 +47,7 @@ typedef struct {
     uint16_t manual_count;
     uint16_t manual_pseudo_freq;
     uint16_t _pseudo_freq_count;
-    uint8_t _manual_toggle_st
+    uint8_t _manual_toggle_st;
 } _ST;
 
 extern _ST st_d;

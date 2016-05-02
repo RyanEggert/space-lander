@@ -78,11 +78,13 @@ void __serviceTxInterrupt(_UART *self) {
 
 uint8_t __getc_buffer(_UART *self) {
     uint8_t ch;
-
-    while (self->RXbuffer.count==0) {}  // Wait until RX buffer is not empty
+    if (self->RXbuffer.count==0) {
+        return 15;
+    }
+    // while (self->RXbuffer.count==0) {}  // Wait until RX buffer is not empty
     disable_interrupts();
-    ch = self->RXbuffer.data[self->RXbuffer.head];
-    self->RXbuffer.head = (self->RXbuffer.head+1)%(self->RXbuffer.length);
+    ch = self->RXbuffer.data[self->RXbuffer.head];  // Removes head
+    self->RXbuffer.head = (self->RXbuffer.head+1)%(self->RXbuffer.length); // Increments head
     self->RXbuffer.count--;
     enable_interrupts();
     return ch;
@@ -514,8 +516,8 @@ void uart_gets(_UART *self, uint8_t *str, uint16_t len) {
         *str = '\0';
         return;
     }
-
-    //if (self->RXbuffer.count == 0);
+ 
+    // if (self->RXbuffer.count == 0);
     //    return;
 
     // uart_flushTxBuffer(self);
@@ -542,9 +544,11 @@ void __attribute__((interrupt, auto_psv)) _U1ErrInterrupt(void) {
     IFS4bits.U1ERIF = 0;  // Lower flag
     // If OERR, clear OERR
     if (bitread(uart1.UxSTA, 1) == 1) {  // IF OERR
-        bitclear(uart1.UxSTA, 1); // Clear OERR flag
         uart1.RXbuffer.tail = uart1.RXbuffer.head;
         uart1.RXbuffer.count = 0;
+        bitclear(uart1.UxSTA, 1); // Clear OERR flag
+        bitclear(uart1.UxMODE, 15);
+        bitset(uart1.UxMODE, 15);
         led_toggle(&led2);
     }
     // Raise a global flag, accessible by UART reading 
