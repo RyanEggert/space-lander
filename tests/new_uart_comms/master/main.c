@@ -27,6 +27,7 @@
 _PIN *LEFT, *RIGHT, *THROTTLE;
 
 uint8_t RC_TXBUF[1024], RC_RXBUF[1024];
+uint8_t RC3_TXBUF[1024], RC3_RXBUF[1024];
 
 typedef void (*STATE_HANDLER_T)(void);
 
@@ -156,7 +157,7 @@ void UART_send(uint8_t value) {
 uint32_t UART_receive() {
     char *ptr;
     uint32_t decoded_msg;
-    uart_gets(&uart1, rx_msg, 64);
+    uart_gets(&uart2, rx_msg, 64);
     printf("REC: %s\n\r", rx_msg);
     if (rx_msg[0] == '\0') {
         led_on(&led2);
@@ -180,12 +181,18 @@ void setup_uart() {
     // Enable UART ERR interrupt
     IFS4bits.U1ERIF = 0;
     IEC4bits.U1ERIE = 1;
+
+    uart_open(&uart2, &RTS2, &CTS2, NULL, NULL, 115200., 'N', 1,
+              0, RC3_TXBUF, 1024, RC3_RXBUF, 1024);
+    // Enable UART ERR interrupt
+    IFS4bits.U2ERIF = 0;
+    IEC4bits.U2ERIE = 1;
 }
 
 void setup() {
     timer_setPeriod(&timer1, 1);  // Timer for LED operation/status blink
-    timer_setPeriod(&timer2, 0.5);
-    timer_setPeriod(&timer3, 0.1);
+    timer_setPeriod(&timer2, 0.1);
+    timer_setPeriod(&timer3, 0.5);
     timer_start(&timer1);
     timer_start(&timer2);
     timer_start(&timer3);

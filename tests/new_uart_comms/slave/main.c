@@ -18,6 +18,7 @@
 #include "msgs.h"
 
 uint8_t RC_TXBUF[1024], RC_RXBUF[1024];
+uint8_t RC3_TXBUF[1024], RC3_RXBUF[1024];
 
 // Handle flying state
 #define LANDED 0
@@ -266,17 +267,23 @@ void VendorRequestsOut(void) {
 //     }
 // }
 
-void setup_uart(void) {
+void setup_uart() {
     /*
     Configures UART for communications.
-    Uses uart1 for inter-PIC communications. Rx on D[1], Tx on D[0].
-    Automatically uses uart2 for stdout, stderr to PC via audio jack.
+    Uses uart1 for inter-PIC communications. Rx on D[0], Tx on D[1].
+    Automatically uses uart3 for stdout, stderr to PC via audio jack.
     */
     uart_open(&uart1, &TX2, &RX2, NULL, NULL, 115200., 'N', 1,
               0, RC_TXBUF, 1024, RC_RXBUF, 1024);
     // Enable UART ERR interrupt
     IFS4bits.U1ERIF = 0;
     IEC4bits.U1ERIE = 1;
+
+    uart_open(&uart2, &RTS2, &CTS2, NULL, NULL, 115200., 'N', 1,
+              0, RC3_TXBUF, 1024, RC3_RXBUF, 1024);
+    // Enable UART ERR interrupt
+    IFS4bits.U2ERIF = 0;
+    IEC4bits.U2ERIE = 1;
 }
 
 void read_limitsw(_TIMER *timer) { //debounce the things
@@ -297,7 +304,7 @@ void read_limitsw(_TIMER *timer) { //debounce the things
 void UART_send(uint8_t value) {
     sprintf(tx_msg, "%05x\r", value);
     printf("SENDING: %s\n\r", tx_msg);
-    uart_puts(&uart1, tx_msg);
+    uart_puts(&uart2, tx_msg);
 }
 
 uint32_t UART_receive() {
