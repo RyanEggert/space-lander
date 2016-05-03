@@ -68,13 +68,13 @@ void st_state(_ST *self, uint8_t state) {
     if (state) { // 1 = Turn stepper drive on
         pin_write(self->pins[2], 1);
         pin_write(self->pins[3], 0);
-        oc_free(self->oc);
+        // oc_free(self->oc);
         oc_pwm(self->oc, self->pins[0], NULL, self->speed, self->duty_cyc);
     }
     else {  // 0 = Turn stepper drive off
         pin_write(self->pins[2], 0);
         pin_write(self->pins[3], 1);
-        oc_free(self->oc);
+        // oc_free(self->oc);
         oc_pwm(self->oc, self->pins[0], NULL, self->speed, 0);
     }
 }
@@ -100,7 +100,7 @@ void st_speed(_ST *self, float speed) {
     if (speed > 0) {
         // If new speed is greater than zero,
         if (self->speed != speed) {  // and if new speed is different,
-            oc_free(self->oc);  // then stop the pwm signal
+            // oc_free(self->oc);  // then stop the pwm signal
             oc_pwm(self->oc, self->pins[0], NULL, speed, self->duty_cyc);
             // and start again at a new frequency, specified by speed.
         }
@@ -190,7 +190,7 @@ void st_manual_toggle(_ST *self){
 }
 
 void st_manual_exit(_ST *self) {
-    oc_free(self->oc);
+    // oc_free(self->oc);
     self->dir = 0;
     self->speed = 0;
     self->step_size = 0;

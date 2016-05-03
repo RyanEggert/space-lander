@@ -406,7 +406,7 @@ void rocket_model() {
     }
     else {
         if (stepper_dir_track) {
-            st_direction(&st_d, 1);
+            // st_direction(&st_d, 1);
             st_speed(&st_d, stepper_speed);
         }
         else {
@@ -1046,7 +1046,7 @@ void win(void) {
     }
 
     // Check for state transitions
-    if (counter == 10) {
+    if (counter == 4) {
         state = idle;
     }
 
