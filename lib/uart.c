@@ -78,11 +78,13 @@ void __serviceTxInterrupt(_UART *self) {
 
 uint8_t __getc_buffer(_UART *self) {
     uint8_t ch;
-
-    while (self->RXbuffer.count==0) {}  // Wait until RX buffer is not empty
+    if (self->RXbuffer.count==0) {
+        return 15;
+    }
+    // while (self->RXbuffer.count==0) {}  // Wait until RX buffer is not empty
     disable_interrupts();
-    ch = self->RXbuffer.data[self->RXbuffer.head];
-    self->RXbuffer.head = (self->RXbuffer.head+1)%(self->RXbuffer.length);
+    ch = self->RXbuffer.data[self->RXbuffer.head];  // Removes head
+    self->RXbuffer.head = (self->RXbuffer.head+1)%(self->RXbuffer.length); // Increments head
     self->RXbuffer.count--;
     enable_interrupts();
     return ch;
@@ -189,11 +191,11 @@ void init_uart(void) {
               (uint16_t *)&IEC5, 9, 8, (uint16_t *)&RPINR27, 
               (uint16_t *)&RPINR27, 0, 8, 30, 31);
 
-    uart_open(&uart2, &AJTX, &AJRX, NULL, NULL, 19200., 'N', 1, 
+    uart_open(&uart3, &AJTX, &AJRX, NULL, NULL, 115200., 'N', 1, 
               0, HWTXBUF, 1024, HWRXBUF, 1024);
 
-    _stdout = &uart2;
-    _stderr = &uart2;
+    _stdout = &uart3;
+    _stderr = &uart3;
 }
 
 void uart_init(_UART *self, uint16_t *UxMODE, uint16_t *UxSTA, 
@@ -514,8 +516,8 @@ void uart_gets(_UART *self, uint8_t *str, uint16_t len) {
         *str = '\0';
         return;
     }
-
-    //if (self->RXbuffer.count == 0);
+ 
+    // if (self->RXbuffer.count == 0);
     //    return;
 
     // uart_flushTxBuffer(self);
@@ -542,11 +544,26 @@ void __attribute__((interrupt, auto_psv)) _U1ErrInterrupt(void) {
     IFS4bits.U1ERIF = 0;  // Lower flag
     // If OERR, clear OERR
     if (bitread(uart1.UxSTA, 1) == 1) {  // IF OERR
-        bitclear(uart1.UxSTA, 1); // Clear OERR flag
         uart1.RXbuffer.tail = uart1.RXbuffer.head;
         uart1.RXbuffer.count = 0;
+        bitclear(uart1.UxSTA, 1); // Clear OERR flag
+        bitclear(uart1.UxMODE, 15);
+        bitset(uart1.UxMODE, 15);
         led_toggle(&led2);
     }
     // Raise a global flag, accessible by UART reading 
+}
 
+void __attribute__((interrupt, auto_psv)) _U2ErrInterrupt(void) {
+    IFS4bits.U2ERIF = 0;  // Lower flag
+    // If OERR, clear OERR
+    if (bitread(uart2.UxSTA, 1) == 1) {  // IF OERR
+        uart2.RXbuffer.tail = uart1.RXbuffer.head;
+        uart2.RXbuffer.count = 0;
+        bitclear(uart2.UxSTA, 1); // Clear OERR flag
+        bitclear(uart2.UxMODE, 15);
+        bitset(uart2.UxMODE, 15);
+        led_toggle(&led2);
+    }
+    // Raise a global flag, accessible by UART reading 
 }

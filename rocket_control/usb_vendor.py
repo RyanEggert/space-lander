@@ -13,6 +13,7 @@ class PIC_USB(object):
         self.DEBUG_SERVO_SET_POS = 60
         self.DEBUG_SERVO_SET_FREQ = 61
         self.DEBUG_UART_STATUS = 70
+        self.DEBUG_OC_STATUS = 72
         self.GET_LIMIT_SW_INFO = 75
 
         self.vendor_id = 0x6666
@@ -101,17 +102,27 @@ class PIC_USB(object):
         and receive ("rx") software UART buffers.
         """
         try:
-            ret = self.dev.ctrl_transfer(0xC0, self.DEBUG_UART_STATUS, 0, 0, 6)
+            ret = self.dev.ctrl_transfer(0xC0, self.DEBUG_UART_STATUS, 0, 0, 12)
         except usb.core.USBError:
             print "Could not send DEBUG_UART_STATUS vendor request."
         else:
+            uart1 = {}
+            uart2 = {}
             out = {}
-            out["URXDA"] = self.parse8(ret, 0)
-            out["OERR"] = self.parse8(ret, 1)
-            out["FERR"] = self.parse8(ret, 2)
-            out["PERR"] = self.parse8(ret, 3)
-            out["RIDLE"] = self.parse8(ret, 4)
-            out["ADDEN"] = self.parse8(ret, 5)
+            uart1["URXDA"] = self.parse8(ret, 0)
+            uart1["OERR"] = self.parse8(ret, 1)
+            uart1["FERR"] = self.parse8(ret, 2)
+            uart1["PERR"] = self.parse8(ret, 3)
+            uart1["RIDLE"] = self.parse8(ret, 4)
+            uart1["ADDEN"] = self.parse8(ret, 5)
+            uart2["URXDA"] = self.parse8(ret, 6)
+            uart2["OERR"] = self.parse8(ret, 7)
+            uart2["FERR"] = self.parse8(ret, 8)
+            uart2["PERR"] = self.parse8(ret, 9)
+            uart2["RIDLE"] = self.parse8(ret, 10)
+            uart2["ADDEN"] = self.parse8(ret, 11)
+            out["uart1"] = uart1
+            out["uart2"] = uart2
             return out
 
     def debug_oc_status(self):
@@ -120,11 +131,12 @@ class PIC_USB(object):
         Condition Status. Checks DC motor OC and stepper OC.
         """
         try:
-            ret = self.dev.ctrl_transfer(0xC0, self.DEBUG_UART_STATUS, 0, 0, 10)
+            ret = self.dev.ctrl_transfer(0xC0, self.DEBUG_OC_STATUS, 0, 0, 10)
         except usb.core.USBError:
             print "Could not send DEBUG_OC_STATUS vendor request."
         else:
             out = {}
+            print ret
             out["DC_OCM0"] = self.parse8(ret, 0)
             out["DC_DCM1"] = self.parse8(ret, 1)
             out["DC_OCM2"] = self.parse8(ret, 2)
@@ -142,7 +154,7 @@ class PIC_USB(object):
         Reads the rocket's current measured tilt, measured speed, and state.
         """
         try:
-            ret = self.dev.ctrl_transfer(0xC0, self.GET_ROCKET_INFO, 0, 0, 16)
+            ret = self.dev.ctrl_transfer(0xC0, self.GET_ROCKET_INFO, 0, 0, 18)
         except usb.core.USBError:
             print "Could not send GET_ROCKET_INFO vendor request."
         else:
@@ -155,6 +167,7 @@ class PIC_USB(object):
             out["tilt_ang"] = self.parse16(ret, 10)
             out["tilt_dir"] = self.parse16(ret, 12)
             out["stepper_speed"] = self.parse16(ret, 14)
+            out["fuel_val"] = self.parse16(ret, 16)
             return out
 
     def get_quad_info(self):

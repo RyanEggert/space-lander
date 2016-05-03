@@ -72,6 +72,7 @@ extern _UART uart1, uart2, uart3, uart4;
 extern _UART *_stdout, *_stderr;
 extern _PIN AJTX, AJRX;
 extern _PIN TX2, RX2;
+extern _PIN RTS2, CTS2;
 
 void uart_init(_UART *self, uint16_t *UxMODE, uint16_t *UxSTA, 
                uint16_t *UxTXREG, uint16_t *UxRXREG, 

@@ -10,7 +10,6 @@ def main():
         start_time = time.clock()
         # rocket_info()
         debug_uart_buffers()
-        debug_uart_status()
 
         while (time.clock() - start_time) < loop_time:
             pass
@@ -23,27 +22,6 @@ def rocket_info():
         info["state"],
         info["motor_speed"],
         info["stepper_speed"]
-    )
-
-def debug_uart_status():
-    info = comms.debug_uart_status()
-    uart1 = info["uart1"]
-    uart2 = info["uart2"]
-    print "[UART1] URXDA: {} | OERR {} | FERR {} || PERR {} | RIDLE {} | ADDEN {}".format(
-        uart1["URXDA"],
-        uart1["OERR"],
-        uart1["FERR"],
-        uart1["PERR"],
-        uart1["RIDLE"],
-        uart1["ADDEN"]
-    )
-    print "[UART2] URXDA: {} | OERR {} | FERR {} || PERR {} | RIDLE {} | ADDEN {}".format(
-        uart2["URXDA"],
-        uart2["OERR"],
-        uart2["FERR"],
-        uart2["PERR"],
-        uart2["RIDLE"],
-        uart2["ADDEN"]
     )
 
 
@@ -60,6 +38,16 @@ def debug_uart_buffers():
         rx["count"],
     )
 
+def debug_uart_status():
+    info = comms.debug_uart_status()
+    print "URXDA: {} | OERR {} | FERR {} || PERR {} | RIDLE {} | ADDEN {}".format(
+        info["URXDA"],
+        info["OERR"],
+        info["FERR"],
+        info["PERR"],
+        info["RIDLE"],
+        info["ADDEN"]
+    )
 if __name__ == '__main__':
     main()
     # debug_uart_buffers()
