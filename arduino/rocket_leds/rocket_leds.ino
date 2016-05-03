@@ -37,6 +37,7 @@ void win(){
       barge_strip.setPixelColor(i, barge_strip.Color(0,255,0)); // bright green color.
       barge_strip.show(); // This sends the updated pixel color to the hardware.
       }
+      lives = 3;
    }
 };
 
@@ -50,7 +51,10 @@ void lose(){
      lives --;
      lives_strip.setPixelColor(lives, 0); // Turn it off
      lives_strip.show(); // This sends the updated pixel color to the hardware.
-      }  
+     if (lives==0){
+         lives=3;
+     }
+   }  
 };
 
 void flying(){
@@ -79,11 +83,10 @@ void idle(){
   if (state != last_state) {
     for(int i=0;i<4;i++){
       // pixels.Color takes RGB values, from 0,0,0 up to 255,255,255
-      barge_strip.setPixelColor(i, barge_strip.Color(255,255,255)); // white
+      barge_strip.setPixelColor(i, barge_strip.Color(0,255,255)); // cyan
       barge_strip.show(); // This sends the updated pixel color to the hardware.
     }
-    lives = 3;
-    for(int i=0;i<3;i++){
+    for(int i=0;i<lives;i++){
     // pixels.Color takes RGB values, from 0,0,0 up to 255,255,255
     lives_strip.setPixelColor(i, barge_strip.Color(0,255,0)); // bright green color.
     lives_strip.show(); // This sends the updated pixel color to the hardware.
