@@ -191,6 +191,11 @@ void st_manual_toggle(_ST *self){
 
 void st_manual_exit(_ST *self) {
     oc_free(self->oc);
+    self->dir = 0;
+    self->speed = 0;
+    self->step_size = 0;
+    self->state = 0;
+    st_state(&st_d, self->state);      // turn on controller
     oc_pwm(self->oc, self->pins[0], NULL, self->speed, 0);
 }
 
