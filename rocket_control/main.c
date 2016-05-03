@@ -840,7 +840,6 @@ void reset(void) {
     }
     dcm_velocity(&dcm1, 40000, 0);  // Drive upwards at 40000.
     st_direction(&st_d, 0);  // Drive stepper left.
-    st_speed(&st_d, 1000);  // Drive stepper left.
 
     if (timer_flag(&timer2)) {
         timer_lower(&timer2);
@@ -858,16 +857,18 @@ void reset(void) {
             // DANGER, why are we here?
         }
     }
-
     // Perform state tasks
-    if ((st_d.stop_min->hit) && (dcm1.stop_max->hit) && rxd_trials_flag) {
-        // We are in top left corner and have been told how many trials are left.
-        if (rxd_trials == 3) {
-            // if no trials remain, reset to game over position.
-            state = reset_to_game_over;
-        } else {
-            // If 1, 2, or 3 trials, reset to start game position.
-            state = reset_from_origin;
+    if (dcm1.stop_max->hit && rxd_trials_flag) {
+        st_speed(&st_d, 1000);  // Drive stepper left.
+        if (st_d.stop_min->hit) {
+            // We are in top left corner and have been told how many trials are left.
+            if (rxd_trials == 3) {
+                // if no trials remain, reset to game over position.
+                state = reset_to_game_over;
+            } else {
+                // If 1, 2, or 3 trials, reset to start game position.
+                state = reset_from_origin;
+            }
         }
     } else {
         state = reset;
@@ -1098,7 +1099,7 @@ int16_t main(void) {
     IEC5bits.USB1IE = 1; //enable
 
     // Initialize State Machine
-    state = idle;
+    state = flying;
     last_state = (STATE_HANDLER_T)NULL;
 
     pin_digitalOut(&D[5]);  // Heartbeat pin

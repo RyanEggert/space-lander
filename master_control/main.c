@@ -446,7 +446,7 @@ int16_t main(void) {
 
 
     // Initialize State Machine
-    state = idle;
+    state = flying;
     last_state = (STATE_HANDLER_T)NULL;
 
     pin_digitalOut(&D[5]);  // Heartbeat pin
