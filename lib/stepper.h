@@ -44,10 +44,10 @@ typedef struct {
     _OC *oc;
     _ESTOP *stop_min;  // minimum limit switch (endstop)
     _ESTOP *stop_max;  // maximum limit switch (endstop)
-    uint16_t manual_count;
-    uint16_t manual_pseudo_freq;
-    uint16_t _pseudo_freq_count;
-    uint8_t _manual_toggle_st
+    volatile uint16_t manual_count;
+    volatile uint16_t manual_pseudo_freq;
+    volatile uint16_t _pseudo_freq_count;
+    volatile uint8_t _manual_toggle_st;
 } _ST;
 
 extern _ST st_d;
@@ -61,7 +61,7 @@ void st_direction(_ST *self, uint8_t dir);
 // void st_step_size(_ST *self, uint8_t size);
 void st_stop(_ST *self);
 void st_check_stops(_ST *self);
-void st_manual_init(_ST *self);
+void st_manual_init(_ST *self, uint16_t man_pseudo_freq);
 void st_manual_toggle(_ST *self);
 void st_manual_exit(_ST *self);
 
