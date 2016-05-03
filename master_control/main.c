@@ -213,7 +213,7 @@ void idle(void) {
         printf("Entering IDLE\n\r");
     }
 
-    coin = pin_read(&D[2]);  // digital read of the coin acceptor.
+    coin = !pin_read(&D[6]);  // digital read of the coin acceptor.
 
     //Note: might be a good idea to add input conditioner later on.
 
@@ -229,7 +229,7 @@ void idle(void) {
 
     if (state != last_state) {
         led_off(&led1);  // if we are leaving the state, do clean up stuff
-        printf("Entering IDLE\n\r");
+        printf("Exiting IDLE\n\r");
     }
 }
 
@@ -379,7 +379,8 @@ void win(void) {
 
     if (state != last_state) {
         timer_stop(&timer1);
-        trials++;  // if we are leaving the state, do clean up stuff
+        // trials++;  // if we are leaving the state, do clean up stuff
+        trials = 3; // If win, we are done.
     }
 }
 
@@ -405,7 +406,7 @@ void setup_uart() {
 
 void setup() {
     timer_setPeriod(&timer1, 1);  // Timer for LED operation/status blink
-    timer_setPeriod(&timer2, 0.5);  // UART Timer
+    timer_setPeriod(&timer2, 0.05);  // UART Timer
     timer_setPeriod(&timer3, 0.5);
     timer_setPeriod(&timer5, 0.1);
 
@@ -446,7 +447,7 @@ int16_t main(void) {
 
 
     // Initialize State Machine
-    state = flying;
+    state = idle;
     last_state = (STATE_HANDLER_T)NULL;
 
     pin_digitalOut(&D[5]);  // Heartbeat pin

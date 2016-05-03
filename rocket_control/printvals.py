@@ -15,7 +15,7 @@ def main():
             # debug_uart_buffers()
             # debug_uart_status()
             rocket_info()
-            endstops()
+            # endstops()
             # debug_oc_status()
         except Exception, e:
             print "Error occurred. {}".format(e)

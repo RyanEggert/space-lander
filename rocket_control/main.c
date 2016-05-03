@@ -155,7 +155,7 @@ uint32_t uart_receive() {
     char *ptr;
     uint32_t decoded_msg;
     uart_gets(&uart1, rx_msg, 64);
-    printf("REC: %s\n\r", rx_msg);
+    // printf("REC: %s\n\r", rx_msg);
     if (rx_msg[0] == '\0') {  // If first char is null, then no data available
         decoded_msg = -1;  // Return -1
     } else {
@@ -840,6 +840,7 @@ void reset(void) {
     }
     dcm_velocity(&dcm1, 40000, 0);  // Drive upwards at 40000.
     st_direction(&st_d, 0);  // Drive stepper left.
+    st_speed(&st_d, 1000);  // Drive stepper left.
 
     if (timer_flag(&timer2)) {
         timer_lower(&timer2);
@@ -858,10 +859,11 @@ void reset(void) {
         }
     }
     // Perform state tasks
-    if (dcm1.stop_max->hit && rxd_trials_flag) {
-        st_speed(&st_d, 1000);  // Drive stepper left.
-        if (st_d.stop_min->hit) {
+    // Perform state tasks
+        if ((st_d.stop_min->hit) && (dcm1.stop_max->hit) && rxd_trials_flag) {
             // We are in top left corner and have been told how many trials are left.
+            servo_set(&servo0, tilt_zero, 0);
+
             if (rxd_trials == 3) {
                 // if no trials remain, reset to game over position.
                 state = reset_to_game_over;
@@ -869,10 +871,9 @@ void reset(void) {
                 // If 1, 2, or 3 trials, reset to start game position.
                 state = reset_from_origin;
             }
+        } else {
+            state = reset;
         }
-    } else {
-        state = reset;
-    }
 
     if (state != last_state) {
         dcm_stop(&dcm1);
@@ -890,22 +891,23 @@ void flying(void) {
         printf("ENTER FLYING STATE");
     }
 
+    // Call uart_receive(). We are waiting for one of the following messages:
+    //    * Status message with tilt and throttle commands
+    uint32_t command_msg;
+    command_msg = uart_receive();
+    if (command_msg == -1) {
+        // No UART data available
+    } else if (command_msg <= 7) {  // If we have received a valid command_msg,
+        // then update throttle and tilt accordingly.
+        throttle = command_msg & 0b01;
+        tilt = (command_msg & 0b110) >> 1;
+    } else {
+        // Some other message receieved.
+        // DANGER, why are we here?
+    }
+
     if (timer_flag(&timer2)) {
         timer_lower(&timer2);
-        // Call uart_receive(). We are waiting for one of the following messages:
-        //    * Status message with tilt and throttle commands
-        uint32_t command_msg;
-        command_msg = uart_receive();
-        if (command_msg == -1) {
-            // No UART data available
-        } else if (command_msg <= 7) {  // If we have received a valid command_msg,
-            // then update throttle and tilt accordingly.
-            throttle = command_msg & 0b01;
-            tilt = (command_msg & 0b110) >> 1;
-        } else {
-            // Some other message receieved.
-            // DANGER, why are we here?
-        }
     }
 
     // *** rocket model handles thrust scaling for x+y axes, drives DCM, stepper, servo ***
@@ -1099,7 +1101,7 @@ int16_t main(void) {
     IEC5bits.USB1IE = 1; //enable
 
     // Initialize State Machine
-    state = flying;
+    state = idle;
     last_state = (STATE_HANDLER_T)NULL;
 
     pin_digitalOut(&D[5]);  // Heartbeat pin
