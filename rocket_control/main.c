@@ -417,26 +417,26 @@ void rocket_model() {
     // Handle tilt
     if (tilt == TILT_CCW) {
         // drive servo to CCW
-        // st_direction(&st_d, 0);
-        // st_speed(&st_d, 150);
-        // led_on(&led3);
+        st_direction(&st_d, 0);
+        st_speed(&st_d, 150);
+        led_on(&led3);
         if (rocket_tilt < tilt_max) {
             rocket_tilt += tilt_incr;
         }
     }
     else if (tilt == TILT_CW) {
         // drive servo CW
-        // st_direction(&st_d, 1);
-        // st_speed(&st_d, 150);
-        // led_on(&led3);
+        st_direction(&st_d, 1);
+        st_speed(&st_d, 150);
+        led_on(&led3);
         if (rocket_tilt > tilt_min) {
             rocket_tilt -= tilt_incr;
         }
     }
     else if (tilt == TILT_ZERO) {
-        // stepper_speed = 0;
-        // st_speed(&st_d, 0);
-        // led_off(&led3);
+        stepper_speed = 0;
+        st_speed(&st_d, 0);
+        led_off(&led3);
     }
 
     if (timer_flag(&timer2)) {
