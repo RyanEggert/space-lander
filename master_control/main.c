@@ -213,7 +213,7 @@ void idle(void) {
         printf("Entering IDLE\n\r");
     }
 
-    coin = !pin_read(&D[2]);  // digital read of the coin acceptor.
+    coin = pin_read(&D[2]);  // digital read of the coin acceptor.
 
     //Note: might be a good idea to add input conditioner later on.
 
@@ -444,8 +444,9 @@ int16_t main(void) {
     IFS5bits.USB1IF = 0; //flag
     IEC5bits.USB1IE = 1; //enable
 
+
     // Initialize State Machine
-    state = flying;
+    state = idle;
     last_state = (STATE_HANDLER_T)NULL;
 
     pin_digitalOut(&D[5]);  // Heartbeat pin

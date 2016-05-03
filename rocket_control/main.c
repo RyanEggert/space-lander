@@ -721,7 +721,7 @@ void reset_from_origin(void) {
         stepper_reset = false;
         float pulley_rad = 6.35;  // Radius of pulley in mm
         float dist_const = (0.0279253 * pulley_rad) / (8); // (1.6 degrees -> radians) * belt pulley radius (mm) / (8th steps)
-        uint16_t reset_dist = 22000;  // Distance from origin to reset position (mm)
+        uint16_t reset_dist = 220;  // Distance from origin to reset position (mm)
         reset_steps = (uint16_t)(reset_dist / dist_const); // No. steps from origin to reset position
         printf("RESET_STEPS: %d\n\r", reset_steps);
         // zero quad encoder
@@ -912,6 +912,7 @@ void flying(void) {
         motor_speed = motor_deadband;
         rocket_tilt = tilt_zero;
         stepper_speed = 0;
+        rocket_state = FLYING;
         printf("ENTER FLYING STATE");
     }
 
@@ -1124,7 +1125,7 @@ int16_t main(void) {
     IEC5bits.USB1IE = 1; //enable
 
     // Initialize State Machine
-    state = flying;
+    state = idle;
     last_state = (STATE_HANDLER_T)NULL;
 
     pin_digitalOut(&D[5]);  // Heartbeat pin
@@ -1133,7 +1134,7 @@ int16_t main(void) {
             timer_lower(&timer5);
             uint8_t state_num = -1;
             if (state == idle) {
-                printf("State: %d\n\r");
+                printf("State: IDLE\n\r");
             } else if (state == reset) {
                 printf("State: RESET\n\r");
             } else if (state == reset_from_origin) {
