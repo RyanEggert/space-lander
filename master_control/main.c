@@ -239,8 +239,6 @@ void reset(void) {
         printf("Entering RESET\n\r");
     }
     uint32_t reset_msg;
-
-
     if (timer_flag(&timer2)) {
         timer_lower(&timer2);
         // Call uart_send(). We must inform the rocket PIC how many trials remain

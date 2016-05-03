@@ -828,7 +828,6 @@ void reset(void) {
     if (state != last_state) {  // if we are entering the state, do initialization stuff
         last_state = state;
         stepper_count = 0;
-        stepper_state = 0;  // drive to X_END_L
         // Move motors towards reset position.
         dcm_velocity(&dcm1, 40000, 0);  // Drive upwards at 40000.
 
