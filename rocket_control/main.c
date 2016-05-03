@@ -647,29 +647,6 @@ void VendorRequestsOut(void) {
     }
 }
 
-// void UARTrequests() {
-//     // received uart message length = 8
-//     uart_gets(&uart1, rec_msg, 8);
-//     uint32_t decoded_msg = (uint32_t)strtol(rec_msg, NULL, 16);
-//     cmd = decoded_msg & 0x0f;
-//     value = (decoded_msg & 0xf0) >> 4;
-//     switch (cmd) {
-//     case GET_ROCKET_VALS:
-//         //speed, orientation
-//         sprintf(rocketstuff, "%02x%02x%02x\r", rocket_speed, rocket_tilt, rocket_state);
-//         uart_puts(&uart1, rocketstuff);
-//         break;
-//     case SET_ROCKET_STATE:
-//         rocket_state = value;
-//         break;
-//     case SEND_ROCKET_COMMANDS:
-//         throttle = value & 0b01;
-//         tilt = (value & 0b110) >> 1;
-//         break;
-//     }
-// }
-
-
 
 void idle(void) {
     if (state != last_state) {  // if we are entering the state, do initialization stuff
@@ -753,10 +730,6 @@ void reset_from_origin(void) {
         // Move to next state
         // if()
         state = flying;
-        // uint16_t delay_counter = 0;
-        // while (delay_counter <= 65000) {
-
-        // }
     }
 
     if (state != last_state) {
@@ -788,7 +761,7 @@ void reset_to_game_over(void) {
 
         // Set up stepper positioning system
         st_direction(&st_d, 1);  // Drive stepper right
-        st_manual_init(&st_d, 100);
+        st_manual_init(&st_d, 30);
         stepper_reset = false;
         float pulley_rad = 6.35;  // Radius of pulley in mm
         float dist_const = (0.0279253 * pulley_rad) / (8); // (1.6 degrees -> radians) * belt pulley radius (mm) / (8th steps)
@@ -809,12 +782,10 @@ void reset_to_game_over(void) {
     if (st_d.manual_count >= reset_steps ) {
         // Stepper has reached reset location.
         stepper_reset = true;
-        led_off(&led1);
     } else {
         // Stepper has not reached reset location.
         stepper_reset = false;
         st_manual_toggle(&st_d);
-        led_on(&led1);
     }
 
     if (!(dcm1.stop_max->hit)) {
