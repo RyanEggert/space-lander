@@ -52,11 +52,12 @@ void st_init(_ST *self, _PIN *pin1, _PIN *pin2, _PIN *pin3, _PIN *pin4, _OC *oc,
     self->oc = oc;
     self->stop_min = endstop_min;
     self->stop_max = endstop_max;
+    self->manual_started = false;
     int i;
     for (i=0; i<=3; i++) {
         pin_digitalOut(self->pins[i]);
     }
-    oc_pwm(self->oc, self->pins[0], NULL, self->speed, 0);
+    // oc_pwm(self->oc, self->pins[0], NULL, self->speed, 0);
     // OC5CON2 = 0x000F; //synchronize to timer5
     // OC7CON2 = 0x000F;
     st_state(&st_d, self->state);      // turn on controller
@@ -69,13 +70,13 @@ void st_state(_ST *self, uint8_t state) {
         pin_write(self->pins[2], 1);
         pin_write(self->pins[3], 0);
         // oc_free(self->oc);
-        oc_pwm(self->oc, self->pins[0], NULL, self->speed, self->duty_cyc);
+        // oc_pwm(self->oc, self->pins[0], NULL, self->speed, self->duty_cyc);
     }
     else {  // 0 = Turn stepper drive off
         pin_write(self->pins[2], 0);
         pin_write(self->pins[3], 1);
         // oc_free(self->oc);
-        oc_pwm(self->oc, self->pins[0], NULL, self->speed, 0);
+        // oc_pwm(self->oc, self->pins[0], NULL, self->speed, 0);
     }
 }
 
@@ -100,7 +101,7 @@ void st_speed(_ST *self, float speed) {
     if (speed > 0) {
         // If new speed is greater than zero,
         if (self->speed != speed) {  // and if new speed is different,
-            // oc_free(self->oc);  // then stop the pwm signal
+            oc_free(self->oc);  // then stop the pwm signal
             oc_pwm(self->oc, self->pins[0], NULL, speed, self->duty_cyc);
             // and start again at a new frequency, specified by speed.
         }
@@ -148,12 +149,18 @@ void st_direction(_ST *self, uint8_t dir) {
 }
 
 void st_stop(_ST *self) {
-    st_speed(self, 0);
+    // st_speed(self, 0);
 }
 
 void st_manual_init(_ST *self, uint16_t man_pseudo_freq) {
-    oc_free(self->oc);
-    pin_digitalOut(self->pins[0]);
+    if (!(self->manual_started)) {
+        pin_digitalOut(self->pins[0]);
+        self->manual_started = true;
+    }
+    // oc_free(self->oc);
+    // pin_init(&D[0], (uint16_t *)&PORTD, (uint16_t *)&TRISD, 
+    //          (uint16_t *)NULL, 5, -1, 0, 20, (uint16_t *)&RPOR10);
+
     pin_clear(self->pins[0]);
     self->manual_pseudo_freq = man_pseudo_freq;
     self->manual_count = 0;
@@ -191,12 +198,14 @@ void st_manual_toggle(_ST *self){
 
 void st_manual_exit(_ST *self) {
     // oc_free(self->oc);
-    self->dir = 0;
-    self->speed = 0;
-    self->step_size = 0;
-    self->state = 0;
-    st_state(&st_d, self->state);      // turn on controller
-    oc_pwm(self->oc, self->pins[0], NULL, self->speed, 0);
+    // self->dir = 0;
+    // self->speed = 0;
+    // self->step_size = 0;
+    // self->state = 0;
+    // pin_init(&D[0], (uint16_t *)&PORTD, (uint16_t *)&TRISD, 
+    //          (uint16_t *)NULL, 5, -1, 0, 20, (uint16_t *)&RPOR10);
+    // st_state(&st_d, self->state);      // turn on controller
+    // oc_pwm(self->oc, self->pins[0], NULL, self->speed, self->duty_cyc);
 }
 
 void st_check_stops(_ST *self) {

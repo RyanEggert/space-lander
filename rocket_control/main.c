@@ -402,16 +402,16 @@ void rocket_model() {
     }
     // drive stepper
     if (stepper_speed == 0) {
-        st_speed(&st_d, 0);
+        // st_speed(&st_d, 0);
     }
     else {
         if (stepper_dir_track) {
             // st_direction(&st_d, 1);
-            st_speed(&st_d, stepper_speed);
+            // st_speed(&st_d, stepper_speed);
         }
         else {
             st_direction(&st_d, 0);
-            st_speed(&st_d, stepper_speed);
+            // st_speed(&st_d, stepper_speed);
         }
     }
     // Handle tilt
@@ -872,27 +872,30 @@ void reset(void) {
     if (state != last_state) {  // if we are entering the state, do initialization stuff
         last_state = state;
         stepper_count = 0;
-        stepper_state = 0;  // drive to X_END_L
         // Move motors towards reset position.
         dcm_velocity(&dcm1, 40000, 0);  // Drive upwards at 40000.
 
         st_direction(&st_d, 0);  // Drive stepper left.
-        st_speed(&st_d, 1000);  // Drive stepper left.
+        st_manual_init(&st_d, 30);
+        // reset_steps = 9925;  // Move to center
+        // st_speed(&st_d, 1000);  // Drive stepper left.
 
         rxd_trials_flag = false;  // No new trials received.
         // led_on(&led2);
     }
-    dcm_velocity(&dcm1, 40000, 0);  // Drive upwards at 40000.
     st_direction(&st_d, 0);  // Drive stepper left.
-    st_speed(&st_d, 1000);  // Drive stepper left.
+    dcm_velocity(&dcm1, 40000, 0);  // Drive upwards at 40000.
+    // st_direction(&st_d, 0);  // Drive stepper left.
+    // st_speed(&st_d, 1000);  // Drive stepper left.
+    st_manual_toggle(&st_d);
 
     if (timer_flag(&timer2)) {
         timer_lower(&timer2);
         trials_msg = uart_receive();
         rxd_trials = trials_msg >> 8;
+        printf("RXD RECD: %d\n\r", rxd_trials);
         if (trials_msg == -1) {
             // No UART data available
-            state = idle;
         } else if (rxd_trials <= 3) {  // Where 3 is max trials
             // New trials value received
             trials = rxd_trials;
@@ -907,10 +910,11 @@ void reset(void) {
         if ((st_d.stop_min->hit) && (dcm1.stop_max->hit) && rxd_trials_flag) {
             // We are in top left corner and have been told how many trials are left.
             servo_set(&servo0, tilt_zero, 0);
-
-            if (rxd_trials == 3) {
+            printf("TRIAL COUNT: %d\n\r", trials);
+            if (trials >= 3) {
                 // if no trials remain, reset to game over position.
-                state = reset_to_game_over;
+                state = idle;
+                uart_send(4315);
             } else {
                 // If 1, 2, or 3 trials, reset to start game position.
                 state = reset_from_origin;
