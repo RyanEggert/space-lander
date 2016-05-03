@@ -647,29 +647,6 @@ void VendorRequestsOut(void) {
     }
 }
 
-// void UARTrequests() {
-//     // received uart message length = 8
-//     uart_gets(&uart1, rec_msg, 8);
-//     uint32_t decoded_msg = (uint32_t)strtol(rec_msg, NULL, 16);
-//     cmd = decoded_msg & 0x0f;
-//     value = (decoded_msg & 0xf0) >> 4;
-//     switch (cmd) {
-//     case GET_ROCKET_VALS:
-//         //speed, orientation
-//         sprintf(rocketstuff, "%02x%02x%02x\r", rocket_speed, rocket_tilt, rocket_state);
-//         uart_puts(&uart1, rocketstuff);
-//         break;
-//     case SET_ROCKET_STATE:
-//         rocket_state = value;
-//         break;
-//     case SEND_ROCKET_COMMANDS:
-//         throttle = value & 0b01;
-//         tilt = (value & 0b110) >> 1;
-//         break;
-//     }
-// }
-
-
 
 void idle(void) {
     if (state != last_state) {  // if we are entering the state, do initialization stuff
@@ -739,7 +716,9 @@ void reset_from_origin(void) {
         stepper_reset = true;
     } else {
         // Stepper has not reached reset location.
-        st_manual_toggle(&st_d);
+        if (timer_flag(&timer3)){
+            st_manual_toggle(&st_d);
+        }
     }
 
     if (!(dcm1.stop_max->hit)) {
@@ -904,7 +883,7 @@ void flying(void) {
         motor_speed = motor_deadband;
         rocket_tilt = tilt_zero;
         stepper_speed = 0;
-        printf("ENTER FLYING STATE");
+        // printf("ENTER FLYING STATE");
     }
 
     if (timer_flag(&timer2)) {
@@ -996,7 +975,7 @@ void lose(void) {
     if (state != last_state) {
         timer_stop(&timer1);
         // trials++;  // if we are leaving the state, do clean up stuff
-        printf("EXIT FLYING STATE");
+        // printf("EXIT FLYING STATE");
 
     }
 }
@@ -1065,7 +1044,7 @@ void setup() {
     // TIMERS
     timer_setPeriod(&timer1, 1);  // Timer for LED operation/status blink
     timer_setPeriod(&timer2, 0.01);  // Motor clocking timer
-    timer_setPeriod(&timer3, 0.5);  // General use timer (state-by-state basis)
+    timer_setPeriod(&timer3, 0.0005);  // General use timer (state-by-state basis)
     timer_setPeriod(&timer5, 0.2);  // Timer for debug state printf
     timer_start(&timer1);
     timer_start(&timer2);
@@ -1124,23 +1103,23 @@ int16_t main(void) {
         if (timer_flag(&timer5)) {
             timer_lower(&timer5);
             uint8_t state_num = -1;
-            if (state == idle) {
-                printf("State: %d\n\r");
-            } else if (state == reset) {
-                printf("State: RESET\n\r");
-            } else if (state == reset_from_origin) {
-                printf("State: RESET_FROM_ORIGIN\n\r");
-            } else if (state == reset_to_game_over) {
-                printf("State: RESET_TO_GAME_OVER\n\r");
-            } else if (state == flying) {
-                printf("State: FLYING\n\r");
-            } else if (state == win) {
-                printf("State: WIN\n\r");
-            } else if (state == lose) {
-                printf("State: LOSE\n\r");
-            } else {
-                printf("State: UNKNOWN STATE\n\r");
-            }
+            // if (state == idle) {
+            //     printf("State: %d\n\r");
+            // } else if (state == reset) {
+            //     printf("State: RESET\n\r");
+            // } else if (state == reset_from_origin) {
+            //     printf("State: RESET_FROM_ORIGIN\n\r");
+            // } else if (state == reset_to_game_over) {
+            //     printf("State: RESET_TO_GAME_OVER\n\r");
+            // } else if (state == flying) {
+            //     printf("State: FLYING\n\r");
+            // } else if (state == win) {
+            //     printf("State: WIN\n\r");
+            // } else if (state == lose) {
+            //     printf("State: LOSE\n\r");
+            // } else {
+            //     printf("State: UNKNOWN STATE\n\r");
+            // }
         }
         state();
         pin_toggle(&D[5]);  // Heartbeat

@@ -447,19 +447,19 @@ int16_t main(void) {
         if (timer_flag(&timer5)) {
             timer_lower(&timer5);
             uint8_t state_num = -1;
-            if (state == idle) {
-                printf("State: %d\n\r");
-            } else if (state == reset) {
-                printf("State: RESET\n\r");
-            } else if (state == flying) {
-                printf("State: FLYING\n\r");
-            } else if (state == win) {
-                printf("State: WIN\n\r");
-            } else if (state == lose) {
-                printf("State: LOSE\n\r");
-            } else {
-                printf("State: UNKNOWN STATE\n\r");
-            }
+            // if (state == idle) {
+            //     printf("State: %d\n\r");
+            // } else if (state == reset) {
+            //     printf("State: RESET\n\r");
+            // } else if (state == flying) {
+            //     printf("State: FLYING\n\r");
+            // } else if (state == win) {
+            //     printf("State: WIN\n\r");
+            // } else if (state == lose) {
+            //     printf("State: LOSE\n\r");
+            // } else {
+            //     printf("State: UNKNOWN STATE\n\r");
+            // }
         }
         state();
         pin_toggle(&D[5]);  // Heartbeat
