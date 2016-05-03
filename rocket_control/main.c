@@ -696,10 +696,11 @@ void reset_from_origin(void) {
         st_direction(&st_d, 1);  // Drive stepper right
         st_manual_init(&st_d, 30);
         stepper_reset = false;
-        float pulley_rad = 6.35;  // Radius of pulley in mm
-        float dist_const = (0.0279253 * pulley_rad) / (8); // (1.6 degrees -> radians) * belt pulley radius (mm) / (8th steps)
-        uint16_t reset_dist = 220;  // Distance from origin to reset position (mm)
-        reset_steps = (uint16_t)(reset_dist / dist_const); // No. steps from origin to reset position
+        // float pulley_rad = 6.35;  // Radius of pulley in mm
+        // float dist_const = (0.0279253 * pulley_rad) / (8); // (1.6 degrees -> radians) * belt pulley radius (mm) / (8th steps)
+        // uint16_t reset_dist = 220;  // Distance from origin to reset position (mm)
+        // reset_steps = (uint16_t)(reset_dist / dist_const); // No. steps from origin to reset position
+        reset_steps = 9925;  // Move to center
         printf("RESET_STEPS: %d\n\r", reset_steps);
         // zero quad encoder
 
@@ -763,10 +764,11 @@ void reset_to_game_over(void) {
         st_direction(&st_d, 1);  // Drive stepper right
         st_manual_init(&st_d, 30);
         stepper_reset = false;
-        float pulley_rad = 6.35;  // Radius of pulley in mm
-        float dist_const = (0.0279253 * pulley_rad) / (8); // (1.6 degrees -> radians) * belt pulley radius (mm) / (8th steps)
-        uint16_t reset_dist = 15;  // Distance from origin to reset position (mm)
-        reset_steps = (uint16_t)(reset_dist / dist_const); // No. steps from origin to reset position
+        // float pulley_rad = 6.35;  // Radius of pulley in mm
+        // float dist_const = (0.0279253 * pulley_rad) / (8); // (1.6 degrees -> radians) * belt pulley radius (mm) / (8th steps)
+        // uint16_t reset_dist = 15;  // Distance from origin to reset position (mm)
+        // reset_steps = (uint16_t)(reset_dist / dist_const); // No. steps from origin to reset position
+        reset_steps = 1800;  // Move to center
         printf("RESET STEPS: %d\n\r", reset_steps);
         // zero quad encoder
 
