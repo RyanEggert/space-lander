@@ -210,6 +210,7 @@ void idle(void) {
         trials = 0;
         pin_clear(&D[8]);
         pin_clear(&D[9]);
+        printf("Entering IDLE\n\r");
     }
 
     coin = !pin_read(&D[2]);  // digital read of the coin acceptor.
@@ -228,12 +229,14 @@ void idle(void) {
 
     if (state != last_state) {
         led_off(&led1);  // if we are leaving the state, do clean up stuff
+        printf("Entering IDLE\n\r");
     }
 }
 
 void reset(void) {
     if (state != last_state) {  // if we are entering the state, do initialization stuff
         last_state = state;
+        printf("Entering RESET\n\r");
     }
     uint32_t reset_msg;
 
@@ -248,9 +251,9 @@ void reset(void) {
         //    * The rocket PIC has finished resetting to game-playable state
         //    * The rocket PIC has finished resetting to game-over state.
         reset_msg = uart_receive();
+        printf("RESET: REC %d\n\r", reset_msg);
         if (reset_msg == -1) {
             // No UART data available
-            state = idle;
         } else if (reset_msg == 4313) {  // Reset to game start complete
             state = flying;
         } else if (reset_msg == 4315) { // Reset to game over complete
@@ -262,6 +265,7 @@ void reset(void) {
     }
 
     if (state != last_state) {
+        printf("Exiting RESET\n\r");
     }
 }
 
@@ -271,6 +275,7 @@ void flying(void) {
         rocket_state = FLYING;
         pin_clear(&D[8]);
         pin_set(&D[9]);
+        printf("Entering FLYING\n\r");
     }
 
     // Perform state tasks
@@ -324,6 +329,7 @@ void flying(void) {
     if (state != last_state) {  // if we are leaving the state, do clean up stuff
         // turn off tilt stick led before exiting state
         led_off(&led3);
+        printf("Exiting FLYING\n\r");
     }
 }
 
@@ -448,7 +454,7 @@ int16_t main(void) {
             timer_lower(&timer5);
             uint8_t state_num = -1;
             if (state == idle) {
-                printf("State: %d\n\r");
+                printf("State: IDLE\n\r");
             } else if (state == reset) {
                 printf("State: RESET\n\r");
             } else if (state == flying) {

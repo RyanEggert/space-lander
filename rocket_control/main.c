@@ -717,12 +717,13 @@ void reset_from_origin(void) {
 
         // Set up stepper positioning system
         st_direction(&st_d, 1);  // Drive stepper right
-        st_manual_init(&st_d);
+        st_manual_init(&st_d, 30);
         stepper_reset = false;
         float pulley_rad = 6.35;  // Radius of pulley in mm
         float dist_const = (0.0279253 * pulley_rad) / (8); // (1.6 degrees -> radians) * belt pulley radius (mm) / (8th steps)
-        uint16_t reset_dist = 220;  // Distance from origin to reset position (mm)
+        uint16_t reset_dist = 22000;  // Distance from origin to reset position (mm)
         reset_steps = (uint16_t)(reset_dist / dist_const); // No. steps from origin to reset position
+        printf("RESET_STEPS: %d\n\r", reset_steps);
         // zero quad encoder
 
         // Set up DC motor positioning system
@@ -732,7 +733,6 @@ void reset_from_origin(void) {
     }
 
     dcm_velocity(&dcm1, 20000, 1);  // Drive motor downwards
-
 
     if (st_d.manual_count >= reset_steps ) {
         // Stepper has reached reset location.
@@ -748,11 +748,15 @@ void reset_from_origin(void) {
         dc_reset = true;
     }
 
-    if (dc_reset && stepper_reset) {
+    if (dc_reset == true && stepper_reset == true) {
         // Both axes have reached their reset positions.
         // Move to next state
         // if()
         state = flying;
+        // uint16_t delay_counter = 0;
+        // while (delay_counter <= 65000) {
+
+        // }
     }
 
     if (state != last_state) {
@@ -784,12 +788,13 @@ void reset_to_game_over(void) {
 
         // Set up stepper positioning system
         st_direction(&st_d, 1);  // Drive stepper right
-        st_manual_init(&st_d);
+        st_manual_init(&st_d, 100);
         stepper_reset = false;
         float pulley_rad = 6.35;  // Radius of pulley in mm
         float dist_const = (0.0279253 * pulley_rad) / (8); // (1.6 degrees -> radians) * belt pulley radius (mm) / (8th steps)
         uint16_t reset_dist = 15;  // Distance from origin to reset position (mm)
         reset_steps = (uint16_t)(reset_dist / dist_const); // No. steps from origin to reset position
+        printf("RESET STEPS: %d\n\r", reset_steps);
         // zero quad encoder
 
         // Set up DC motor positioning system
@@ -804,9 +809,12 @@ void reset_to_game_over(void) {
     if (st_d.manual_count >= reset_steps ) {
         // Stepper has reached reset location.
         stepper_reset = true;
+        led_off(&led1);
     } else {
         // Stepper has not reached reset location.
+        stepper_reset = false;
         st_manual_toggle(&st_d);
+        led_on(&led1);
     }
 
     if (!(dcm1.stop_max->hit)) {
@@ -881,7 +889,7 @@ void reset(void) {
     // Perform state tasks
     if ((st_d.stop_min->hit) && (dcm1.stop_max->hit) && rxd_trials_flag) {
         // We are in top left corner and have been told how many trials are left.
-        if (rxd_trials == 0) {
+        if (rxd_trials == 3) {
             // if no trials remain, reset to game over position.
             state = reset_to_game_over;
         } else {
