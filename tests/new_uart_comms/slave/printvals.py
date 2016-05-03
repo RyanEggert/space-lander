@@ -6,17 +6,15 @@ comms = PIC_USB(0x0005)
 
 def main():
     print("START")
-    loop_time = .2  # How often to run the main loop, in seconds
+    loop_time = .01  # How often to run the main loop, in seconds
     while True:
         start_time = time.clock()
-        # print(chr(27) + "[2J")
+        print(chr(27) + "[2J")
         # quad_info()
         try:
-            # debug_uart_buffers()
-            # debug_uart_status()
-            rocket_info()
-            endstops()
-            # debug_oc_status()
+            debug_uart_buffers()
+            debug_uart_status()
+
         except Exception, e:
             print "Error occurred. {}".format(e)
             traceback.print_exc()
@@ -55,25 +53,14 @@ def debug_uart_buffers():
 
 def debug_uart_status():
     info = comms.debug_uart_status()
-    uart1 = info["uart1"]
-    uart2 = info["uart2"]
-    print "[UART1] URXDA: {} | OERR {} | FERR {} || PERR {} | RIDLE {} | ADDEN {}".format(
-        uart1["URXDA"],
-        uart1["OERR"],
-        uart1["FERR"],
-        uart1["PERR"],
-        uart1["RIDLE"],
-        uart1["ADDEN"]
+    print "URXDA: {} | OERR {} | FERR {} || PERR {} | RIDLE {} | ADDEN {}".format(
+        info["URXDA"],
+        info["OERR"],
+        info["FERR"],
+        info["PERR"],
+        info["RIDLE"],
+        info["ADDEN"]
     )
-    print "[UART2] URXDA: {} | OERR {} | FERR {} || PERR {} | RIDLE {} | ADDEN {}".format(
-        uart2["URXDA"],
-        uart2["OERR"],
-        uart2["FERR"],
-        uart2["PERR"],
-        uart2["RIDLE"],
-        uart2["ADDEN"]
-    )
-
 
 def debug_oc_status():
     info = comms.debug_oc_status()
@@ -92,11 +79,6 @@ def debug_oc_status():
         info["ST_OCFLT"]
     )
 
-def current_state():
-    info = comms.get_state()
-    print "Current State {}".format(
-        info["state"],
-    )
 
 def quad_info():
     info = comms.get_quad_info()

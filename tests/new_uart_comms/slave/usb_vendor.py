@@ -102,27 +102,17 @@ class PIC_USB(object):
         and receive ("rx") software UART buffers.
         """
         try:
-            ret = self.dev.ctrl_transfer(0xC0, self.DEBUG_UART_STATUS, 0, 0, 12)
+            ret = self.dev.ctrl_transfer(0xC0, self.DEBUG_UART_STATUS, 0, 0, 6)
         except usb.core.USBError:
             print "Could not send DEBUG_UART_STATUS vendor request."
         else:
-            uart1 = {}
-            uart2 = {}
             out = {}
-            uart1["URXDA"] = self.parse8(ret, 0)
-            uart1["OERR"] = self.parse8(ret, 1)
-            uart1["FERR"] = self.parse8(ret, 2)
-            uart1["PERR"] = self.parse8(ret, 3)
-            uart1["RIDLE"] = self.parse8(ret, 4)
-            uart1["ADDEN"] = self.parse8(ret, 5)
-            uart2["URXDA"] = self.parse8(ret, 6)
-            uart2["OERR"] = self.parse8(ret, 7)
-            uart2["FERR"] = self.parse8(ret, 8)
-            uart2["PERR"] = self.parse8(ret, 9)
-            uart2["RIDLE"] = self.parse8(ret, 10)
-            uart2["ADDEN"] = self.parse8(ret, 11)
-            out["uart1"] = uart1
-            out["uart2"] = uart2
+            out["URXDA"] = self.parse8(ret, 0)
+            out["OERR"] = self.parse8(ret, 1)
+            out["FERR"] = self.parse8(ret, 2)
+            out["PERR"] = self.parse8(ret, 3)
+            out["RIDLE"] = self.parse8(ret, 4)
+            out["ADDEN"] = self.parse8(ret, 5)
             return out
 
     def debug_oc_status(self):

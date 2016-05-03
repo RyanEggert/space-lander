@@ -10,7 +10,9 @@ void init_stops(void);
 
 typedef struct {
     bool hit;  // true if triggered/depressed, else false
-    volatile uint16_t state;
+    volatile uint16_t last_state;
+    volatile uint16_t curr_state;
+    volatile uint16_t counter;
     _PIN *pin;  // Pin connected to motor driver's "PWM" input
 } _ESTOP;
 

@@ -151,10 +151,11 @@ void st_stop(_ST *self) {
     st_speed(self, 0);
 }
 
-void st_manual_init(_ST *self) {
+void st_manual_init(_ST *self, uint16_t man_pseudo_freq) {
     oc_free(self->oc);
     pin_digitalOut(self->pins[0]);
     pin_clear(self->pins[0]);
+    self->manual_pseudo_freq = man_pseudo_freq;
     self->manual_count = 0;
     self->_manual_toggle_st = 0;
     self->_pseudo_freq_count = 0;
@@ -182,7 +183,7 @@ void st_manual_toggle(_ST *self){
     }
     
     // Increment step counter if rising edge
-    if(self->_manual_toggle_st == 1) {
+    if((self->_manual_toggle_st == 1) && (self->_pseudo_freq_count == 0)) {
         // Rising edge
         self->manual_count += 1;
     } 
