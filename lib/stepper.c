@@ -100,14 +100,16 @@ void st_speed(_ST *self, float speed) {
     if (speed > 0) {
         // If new speed is greater than zero,
         if (self->speed != speed) {  // and if new speed is different,
-            oc_free(self->oc);  // then stop the pwm signal
-            oc_pwm(self->oc, self->pins[0], NULL, speed, self->duty_cyc);
+            // oc_free(self->oc);  // then stop the pwm signal
+            // oc_pwm(self->oc, self->pins[0], NULL, speed, self->duty_cyc);
+            oc_freq(self->oc, self->pins[0], speed, self->duty_cyc);
             // and start again at a new frequency, specified by speed.
         }
     }
     else {
         // If speed is zero (or less), stop the motor.
-        oc_free(self->oc);
+        oc_freq(self->oc, self->pins[0], 0, self->duty_cyc);
+        // oc_free(self->oc);
     }
     self->speed = speed;
 }

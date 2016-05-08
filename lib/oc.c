@@ -153,6 +153,19 @@ void oc_pwm(_OC *self, _PIN *pin, _TIMER *timer, float freq, uint16_t duty) {
     self->pin->read = __pwmRead;
 }
 
+void oc_freq(_OC *self, _PIN *pin, float freq, uint16_t duty) {
+    // change OCxRS register to change oc freq
+    WORD32 temp;
+    if (freq<(FCY/65536.))
+        *(self->OCxRS) = 0xFFFF;
+    else
+        *(self->OCxRS) = (uint16_t)(FCY/freq-1.);
+    temp.ul = (uint32_t)duty*(uint32_t)(*(self->OCxRS));
+    *(self->OCxR) = temp.w[1];
+    // self->pin->write = __pwmWrite;
+    // self->pin->read = __pwmRead;
+}
+
 void oc_servo(_OC *self, _PIN *pin, _TIMER *timer, float interval, 
               float min_width, float max_width, uint16_t pos) {
     WORD32 temp;
