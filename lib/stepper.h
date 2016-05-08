@@ -48,6 +48,7 @@ typedef struct {
     volatile uint16_t manual_pseudo_freq;
     volatile uint16_t _pseudo_freq_count;
     volatile uint8_t _manual_toggle_st;
+    volatile bool manual_started;
 } _ST;
 
 extern _ST st_d;

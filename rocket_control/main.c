@@ -79,16 +79,16 @@ volatile bool TOP_DSTOP, BOT_DSTOP, RT_DSTOP, LT_DSTOP;  // Not needed. Can remo
 
 // rocket fuel vals
 uint16_t fuel_val = 0xFFFF;
-uint16_t fuel_burn_rate = 0.75;
-float fuel_scale = (tilt_max - tilt_min) / fuel_max;
-uint16_t fuel_offset = tilt_min;
+float fuel_burn_rate = 3;
+float fuel_scale = ((float)(tilt_max) - (float)(tilt_min)) / (float)(fuel_max);
+uint16_t fuel_offset = tilt_max;
 uint16_t fuel_servo_set;
 
 
 // kinematic model vals
-float thrust_val = 5.0;
-float grav_val = 4.0;
-float stepper_thrust_val = 5;
+float thrust_val = 3.0;
+float grav_val = 3.0;
+float stepper_thrust_val = 1.;
 
 // thrust angle LUT's; contain cos(theta) and sin(theta) vals
 float angle_vals_LUT[10] = {0, 5, 10, 15, 20, 25, 30, 35, 40, 45};
@@ -112,11 +112,11 @@ uint16_t motor_state;
 uint16_t motor_dir_track = 0;
 uint16_t motor_speed = 0;
 // uint16_t motor_speed_limit = 0x7FFF;
-#define motor_speed_limit_constant 49151;
+#define motor_speed_limit_constant 49151
 uint16_t motor_speed_limit = motor_speed_limit_constant;
 #define motor_deadband_constant 7000
 uint16_t motor_deadband = motor_deadband_constant;  // will find once gantry is built
-#define motor_speed_range 32767 - 7000
+float motor_speed_range = motor_speed_limit_constant - motor_deadband_constant;
 uint16_t motor_thrust;
 
 // tilt vars
@@ -138,8 +138,8 @@ uint16_t rocket_state = FLYING;
 uint16_t rocket_speed;
 uint16_t rocket_speed_servo_set;
 // uint16_t rocket_speed_range = motor_speed_limit_constant - motor_deadband_constant;
-float rocket_speed_scale = (tilt_max - tilt_min) / motor_speed_range;
-uint16_t rocket_speed_offset = tilt_min;
+float rocket_speed_scale;
+uint16_t rocket_speed_offset = tilt_max;
 float rocket_tilt;
 float rocket_tilt_last;
 uint16_t counter;
@@ -260,11 +260,11 @@ uint16_t get_thrust_scale_ind() {
 
 void rocket_model() {
     // handle fuel value
-    if (fuel_val > 0) {
-        // fuel still greater than 0; continue decrementing
-        fuel_val -= fuel_burn_rate;
-    }
-    else if (fuel_val == 0) {
+    // if (fuel_val > 0) {
+    //     // fuel still greater than 0; continue decrementing
+    //     fuel_val -= fuel_burn_rate;
+    // }
+    if (fuel_val == 0) {
         // fuel exhausted; round lost
         rocket_state = CRASHED;
     }
@@ -400,34 +400,40 @@ void rocket_model() {
     else {
         dcm_velocity(&dcm1, motor_speed, 1);
     }
-    // // drive stepper
-    // if (stepper_speed == 0) {
-    //     st_speed(&st_d, 0);
-    // }
-    // else {
-    //     if (stepper_dir_track) {
-    //         st_direction(&st_d, 1);
-    //         st_speed(&st_d, stepper_speed);
-    //     }
-    //     else {
-    //         st_direction(&st_d, 0);
-    //         st_speed(&st_d, stepper_speed);
-    //     }
-    // }
+    // drive stepper
+    if (stepper_speed == 0) {
+        // st_speed(&st_d, 0);
+    }
+    else {
+        if (stepper_dir_track) {
+            // st_direction(&st_d, 1);
+            // st_speed(&st_d, stepper_speed);
+        }
+        else {
+            st_direction(&st_d, 0);
+            // st_speed(&st_d, stepper_speed);
+        }
+    }
     // Handle tilt
     if (tilt == TILT_CCW) {
         // drive servo to CCW
-        // st_direction(&st_d, 0);
-        // st_speed(&st_d, 150);
+        st_direction(&st_d, 0);
+        st_speed(&st_d, 150);
         led_on(&led3);
+        if (rocket_tilt > tilt_zero) {
+            st_direction(&st_d, 0);
+            st_speed(&st_d, 150);
+        }
         if (rocket_tilt < tilt_max) {
             rocket_tilt += tilt_incr;
         }
     }
     else if (tilt == TILT_CW) {
         // drive servo CW
-        // st_direction(&st_d, 1);
-        // st_speed(&st_d, 150);
+        if (rocket_tilt < tilt_zero) {
+            st_direction(&st_d, 1);
+            st_speed(&st_d, 150);
+        }
         led_on(&led3);
         if (rocket_tilt > tilt_min) {
             rocket_tilt -= tilt_incr;
@@ -435,7 +441,7 @@ void rocket_model() {
     }
     else if (tilt == TILT_ZERO) {
         // stepper_speed = 0;
-        // st_speed(&st_d, 0);
+        st_speed(&st_d, 0);
         led_off(&led3);
     }
 
@@ -443,15 +449,15 @@ void rocket_model() {
         timer_lower(&timer2);
         // servo_set(&servo0, 350, 0);
         servo_set(&servo0, (uint16_t)(rocket_tilt), 0);
-        fuel_servo_set = (uint16_t)((float)(fuel_val)*fuel_scale)+fuel_offset;
-        printf("fuel_scale:%d\n\r", fuel_scale);
-        printf("fuel_servo_set:%d\n\r", fuel_servo_set);
-        servo_set(&servo4, fuel_servo_set, 0);
+        fuel_servo_set = fuel_offset - (uint16_t)((float)(fuel_val)*fuel_scale);
+        // printf("fuel_scale:%d\n\r", fuel_scale);
+        // printf("fuel_servo_set:%d\n\r", fuel_servo_set);
+        servo_set(&servo5, fuel_servo_set, 0);
         // scale rocket_speed to servo drive value
-        rocket_speed_servo_set = (uint16_t)((float)(motor_speed)*rocket_speed_scale)+rocket_speed_offset;
-        printf("rocket_speed_scale:%d\n\r", rocket_speed_scale);
-        printf("rocket_speed_servo_set:%d\n\r", rocket_speed_servo_set);
-        servo_set(&servo5, rocket_speed_servo_set, 0);
+        rocket_speed_servo_set = rocket_speed_offset - (uint16_t)((float)(motor_speed)*rocket_speed_scale);
+        // printf("rocket_speed_scale:%d\n\r", rocket_speed_scale);
+        // printf("rocket_speed_servo_set:%d\n\r", rocket_speed_servo_set);
+        servo_set(&servo4, rocket_speed_servo_set, 0);
     }
 
     rocket_speed = motor_speed;
@@ -872,27 +878,30 @@ void reset(void) {
     if (state != last_state) {  // if we are entering the state, do initialization stuff
         last_state = state;
         stepper_count = 0;
-        stepper_state = 0;  // drive to X_END_L
         // Move motors towards reset position.
         dcm_velocity(&dcm1, 40000, 0);  // Drive upwards at 40000.
 
         st_direction(&st_d, 0);  // Drive stepper left.
-        st_speed(&st_d, 1000);  // Drive stepper left.
+        st_manual_init(&st_d, 30);
+        // reset_steps = 9925;  // Move to center
+        // st_speed(&st_d, 1000);  // Drive stepper left.
 
         rxd_trials_flag = false;  // No new trials received.
         // led_on(&led2);
     }
-    dcm_velocity(&dcm1, 40000, 0);  // Drive upwards at 40000.
     st_direction(&st_d, 0);  // Drive stepper left.
-    st_speed(&st_d, 1000);  // Drive stepper left.
+    dcm_velocity(&dcm1, 40000, 0);  // Drive upwards at 40000.
+    // st_direction(&st_d, 0);  // Drive stepper left.
+    // st_speed(&st_d, 1000);  // Drive stepper left.
+    st_manual_toggle(&st_d);
 
     if (timer_flag(&timer2)) {
         timer_lower(&timer2);
         trials_msg = uart_receive();
         rxd_trials = trials_msg >> 8;
+        printf("RXD RECD: %d\n\r", rxd_trials);
         if (trials_msg == -1) {
             // No UART data available
-            state = idle;
         } else if (rxd_trials <= 3) {  // Where 3 is max trials
             // New trials value received
             trials = rxd_trials;
@@ -907,10 +916,11 @@ void reset(void) {
         if ((st_d.stop_min->hit) && (dcm1.stop_max->hit) && rxd_trials_flag) {
             // We are in top left corner and have been told how many trials are left.
             servo_set(&servo0, tilt_zero, 0);
-
-            if (rxd_trials == 3) {
+            printf("TRIAL COUNT: %d\n\r", trials);
+            if (trials >= 3) {
                 // if no trials remain, reset to game over position.
-                state = reset_to_game_over;
+                state = idle;
+                uart_send(4315);
             } else {
                 // If 1, 2, or 3 trials, reset to start game position.
                 state = reset_from_origin;
@@ -974,7 +984,7 @@ void flying(void) {
     if (es_landing.hit == 1) {
         // Rocket has landed on the barge.
         // led_on(&led2);
-        if (abs(rocket_speed) <= 15000 && abs(tilt_ang) <= 30) {
+        if (abs(rocket_speed) <= 17000 && abs(tilt_ang) <= 30) {
             // If rocket has landed within a range of feasible parameter values,
             rocket_state = LANDED;  // then the landing is successful.
         } else {
@@ -1019,14 +1029,14 @@ void lose(void) {
     }
 
     // Check for state transitions
-    if (counter == 10) {
+    if (counter == 4) {
         state = reset;
     }
 
     if (state != last_state) {
         timer_stop(&timer1);
         // trials++;  // if we are leaving the state, do clean up stuff
-        printf("EXIT FLYING STATE");
+        printf("EXIT LOSE STATE");
 
     }
 }
@@ -1046,8 +1056,8 @@ void win(void) {
     }
 
     // Check for state transitions
-    if (counter == 10) {
-        state = reset;
+    if (counter == 4) {
+        state = idle;
     }
 
     if (state != last_state) {
@@ -1116,6 +1126,9 @@ void setup() {
 
     // UART
     setup_uart();
+
+    // GAME
+    rocket_speed_scale = ((float)(tilt_max) - (float)(tilt_min)) / (float)(motor_speed_range);
 
     throttle, tilt = 0;
 }

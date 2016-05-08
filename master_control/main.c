@@ -236,6 +236,8 @@ void idle(void) {
 void reset(void) {
     if (state != last_state) {  // if we are entering the state, do initialization stuff
         last_state = state;
+        pin_clear(&D[8]);
+        pin_clear(&D[9]);
         printf("Entering RESET\n\r");
     }
     uint32_t reset_msg;
@@ -348,7 +350,7 @@ void lose(void) {
     }
 
     // Check for state transitions
-    if (counter == 10) {
+    if (counter == 4) {
         state = reset;
     }
 
@@ -373,8 +375,8 @@ void win(void) {
     }
 
     // Check for state transitions
-    if (counter == 10) {
-        state = reset;
+    if (counter == 4) {
+        state = idle;
     }
 
     if (state != last_state) {
