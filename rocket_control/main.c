@@ -400,25 +400,25 @@ void rocket_model() {
     else {
         dcm_velocity(&dcm1, motor_speed, 1);
     }
-    // drive stepper
-    if (stepper_speed == 0) {
-        st_speed(&st_d, 0);
-    }
-    else {
-        if (stepper_dir_track) {
-            st_direction(&st_d, 1);
-            st_speed(&st_d, stepper_speed);
-        }
-        else {
-            st_direction(&st_d, 0);
-            st_speed(&st_d, stepper_speed);
-        }
-    }
+    // // drive stepper
+    // if (stepper_speed == 0) {
+    //     st_speed(&st_d, 0);
+    // }
+    // else {
+    //     if (stepper_dir_track) {
+    //         st_direction(&st_d, 1);
+    //         st_speed(&st_d, stepper_speed);
+    //     }
+    //     else {
+    //         st_direction(&st_d, 0);
+    //         st_speed(&st_d, stepper_speed);
+    //     }
+    // }
     // Handle tilt
     if (tilt == TILT_CCW) {
         // drive servo to CCW
-        st_direction(&st_d, 0);
-        st_speed(&st_d, 150);
+        // st_direction(&st_d, 0);
+        // st_speed(&st_d, 150);
         led_on(&led3);
         if (rocket_tilt < tilt_max) {
             rocket_tilt += tilt_incr;
@@ -426,16 +426,16 @@ void rocket_model() {
     }
     else if (tilt == TILT_CW) {
         // drive servo CW
-        st_direction(&st_d, 1);
-        st_speed(&st_d, 150);
+        // st_direction(&st_d, 1);
+        // st_speed(&st_d, 150);
         led_on(&led3);
         if (rocket_tilt > tilt_min) {
             rocket_tilt -= tilt_incr;
         }
     }
     else if (tilt == TILT_ZERO) {
-        stepper_speed = 0;
-        st_speed(&st_d, 0);
+        // stepper_speed = 0;
+        // st_speed(&st_d, 0);
         led_off(&led3);
     }
 
